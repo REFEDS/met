@@ -9,7 +9,7 @@ django-dotenv
 setuptools-rust
 python-memcached>=1.48
 simplejson
-django-silk
+django-silk==2.0.0
 pyff
 slackclient
 pyvirtualdisplay
