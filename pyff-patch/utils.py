@@ -29,7 +29,7 @@ def _e(error_log, m=None):
     def _f(x):
         if ":WARNING:" in x:
             return False
-        if m is not None and not m in x:
+        if m is not None and m not in x:
             return False
         return True
 
@@ -172,7 +172,7 @@ def schema():
             parser.resolvers.add(ResourceResolver())
             st = etree.parse(pkg_resources.resource_stream(__name__, "schema/schema.xsd"), parser)
             _SCHEMA = etree.XMLSchema(st)
-        except etree.XMLSchemaParseError, ex:
+        except etree.XMLSchemaParseError as ex:
             log.error(_e(ex.error_log))
             raise ex
     return _SCHEMA
@@ -194,13 +194,13 @@ def safe_write(fn, data):
         if os.path.exists(tmpn) and os.stat(tmpn).st_size > 0:
             os.rename(tmpn, fn)
             return True
-    except Exception, ex:
+    except Exception as ex:
         log.error(ex)
     finally:
         if tmpn is not None and os.path.exists(tmpn):
             try:
                 os.unlink(tmpn)
-            except Exception, ex:
+            except Exception as ex:
                 log.warn(ex)
                 pass
     return False
@@ -279,7 +279,7 @@ class URLFetch(threading.Thread):
                 self.result = self.resp.content
 
             log.debug("got %d bytes from '%s'" % (len(self.result), self.url))
-        except Exception, ex:
+        except Exception as ex:
             traceback.print_exc()
             log.warn("unable to fetch '%s': %s" % (self.url, ex))
             self.ex = ex

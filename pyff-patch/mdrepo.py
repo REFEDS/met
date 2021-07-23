@@ -306,7 +306,7 @@ and verified.
             stats = {}
 
         def producer(q, resources, cache=self.metadata_cache_enabled):
-            print resources
+            print(resources)
             for url, verify, id, tries in resources:
                 log.debug("starting fetcher for '%s'" % url)
                 thread = URLFetch(
@@ -407,7 +407,7 @@ and verified.
                     else:
                         raise MetadataException(
                             "unknown metadata type for '%s' (%s)" % (thread.url, relt.tag))
-                except Exception, ex:
+                except Exception as ex:
                     # traceback.print_exc(ex)
                     log.warn("problem fetching '%s' (will retry): %s" %
                              (thread.url, ex))
@@ -477,12 +477,12 @@ and verified.
                 # Having removed the invalid entities this should now never
                 # happen...
                 schema().assertValid(t)
-        except DocumentInvalid, ex:
+        except DocumentInvalid as ex:
             traceback.print_exc()
             log.debug("schema validation failed on '%s': %s" % (
                 base_url, _e(ex.error_log, m=base_url)))
             raise MetadataException("schema validation failed")
-        except Exception, ex:
+        except Exception as ex:
             # log.debug(_e(schema().error_log))
             log.error(ex)
             if fail_on_error:
@@ -496,9 +496,9 @@ and verified.
                     raise MetadataException(
                         "XML metadata contains %d signatures - exactly 1 is required" % len(refs))
                 t = refs[0]  # prevent wrapping attacks
-            except Exception, ex:
+            except Exception as ex:
                 tb = traceback.format_exc()
-                print tb
+                print(tb)
                 log.error(ex)
                 return None
 
@@ -580,7 +580,7 @@ starting with '.' are excluded.
                             t = self.parse_metadata(fn, fail_on_error=True)
                             # local metadata is assumed to be ok
                             entities.extend(self.entities(t))
-                        except Exception, ex:
+                        except Exception as ex:
                             log.error(ex)
             self.import_metadata(self.entity_set(entities, url))
         return self.md[url]
@@ -758,7 +758,7 @@ Produce an EntityDescriptors set from a list of entities. Optional Name, cacheDu
         if validate:
             try:
                 schema().assertValid(t)
-            except DocumentInvalid, ex:
+            except DocumentInvalid as ex:
                 log.debug(_e(ex.error_log))
                 #raise MetadataException(
                 #    "XML schema validation failed: %s" % name)
@@ -866,7 +866,7 @@ replace old_e in t.
                 if new_e:
                     # we don't know which strategy was employed
                     self.index.add(new_e)
-            except Exception, ex:
+            except Exception as ex:
                 traceback.print_exc()
                 self.index.add(old_e)
                 raise ex
