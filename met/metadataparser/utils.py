@@ -66,7 +66,6 @@ def send_slack(message):
 def send_mail(from_email_address, subject, message):
     mail_config_dict = getattr(settings, "MAIL_CONFIG")
     server = mail_config_dict['email_server']
-    smtp_send = None
 
     if server is None:
         return
