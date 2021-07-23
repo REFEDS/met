@@ -51,7 +51,7 @@ def refresh(fed_name=None, force_refresh=False, logger=None):
 
     federations = Federation.objects.all()
     federations.prefetch_related('etypes', 'federations')
-    #TODO prefetch related, add federations->entity_categories
+    # TODO prefetch related, add federations->entity_categories
 
     for federation in federations:
         if fed_name and federation.slug != fed_name:
