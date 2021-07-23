@@ -87,7 +87,8 @@ def interfederations_summary(context, queryname, counts, federations=None):
             'entity_types': DESCRIPTOR_TYPES}
 
 @register.inclusion_tag('metadataparser/tag_entity_list.html', takes_context=True)
-def entity_list(context, entities, categories=None, pagination=None, curfed=None, show_total=True, append_query=None, onclick_page=None, onclick_export=None):
+def entity_list(context, entities, categories=None, pagination=None, curfed=None, show_total=True,
+                append_query=None, onclick_page=None, onclick_export=None):
     request = context.get('request', None)
     lang = 'en'
     if request:
@@ -108,7 +109,8 @@ def entity_list(context, entities, categories=None, pagination=None, curfed=None
 
 
 @register.inclusion_tag('metadataparser/most_fed_entities_summary.html', takes_context=True)
-def most_fed_entity_list(context, entities, categories=None, pagination=None, curfed=None, show_total=True, append_query=None, onclick_page=None, onclick_export=None):
+def most_fed_entity_list(context, entities, categories=None, pagination=None, curfed=None,
+                         show_total=True, append_query=None, onclick_page=None, onclick_export=None):
     request = context.get('request', None)
     lang = 'en'
     if request:
@@ -129,7 +131,8 @@ def most_fed_entity_list(context, entities, categories=None, pagination=None, cu
 
 
 @register.inclusion_tag('metadataparser/service_search_summary.html', takes_context=True)
-def service_search_result(context, entities, categories=None, pagination=None, curfed=None, show_total=True, append_query=None, onclick_page=None, onclick_export=None):
+def service_search_result(context, entities, categories=None, pagination=None, curfed=None,
+                          show_total=True, append_query=None, onclick_page=None, onclick_export=None):
     request = context.get('request', None)
     lang = 'en'
     if request:
