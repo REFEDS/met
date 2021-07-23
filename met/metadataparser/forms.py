@@ -32,7 +32,9 @@ class MultiURLforMetadata(Widget):
         final_attrs = self.build_attrs(attrs, name=name)
         output = []
         output.append(format_html(
-            '<table id="metadata_type" class="display" cellspacing="0" width="100%"><thead><tr><th>Metadata</th><th>Type</th></tr></thead><tbody>', flatatt(final_attrs)))
+            '<table id="metadata_type" class="display" cellspacing="0" width="100%"><thead><tr><th>Metadata</th><th>Type</th></tr></thead><tbody>',
+            flatatt(final_attrs))
+        )
 
         for curpair in value.split("|"):
             val = ''.join(curpair)
@@ -54,7 +56,9 @@ class MultiURLforMetadata(Widget):
 
             <fieldset class="control-group" id="new_URL_set">
             Meta URL: <input type="url" name="meta_URL" id="meta_URL" />
-            <select name="type_URL" id="type_URL"><option value="All">All</option><option value="IDP">IDP</option><option value="SP">SP</option></select>
+            <select name="type_URL" id="type_URL">
+            <option value="All">All</option><option value="IDP">IDP</option><option value="SP">SP</option>
+            </select>
             <input id="add" type="button" value="Add URL" />
             </fieldset>
         ''')
@@ -69,8 +73,8 @@ class MultiURLforMetadata(Widget):
                     "ordering":  false,
                     "paging":    false,
                     "info":      false
-                }}); 
-   
+                }});
+
                 var table = $('#metadata_type').DataTable();
                 $('#metadata_type tbody').on( 'click', 'tr', function () {{
                     $(this).toggleClass('selected');
@@ -89,7 +93,7 @@ class MultiURLforMetadata(Widget):
                     var urlpattern = new RegExp('([a-zA-Z\\d]+:\\/\\/)?((\\w+:\\w+@)?([a-zA-Z\\d.-]+\\.[A-Za-z]{{2,4}})(:\\d+)?(\\/.*)?)','i'); // fragment locater
                     if (!urlpattern.test($('#meta_URL').val())) {{
                         $('#new_URL_set').addClass("error");
-                        return; 
+                        return;
                     }}
 
                     $('#new_URL_set').removeClass("error");
@@ -108,14 +112,14 @@ class MultiURLforMetadata(Widget):
 
                 $('#delete').click( function () {{
                     table.row('.selected').remove().draw(false);
-                   
+
                     var text = "";
                     table.rows().every( function () {{
                         var data = this.data();
                         text +=data[0] +  ";" + data[1] + "|";
                     }} );
                     text = text.substring(0, text.length - 1);
-                    $('#id_{}').val(text); 
+                    $('#id_{}').val(text);
                 }});
             }});
             </script>'''.format(name, name, name))

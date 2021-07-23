@@ -233,7 +233,7 @@ class MetadataParser:
                 cert = x509.load_pem_x509_certificate(
                     certText, default_backend())
                 certName = cert.signature_hash_algorithm.name
-            except Exception as e:
+            except Exception:
                 pass
 
             if certName not in hashes:
@@ -375,7 +375,7 @@ class MetadataParser:
 
         scope = []
         for cur_scope in scope_node:
-            if not cur_scope.text in scope:
+            if cur_scope.text not in scope:
                 scope.append(cur_scope.text)
         return scope
 

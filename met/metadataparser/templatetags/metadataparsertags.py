@@ -86,6 +86,7 @@ def interfederations_summary(context, queryname, counts, federations=None):
             'counts': counts,
             'entity_types': DESCRIPTOR_TYPES}
 
+
 @register.inclusion_tag('metadataparser/tag_entity_list.html', takes_context=True)
 def entity_list(context, entities, categories=None, pagination=None, curfed=None, show_total=True,
                 append_query=None, onclick_page=None, onclick_export=None):
@@ -150,7 +151,6 @@ def service_search_result(context, entities, categories=None, pagination=None, c
             'onclick_page': onclick_page,
             'onclick_export': onclick_export,
             'entity_types': DESCRIPTOR_TYPES}
-
 
 
 @register.inclusion_tag('metadataparser/tag_entity_filters.html', takes_context=True)
@@ -218,9 +218,9 @@ def export_menu(context, entities, append_query=None, onclick=None):
         if query:
             url += f'?{query}&format={mode}'
         else:
-            url += '?format=%s' % (mode)
+            url += '?format=%s' % mode
         if append_query:
-            url += "&%s" % (append_query)
+            url += "&%s" % append_query
         formats.append({'url': url, 'label': mode, 'onclick': onclick})
 
     return {'formats': formats}
@@ -296,7 +296,8 @@ def organization_property(context, organizations, prop, lang):
     val = None
     for organization in organizations:
         if prop in organization:
-            if val is None: val = organization[prop]
+            if val is None:
+                val = organization[prop]
             if organization['lang'] == lang:
                 val = organization[prop]
 
@@ -307,14 +308,14 @@ def organization_property(context, organizations, prop, lang):
 def get_property(obj, prop=None):
     uprop = str(prop)
     if not uprop:
-        return '<a href="{link}">{name}</a>'.format(link=obj.get_absolute_url(),
-                                                    name=str(obj))
+        return '<a href="{link}">{name}</a>'.format(link=obj.get_absolute_url(), name=str(obj))
     if isinstance(obj, dict):
         return obj.get(prop, None)
     if getattr(getattr(obj, uprop, None), 'all', None):
-        return '. '.join(['<a href="{link}">{name}</a>'.format(link=item.get_absolute_url(),
-                                                               name=str(item))
-                          for item in getattr(obj, uprop).all()])
+        return '. '.join([
+            '<a href="{link}">{name}</a>'.format(link=item.get_absolute_url(), name=str(item))
+            for item in getattr(obj, uprop).all()
+        ])
     if isinstance(getattr(obj, uprop, ''), list):
         return ', '.join(getattr(obj, uprop, []))
     return getattr(obj, uprop, '')

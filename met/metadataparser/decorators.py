@@ -25,8 +25,7 @@ def login_request(request, login_url=None):
     path = request.build_absolute_uri()
     # If the login url is the same scheme and net location then just
     # use the path as the "next" url.
-    login_scheme, login_netloc = urlparse(login_url or
-                                                   settings.LOGIN_URL)[:2]
+    login_scheme, login_netloc = urlparse(login_url or settings.LOGIN_URL)[:2]
     current_scheme, current_netloc = urlparse(path)[:2]
     if ((not login_scheme or login_scheme == current_scheme) and
             (not login_netloc or login_netloc == current_netloc)):
