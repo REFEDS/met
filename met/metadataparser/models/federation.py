@@ -44,7 +44,7 @@ def update_obj(mobj, obj, attrs=None):
     for_attrs = attrs or getattr(mobj, 'all_attrs', [])
     for attrb in attrs or for_attrs:
         if (getattr(mobj, attrb, None) and
-            getattr(obj, attrb, None) and
+                getattr(obj, attrb, None) and
                 getattr(mobj, attrb) != getattr(obj, attrb)):
             setattr(obj, attrb, getattr(mobj, attrb))
 
@@ -414,7 +414,7 @@ class Federation(Base):
 @receiver(pre_save, sender=Federation, dispatch_uid='federation_pre_save')
 def federation_pre_save(sender, instance, **kwargs):
     # Skip pre_save if only file name is saved
-    if kwargs.has_key('update_fields') and kwargs['update_fields'] == {'file'}:
+    if 'update_fields' in kwargs and kwargs['update_fields'] == {'file'}:
         return
 
     # slug = slugify(str(instance.name))[:200]

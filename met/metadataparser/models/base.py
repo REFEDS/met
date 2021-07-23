@@ -61,7 +61,7 @@ class JSONField(models.CharField):
             return None
 
         try:
-            if isinstance(value, basestring):
+            if isinstance(value, str):
                 return json.loads(value)
         except ValueError:
             return value
