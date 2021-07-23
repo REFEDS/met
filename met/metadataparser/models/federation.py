@@ -54,34 +54,76 @@ class Federation(Base):
     Model describing an identity federation.
     """
 
-    name = models.CharField(blank=False, null=False, max_length=200,
-                            unique=True, verbose_name=_('Name'))
+    name = models.CharField(
+        blank=False,
+        null=False,
+        max_length=200,
+        unique=True,
+        verbose_name=_('Name')
+    )
 
-    type = models.CharField(blank=True, null=True, max_length=100,
-                            unique=False, verbose_name=_('Type'), choices=FEDERATION_TYPES)
+    type = models.CharField(
+        blank=True,
+        null=True,
+        max_length=100,
+        unique=False,
+        verbose_name=_('Type'),
+        choices=FEDERATION_TYPES
+    )
 
-    url = models.URLField(verbose_name='Federation url',
-                          blank=True, null=True)
+    url = models.URLField(
+        verbose_name='Federation url',
+        blank=True,
+        null=True
+    )
 
-    fee_schedule_url = models.URLField(verbose_name='Fee schedule url',
-                                       max_length=150, blank=True, null=True)
+    fee_schedule_url = models.URLField(
+        verbose_name='Fee schedule url',
+        max_length=150,
+        blank=True,
+        null=True
+    )
 
-    logo = models.ImageField(upload_to='federation_logo', blank=True,
-                             null=True, verbose_name=_('Federation logo'))
+    logo = models.ImageField(
+        upload_to='federation_logo',
+        blank=True,
+        null=True,
+        verbose_name=_('Federation logo')
+    )
 
-    is_interfederation = models.BooleanField(default=False, db_index=True,
-                                             verbose_name=_('Is interfederation'))
+    is_interfederation = models.BooleanField(
+        default=False,
+        db_index=True,
+        verbose_name=_('Is interfederation')
+    )
 
-    slug = models.SlugField(max_length=200, unique=True)
+    slug = models.SlugField(
+        max_length=200,
+        unique=True
+    )
 
-    country = models.CharField(blank=True, null=True, max_length=100,
-                               unique=False, verbose_name=_('Country'))
+    country = models.CharField(
+        blank=True,
+        null=True,
+        max_length=100,
+        unique=False,
+        verbose_name=_('Country')
+    )
 
-    metadata_update = models.DateTimeField(blank=True, null=True,
-                                           unique=False, verbose_name=_('Metadata update date and time'))
+    metadata_update = models.DateTimeField(
+        blank=True,
+        null=True,
+        unique=False,
+        verbose_name=_('Metadata update date and time')
+    )
 
-    certstats = models.CharField(blank=True, null=True, max_length=200,
-                                 unique=False, verbose_name=_('Certificate Stats'))
+    certstats = models.CharField(
+        blank=True,
+        null=True,
+        max_length=200,
+        unique=False,
+        verbose_name=_('Certificate Stats')
+    )
 
     @property
     def certificates(self):
@@ -122,9 +164,8 @@ class Federation(Base):
         removed = 0
         for entity in self.entity_set.all():
             # Remove entity relation if does not exist in metadata
-            if not entity.entityid in entities_from_xml:
-                Entity_Federations.objects.filter(
-                    federation=self, entity=entity).delete()
+            if entity.entityid not in entities_from_xml:
+                Entity_Federations.objects.filter(federation=self, entity=entity).delete()
                 removed += 1
 
         return removed
@@ -139,14 +180,12 @@ class Federation(Base):
                 break
 
             if cached_entity_categories is None:
-                entity_category, _ = EntityCategory.objects.get_or_create(
-                    category_id=ecategory)
+                entity_category, _ = EntityCategory.objects.get_or_create(category_id=ecategory)
             else:
                 if ecategory in cached_entity_categories:
                     entity_category = cached_entity_categories[ecategory]
                 else:
-                    entity_category = EntityCategory.objects.create(
-                        category_id=ecategory)
+                    entity_category = EntityCategory.objects.create(category_id=ecategory)
             entity_categories.append(entity_category)
         return entity_categories
 
@@ -161,19 +200,20 @@ class Federation(Base):
             if e.xml_categories:
                 db_entity_categories = EntityCategory.objects.all()
                 cached_entity_categories = {
-                    entity_category.category_id: entity_category for entity_category in db_entity_categories}
+                    entity_category.category_id: entity_category for entity_category in db_entity_categories
+                }
 
                 # Delete categories no more present in XML
                 membership.entity_categories.clear()
 
-                # Create all entities, if not alread in database
+                # Create all entities, if not already in database
                 entity_categories = self._get_or_create_ecategories(e, cached_entity_categories)
 
                 # Add categories to entity
                 if len(entity_categories) > 0:
                     membership.entity_categories.add(*entity_categories)
             else:
-                # No categories in XML, delete eventual categorie sin DB
+                # No categories in XML, delete eventual categories sin DB
                 membership.entity_categories.clear()
 
             membership.save()
@@ -181,7 +221,8 @@ class Federation(Base):
     def _add_new_entities(self, entities, entities_from_xml, request, federation_slug):
         db_entity_types = EntityType.objects.all()
         cached_entity_types = {
-            entity_type.xmlname: entity_type for entity_type in db_entity_types}
+            entity_type.xmlname: entity_type for entity_type in db_entity_types
+        }
 
         entities_to_add = []
         entities_to_update = []
@@ -220,7 +261,8 @@ class Federation(Base):
             yield start_date + timedelta(n)
 
     def compute_new_stats(self):
-        if not self._metadata: return ([], [])
+        if not self._metadata:
+            return [], []
         entities_from_xml = self._metadata.get_entities()
 
         entities = Entity.objects.filter(entityid__in=entities_from_xml)
@@ -248,8 +290,7 @@ class Federation(Base):
                     stat.feature = feature
                     stat.time = curtimestamp
                     stat.federation = self
-                    stat.value = fun(
-                        entities, stats['features'][feature], curtimestamp)
+                    stat.value = fun(entities, stats['features'][feature], curtimestamp)
                     entity_stats.append(stat)
                     computed[feature] = stat.value
                 else:
@@ -266,24 +307,24 @@ class Federation(Base):
                 federation=self, time__gte=from_time, time__lte=to_time).delete()
             EntityStat.objects.bulk_create(entity_stats)
 
-        return (computed, not_computed)
+        return computed, not_computed
 
     def process_metadata_entities(self, request=None, federation_slug=None):
-        if not self._metadata: return
+        if not self._metadata:
+            return
         entities_from_xml = self._metadata.get_entities()
         removed = self._remove_deleted_entities(entities_from_xml)
 
         entities = {}
         db_entities = Entity.objects.filter(entityid__in=entities_from_xml)
         db_entities = db_entities.prefetch_related('types')
-        #TODO add prefetch related, federations, entity_categories
+        # TODO add prefetch related, federations, entity_categories
 
         for entity in db_entities.all():
             entities[entity.entityid] = entity
 
         if request and federation_slug:
-            request.session['%s_num_entities' %
-                            federation_slug] = len(entities_from_xml)
+            request.session['%s_num_entities' % federation_slug] = len(entities_from_xml)
             request.session['%s_cur_entities' % federation_slug] = 0
             request.session['%s_process_done' % federation_slug] = False
             request.session.save()
@@ -347,12 +388,16 @@ class Federation(Base):
 
     def get_stat_protocol(self, entities, xml_name, service_type, ref_date):
         if ref_date and ref_date < pytz.utc.localize(datetime.now() - timedelta(days=1)):
-            selected = entities.filter(types__xmlname=service_type,
-                                       _display_protocols__contains=xml_name,
-                                       entity_federations__registration_instant__lt=ref_date)
+            selected = entities.filter(
+                types__xmlname=service_type,
+                _display_protocols__contains=xml_name,
+                entity_federations__registration_instant__lt=ref_date
+            )
         else:
-            selected = entities.filter(types__xmlname=service_type,
-                                       _display_protocols__contains=xml_name)
+            selected = entities.filter(
+                types__xmlname=service_type,
+                _display_protocols__contains=xml_name
+            )
 
         return len(selected)
 
@@ -372,7 +417,7 @@ def federation_pre_save(sender, instance, **kwargs):
     if kwargs.has_key('update_fields') and kwargs['update_fields'] == {'file'}:
         return
 
-    #slug = slugify(str(instance.name))[:200]
+    # slug = slugify(str(instance.name))[:200]
     # if instance.file_url and instance.file_url != '':
     #    try:
     #        instance.fetch_metadata_file(slug)

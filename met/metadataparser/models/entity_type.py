@@ -19,11 +19,21 @@ class EntityType(models.Model):
     Model describing the type of an entity.
     """
 
-    name = models.CharField(blank=False, max_length=20, unique=True,
-                            verbose_name=_('Name'), db_index=True)
+    name = models.CharField(
+        blank=False,
+        max_length=20,
+        unique=True,
+        verbose_name=_('Name'),
+        db_index=True
+    )
 
-    xmlname = models.CharField(blank=False, max_length=20, unique=True,
-                               verbose_name=_('Name in XML'), db_index=True)
+    xmlname = models.CharField(
+        blank=False,
+        max_length=20,
+        unique=True,
+        verbose_name=_('Name in XML'),
+        db_index=True
+    )
 
     def __str__(self):
         return self.name

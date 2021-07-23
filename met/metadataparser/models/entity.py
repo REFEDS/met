@@ -54,13 +54,11 @@ class EntityQuerySet(QuerySet):
                 continue
 
             federations = entity.federations.all()
-            if federations:
-                federation = federations[0]
-            else:
+            if not federations:
                 raise ValueError("Can't find entity metadata")
 
             for federation in federations:
-                if not federation.id in cached_federations:
+                if federation.id not in cached_federations:
                     cached_federations[federation.id] = federation
 
                 cached_federation = cached_federations[federation.id]
@@ -86,7 +84,7 @@ class EntityManager(models.Manager):
 
 class Entity(Base):
     """
-    Model describin a federation entity (IdP, SP or AA).
+    Model describing a federation entity (IdP, SP or AA).
     """
 
     READABLE_PROTOCOLS = {
@@ -95,22 +93,47 @@ class Entity(Base):
         'urn:mace:shibboleth:1.0': 'Shiboleth 1.0',
     }
 
-    entityid = models.CharField(blank=False, max_length=200, unique=True,
-                                verbose_name=_('EntityID'), db_index=True)
+    entityid = models.CharField(
+        blank=False,
+        max_length=200,
+        unique=True,
+        verbose_name=_('EntityID'),
+        db_index=True
+    )
 
-    federations = models.ManyToManyField('Federation', through='Entity_Federations',
-                                         verbose_name=_('Federations'))
+    federations = models.ManyToManyField(
+        'Federation',
+        through='Entity_Federations',
+        verbose_name=_('Federations')
+    )
 
-    types = models.ManyToManyField('EntityType', verbose_name=_('Type'))
+    types = models.ManyToManyField(
+        'EntityType',
+        verbose_name=_('Type')
+    )
 
-    name = JSONField(blank=True, null=True, max_length=2000,
-                     verbose_name=_('Display Name'))
+    name = JSONField(
+        blank=True,
+        null=True,
+        max_length=2000,
+        verbose_name=_('Display Name')
+    )
 
-    certstats = models.CharField(blank=True, null=True, max_length=200,
-                                 unique=False, verbose_name=_('Certificate Stats'))
+    certstats = models.CharField(
+        blank=True,
+        null=True,
+        max_length=200,
+        unique=False,
+        verbose_name=_('Certificate Stats')
+    )
 
-    _display_protocols = models.CharField(blank=True, null=True, max_length=300,
-                                          unique=False, verbose_name=_('Display Protocols'))
+    _display_protocols = models.CharField(
+        blank=True,
+        null=True,
+        max_length=300,
+        unique=False,
+        verbose_name=_('Display Protocols')
+    )
 
     objects = models.Manager()
 
@@ -373,14 +396,18 @@ class Entity(Base):
                 break
 
             if cached_entity_types is None:
-                entity_type, _ = EntityType.objects.get_or_create(xmlname=etype,
-                                                                  name=DESCRIPTOR_TYPES_DISPLAY[etype])
+                entity_type, _ = EntityType.objects.get_or_create(
+                    xmlname=etype,
+                    name=DESCRIPTOR_TYPES_DISPLAY[etype]
+                )
             else:
                 if etype in cached_entity_types:
                     entity_type = cached_entity_types[etype]
                 else:
-                    entity_type = EntityType.objects.create(xmlname=etype,
-                                                            name=DESCRIPTOR_TYPES_DISPLAY[etype])
+                    entity_type = EntityType.objects.create(
+                        xmlname=etype,
+                        name=DESCRIPTOR_TYPES_DISPLAY[etype]
+                    )
             entity_types.append(entity_type)
         return entity_types
 
@@ -389,8 +416,10 @@ class Entity(Base):
             self.load_metadata()
 
         if self.entityid.lower() != entity_data.get('entityid').lower():
-            raise ValueError("EntityID is not the same: {} != {}".format(
-                self.entityid.lower(), entity_data.get('entityid').lower()))
+            raise ValueError(
+                "EntityID is not the same: {} != {}".format(
+                    self.entityid.lower(), entity_data.get('entityid').lower())
+            )
 
         self._entity_cached = entity_data
 
@@ -436,11 +465,12 @@ class Entity(Base):
 
         return entity
 
-    def display_etype(value, separator=', '):
-        return separator.join([str(item) for item in value.all()])
+    # TODO this method doesn't seem to work. Let's comment it for now, until we verify it can be removed
+    # def display_etype(value, separator=', '):
+    #    return separator.join([str(item) for item in value.all()])
 
     @classmethod
-    def get_most_federated_entities(self, maxlength=TOP_LENGTH, cache_expire=None):
+    def get_most_federated_entities(cls, maxlength=TOP_LENGTH, cache_expire=None):
         entities = None
         if cache_expire:
             entities = cache.get("most_federated_entities")
