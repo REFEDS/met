@@ -19,3 +19,4 @@ slackclient
 Pillow
 uWSGI==2.0.19.1
 uwsgitop==0.11
+flake8==3.9.2
