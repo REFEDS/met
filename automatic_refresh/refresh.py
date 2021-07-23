@@ -10,7 +10,8 @@
 # Consortium GARR, http://www.garr.it
 #########################################################################################
 
-import sys, os
+import os
+import sys
 import logging
 import logging.config
 from optparse import OptionParser
@@ -30,58 +31,61 @@ from met.metadataparser.refresh_metadata import refresh
 
 django.setup()
 
+
 class SingleRun(object):
     class InstanceRunningException(Exception):
         pass
 
     def __init__(self, lock_file):
-        #define the lock file name
-        self.lock_file =  "/tmp/%s.pid" % lock_file
+        # define the lock file name
+        self.lock_file = "/tmp/%s.pid" % lock_file
 
     def __call__(self, func):
         def fnc(*args, **kwargs):
             if os.path.exists(self.lock_file):
-                #get process id, if lock file exists
+                # get process id, if lock file exists
                 pid = open(self.lock_file, "rt").read()
                 if not os.path.exists("/proc/%s" % pid):
-                    #if process is not alive remove the lock file
+                    # if process is not alive remove the lock file
                     os.unlink(self.lock_file)
                 else:
-                    #process is running
+                    # process is running
                     raise self.InstanceRunningException(pid)
 
             try:
-                #store process id
+                # store process id
                 open(self.lock_file, "wt").write(str(os.getpid()))
-                #execute wrapped function
-                func(*args,**kwargs)
+                # execute wrapped function
+                func(*args, **kwargs)
             finally:
                 if os.path.exists(self.lock_file):
                     os.unlink(self.lock_file)
         return fnc
+
 
 class RefreshMetaData(object):
     @classmethod
     def process(cls, options):
         fed_name = options.fed_name
         force_refresh = options.force_refresh
-        
+
         logger = None
         if options.log:
             logging.config.fileConfig(options.log)
             logger = logging.getLogger("Refresh")
-    
+
         try:
             refresh(fed_name, force_refresh, logger)
         except Exception as e:
             if logger:
-	        logger.error("%s" % e)
+                logger.error("%s" % e)
+
 
 @SingleRun(lock_file="met-metadatarefresh")
 def commandline_call(convert_class=RefreshMetaData):
     opt_parser = OptionParser()
     opt_parser.set_usage("refresh [--federation <fed_name>] [--log  <file>] [--force-refresh]")
-    
+
     opt_parser.add_option(
         "-l",
         "--log",
@@ -109,18 +113,19 @@ def commandline_call(convert_class=RefreshMetaData):
         metavar="REF")
 
     (options, _) = opt_parser.parse_args()
-    
+
     error_message = ""
     if options.log and not os.path.exists(options.log):
         error_message = "File '%s' does not exist." % options.log
-    
+
     if error_message:
         print(error_message)
         print(opt_parser.get_usage())
-        exit (1)
-    
+        exit(1)
+
     obj_convert = convert_class()
     obj_convert.process(options)
+
 
 if __name__ == '__main__':
     log_args = {'level': logging.ERROR}

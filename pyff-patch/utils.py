@@ -270,7 +270,8 @@ class URLFetch(threading.Thread):
                     self.last_modified = datetime.fromtimestamp(os.stat(path).st_mtime)
             else:
                 self.resp = requests.get(self.url, timeout=60, verify=False)
-                self.last_modified = _parse_date(self.resp.headers.get('last-modified', self.resp.headers.get('date', None)))
+                self.last_modified = _parse_date(
+                    self.resp.headers.get('last-modified', self.resp.headers.get('date', None)))
                 self.date = _parse_date(self.resp.headers['date'])
                 self.cached = getattr(self.resp, 'from_cache', False)
                 self.status = self.resp.status_code
@@ -296,8 +297,16 @@ def root(t):
 
 
 def duration2timedelta(period):
-    regex = re.compile(
-        r'(?P<sign>[-+]?)P(?:(?P<years>\d+)[Yy])?(?:(?P<months>\d+)[Mm])?(?:(?P<days>\d+)[Dd])?(?:T(?:(?P<hours>\d+)[Hh])?(?:(?P<minutes>\d+)[Mm])?(?:(?P<seconds>\d+)[Ss])?)?')
+    pattern = r"""
+        (?P<sign>[-+]?)P
+        (?:(?P<years>\d+)[Yy])?
+        (?:(?P<months>\d+)[Mm])?
+        (?:(?P<days>\d+)[Dd])?
+        (?:T(?:(?P<hours>\d+)[Hh])?
+        (?:(?P<minutes>\d+)[Mm])?
+        (?:(?P<seconds>\d+)[Ss])?)?
+    """
+    regex = re.compile(pattern, re.VERBOSE)
 
     # Fetch the match groups with default value of 0 (not None)
     m = regex.match(period)
