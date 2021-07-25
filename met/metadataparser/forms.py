@@ -27,7 +27,7 @@ from met.metadataparser.models import Federation, Entity, EntityType, EntityCate
 class MultiURLforMetadata(Widget):
     def render(self, name, value, attrs=None):
         if value is None:
-            value = ""
+            value = ''
 
         final_attrs = self.build_attrs(attrs, name=name)
         output = []
@@ -36,12 +36,12 @@ class MultiURLforMetadata(Widget):
             flatatt(final_attrs))
         )
 
-        for curpair in value.split("|"):
+        for curpair in value.split('|'):
             val = ''.join(curpair)
-            val = curpair.split(";")
+            val = curpair.split(';')
 
             if len(val) == 1:
-                val.append("All")
+                val.append('All')
 
             if val[0]:
                 output.append('<tr><td>%s</th><td>%s</td></tr>' %
@@ -134,8 +134,8 @@ class FederationForm(forms.ModelForm):
         editor_users_choices = self.fields['editor_users'].widget.choices
         self.fields['editor_users'].widget = CheckboxSelectMultiple(
             choices=editor_users_choices)
-        self.fields['editor_users'].help_text = _("This/these user(s) can edit this "
-                                                  "federation and its entities")
+        self.fields['editor_users'].help_text = _('This/these user(s) can edit this '
+                                                  'federation and its entities')
 
         self.fields['file_url'].widget = MultiURLforMetadata()
 
@@ -152,8 +152,7 @@ class EntityForm(forms.ModelForm):
         editor_users_choices = self.fields['editor_users'].widget.choices
         self.fields['editor_users'].widget = CheckboxSelectMultiple(
             choices=editor_users_choices)
-        self.fields['editor_users'].help_text = _("These users can edit only "
-                                                  "this entity")
+        self.fields['editor_users'].help_text = _('These users can edit only this entity')
 
     class Meta:
         model = Entity
@@ -198,10 +197,10 @@ class ChartForm(forms.Form):
 
 class EntityCommentForm(forms.Form):
     email = forms.EmailField(label=_('Your email address'),
-                             help_text=_("Please enter your email address here."))
+                             help_text=_('Please enter your email address here.'))
 
-    comment = forms.CharField(max_length=1000, label=_("Your comment"),
-                              help_text=_("Please enter your comment here."),
+    comment = forms.CharField(max_length=1000, label=_('Your comment'),
+                              help_text=_('Please enter your comment here.'),
                               widget=forms.Textarea(attrs={'cols': '100', 'rows': '10'}))
 
     def __init__(self, *args, **kwargs):
@@ -214,7 +213,7 @@ class EntityCommentForm(forms.Form):
 
 class EntityProposalForm(forms.Form):
     email = forms.EmailField(label=_('Your email address'),
-                             help_text=_("Please enter your email address here."))
+                             help_text=_('Please enter your email address here.'))
 
     federation_choices = []
     i = 0
@@ -223,10 +222,10 @@ class EntityProposalForm(forms.Form):
         federation_choices.append(('%s' % federation, federation))
 
     federations = forms.MultipleChoiceField(label=_('Federations'), choices=federation_choices,
-                                            help_text=_("Please select the federation(s) you want to gather the entity in."))
+                                            help_text=_('Please select the federation(s) you want to gather the entity in.'))
 
-    comment = forms.CharField(max_length=1000, label=_("Your comment"),
-                              help_text=_("Please enter your comment here."),
+    comment = forms.CharField(max_length=1000, label=_('Your comment'),
+                              help_text=_('Please enter your comment here.'),
                               widget=forms.Textarea(attrs={'cols': '100', 'rows': '10'}))
 
     def __init__(self, *args, **kwargs):
@@ -248,9 +247,9 @@ class EntityProposalForm(forms.Form):
 
 
 class ServiceSearchForm(forms.Form):
-    entityid = forms.CharField(max_length=200, label=_("Search service ID"),
+    entityid = forms.CharField(max_length=200, label=_('Search service ID'),
                                help_text=_(
-                                   "Enter a full or partial entityid"),
+                                   'Enter a full or partial entityid'),
                                widget=forms.TextInput(attrs={'size': '200'}))
 
     class Meta:
@@ -270,7 +269,7 @@ class SearchEntitiesForm(forms.Form):
     for entity_category in EntityCategory.objects.all():
         category_choices.append(('%s' % entity_category, entity_category))
 
-    entity_type = forms.ChoiceField(label=_("Entity Type"),
+    entity_type = forms.ChoiceField(label=_('Entity Type'),
                                     help_text=_(
                                         "Select the entity type you're interest in"),
                                     choices=type_choices,
@@ -282,16 +281,16 @@ class SearchEntitiesForm(forms.Form):
                                         choices=category_choices,
                                         initial=['All'])
 
-    federations = forms.MultipleChoiceField(label=_("Federation filter"),
+    federations = forms.MultipleChoiceField(label=_('Federation filter'),
                                             help_text=_(
                                                 "Select the federations you're interest in (you may select multiple)"),
                                             widget=forms.CheckboxSelectMultiple,
                                             choices=federation_choices,
                                             initial=['All'])
 
-    entityid = forms.CharField(max_length=200, label=_("Search entity ID"),
+    entityid = forms.CharField(max_length=200, label=_('Search entity ID'),
                                help_text=_(
-                                   "Enter a full or partial entityid"),
+                                   'Enter a full or partial entityid'),
                                widget=forms.TextInput(attrs={'size': '200'}),
                                required=False)
 

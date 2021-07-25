@@ -158,7 +158,7 @@ class Entity(Base):
         reginstant = self._get_property('registration_instant')
         if reginstant is None:
             return None
-        reginstant = "%sZ" % reginstant[0:19]
+        reginstant = '%sZ' % reginstant[0:19]
         return datetime.strptime(reginstant, '%Y-%m-%dT%H:%M:%SZ')
 
     @property
@@ -386,7 +386,7 @@ class Entity(Base):
         if hasattr(self, '_entity_cached'):
             return self._entity_cached.get(prop, None)
         else:
-            raise ValueError("Not metadata loaded")
+            raise ValueError('Not metadata loaded')
 
     def _get_or_create_etypes(self, cached_entity_types):
         entity_types = []
@@ -417,7 +417,7 @@ class Entity(Base):
 
         if self.entityid.lower() != entity_data.get('entityid').lower():
             raise ValueError(
-                "EntityID is not the same: {} != {}".format(
+                'EntityID is not the same: {} != {}'.format(
                     self.entityid.lower(), entity_data.get('entityid').lower())
             )
 

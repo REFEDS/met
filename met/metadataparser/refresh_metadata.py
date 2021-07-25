@@ -26,7 +26,7 @@ else:
 
 
 def _send_message_via_email_and_slack(error_msg, federation, logger=None):
-    mail_config_dict = getattr(settings, "MAIL_CONFIG")
+    mail_config_dict = getattr(settings, 'MAIL_CONFIG')
     try:
         subject = mail_config_dict['refresh_subject'] % federation
         from_address = mail_config_dict['from_email_address']
@@ -43,7 +43,7 @@ def _fetch_new_metadata_file(federation, logger):
         return None, changed
     except Exception as errorMessage:
         log('%s' % errorMessage, logger, logging.ERROR)
-        return "%s" % errorMessage, False
+        return '%s' % errorMessage, False
 
 
 def refresh(fed_name=None, force_refresh=False, logger=None):
@@ -108,14 +108,14 @@ def refresh(fed_name=None, force_refresh=False, logger=None):
 
     try:
         log('Removing entity categories with no entity associated...', logger, logging.INFO)
-        EntityCategory.objects.all().annotate(entitylength=Count("entity_federations")
+        EntityCategory.objects.all().annotate(entitylength=Count('entity_federations')
                                               ).filter(entitylength__lte=0).delete()
     except Exception as errorMessage:
         log('Error: %s' % errorMessage, logger, logging.ERROR)
 
     try:
         log('Removing entities with no federation associated...', logger, logging.INFO)
-        Entity.objects.all().annotate(federationslength=Count("federations")
+        Entity.objects.all().annotate(federationslength=Count('federations')
                                       ).filter(federationslength__lte=0).delete()
     except Exception as errorMessage:
         log('Error: %s' % errorMessage, logger, logging.ERROR)

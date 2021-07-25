@@ -57,8 +57,8 @@ def export_summary_xml(qs, relation, filename, counters):
     root = xml.createElement(filename)
     # Write data to CSV file
     for obj in qs:
-        item = xml.createElement("federation")
-        item.setAttribute("name", str(obj))
+        item = xml.createElement('federation')
+        item.setAttribute('name', str(obj))
         for counter_label, counter_filter in counters:
             val = getattr(obj, relation).filter(**counter_filter).count()
             element = xml.createElement(counter_label)
@@ -86,5 +86,5 @@ def export_summary(mode, qs, relation, filename, counters):
     if mode in export_summary_modes:
         return export_summary_modes[mode](qs, relation, filename, counters)
     else:
-        content = "Error 400, Format %s is not supported" % mode
+        content = 'Error 400, Format %s is not supported' % mode
         return HttpResponseBadRequest(content)

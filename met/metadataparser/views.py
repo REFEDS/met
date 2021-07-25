@@ -54,7 +54,7 @@ if settings.PROFILE:
 else:
     from met.metadataparser.templatetags.decorators import noop_decorator as profile
 
-RESCUE_SLASH = re.compile(r"^(http(?:|s):/)([^/])")
+RESCUE_SLASH = re.compile(r'^(http(?:|s):/)([^/])')
 
 
 def increment_current_toplength(request):
@@ -317,7 +317,7 @@ def federation_update_entities(request, federation_slug=None):
     federation.process_metadata_entities(request=request, federation_slug=federation_slug)
 
     messages.success(request, _('Federation entities updated succesfully'))
-    return HttpResponse("Done. All entities updated.", content_type='text/plain')
+    return HttpResponse('Done. All entities updated.', content_type='text/plain')
 
 
 def entityupdate_progress(request, federation_slug=None):
@@ -357,7 +357,7 @@ def federation_charts(request, federation_slug=None):
         form = ChartForm(request.POST, request.FILES, instance=federation)
 
         if form.is_valid():
-            stats_config_dict = getattr(settings, "STATS")
+            stats_config_dict = getattr(settings, 'STATS')
             service_terms = stats_config_dict['statistics']['entity_by_type']['terms']
             protocol_terms = stats_config_dict['statistics']['entity_by_protocol']['terms']
 
@@ -375,14 +375,14 @@ def federation_charts(request, federation_slug=None):
                 feature__in=service_terms,
                 time__gte=from_time,
                 time__lte=to_time
-            ).order_by("time")
+            ).order_by('time')
 
             protocol_stats = EntityStat.objects.filter(
                 federation=federation,
                 feature__in=protocol_terms,
                 time__gte=from_time,
                 time__lte=to_time
-            ).order_by("time")
+            ).order_by('time')
 
             s_chart = []
 
@@ -551,7 +551,7 @@ def _get_chart_options(chart_type, title=None, x_title=None, y_title=None):
 
 
 def fed_pie_chart(request, federation_id):
-    stats_config_dict = getattr(settings, "STATS")
+    stats_config_dict = getattr(settings, 'STATS')
     terms = stats_config_dict['statistics']['entity_by_type']['terms']
     stats = EntityStat.objects.filter(
         federation=federation_id,
@@ -671,7 +671,7 @@ def entity_comment(request, federation_slug=None, entity_id=None):
     if request.method == 'POST':
         form = EntityCommentForm(request.POST, request.FILES, instance=entity)
         if form.is_valid():
-            mail_config = getattr(settings, "MAIL_CONFIG")
+            mail_config = getattr(settings, 'MAIL_CONFIG')
             try:
                 subject = mail_config['comment_subject'] % entity
                 send_mail(form.data['email'], subject, form.data['comment'])
@@ -709,7 +709,7 @@ def entity_proposal(request, federation_slug=None, entity_id=None):
         form = EntityProposalForm(request.POST, request.FILES, instance=entity)
 
         if form.is_valid():
-            mail_config = getattr(settings, "MAIL_CONFIG")
+            mail_config = getattr(settings, 'MAIL_CONFIG')
             try:
                 subject = mail_config['proposal_subject'] % entity
                 my_dict = dict(form.data.iterlists())
@@ -800,7 +800,7 @@ def search_service(request):
 
 def met_logout(request):
     logout(request)
-    return HttpResponseRedirect(request.GET.get("next", "/"))
+    return HttpResponseRedirect(request.GET.get('next', '/'))
 
 
 @profile(name='Search entities')
