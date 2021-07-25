@@ -30,7 +30,7 @@ from met.metadataparser.models.base import JSONField, Base
 from met.metadataparser.models.entity_type import EntityType
 from met.metadataparser.models.entity_federations import Entity_Federations
 
-TOP_LENGTH = getattr(settings, "TOP_LENGTH", 5)
+TOP_LENGTH = getattr(settings, 'TOP_LENGTH', 5)
 
 
 def update_obj(mobj, obj, attrs=None):
@@ -449,19 +449,19 @@ class Entity(Base):
         self.load_metadata()
 
         entity = self._entity_cached.copy()
-        entity["types"] = [str(f) for f in self.types.all()]
-        entity["federations"] = [{"name": str(f), "url": f.get_absolute_url()}
+        entity['types'] = [str(f) for f in self.types.all()]
+        entity['federations'] = [{'name': str(f), 'url': f.get_absolute_url()}
                                  for f in self.federations.all()]
 
         if self.registration_authority:
-            entity["registration_authority"] = self.registration_authority
+            entity['registration_authority'] = self.registration_authority
         if self.registration_instant:
-            entity["registration_instant"] = '%s' % self.registration_instant
+            entity['registration_instant'] = '%s' % self.registration_instant
 
-        if "file_id" in entity.keys():
-            del entity["file_id"]
-        if "entity_types" in entity.keys():
-            del entity["entity_types"]
+        if 'file_id' in entity.keys():
+            del entity['file_id']
+        if 'entity_types' in entity.keys():
+            del entity['entity_types']
 
         return entity
 
@@ -473,13 +473,13 @@ class Entity(Base):
     def get_most_federated_entities(cls, maxlength=TOP_LENGTH, cache_expire=None):
         entities = None
         if cache_expire:
-            entities = cache.get("most_federated_entities")
+            entities = cache.get('most_federated_entities')
 
         if not entities or len(entities) < maxlength:
             # Entities with count how many federations belongs to, and sorted
             # by most first
             ob_entities = Entity.objects.all().annotate(
-                federationslength=Count("federations")).order_by("-federationslength")
+                federationslength=Count('federations')).order_by('-federationslength')
             ob_entities = ob_entities.prefetch_related('types', 'federations')
             ob_entities = ob_entities[:maxlength]
 
@@ -494,7 +494,7 @@ class Entity(Base):
                 })
 
         if cache_expire:
-            cache.set("most_federated_entities", entities, cache_expire)
+            cache.set('most_federated_entities', entities, cache_expire)
 
         return entities[:maxlength]
 
