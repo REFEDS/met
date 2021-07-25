@@ -29,7 +29,7 @@ from met.metadataparser.utils import compare_filecontents
 
 class JSONField(models.CharField):
     """
-    JSONField is a generic textfield that neatly serializes/unserializes
+    JSONField is a generic textfield that neatly serializes/deserializes
     JSON objects seamlessly
 
     The json spec claims you must use a collection type at the top level of
@@ -38,7 +38,7 @@ class JSONField(models.CharField):
     The to_python method relies on the value being an instance of basestring
     to ensure that it is encoded.  If a string is the sole value at the
     point the field is instanced, to_python attempts to decode the sting because
-    it is derived from basestring but cannot be encodeded and throws the
+    it is derived from basestring but cannot be encoded and throws the
     exception ValueError: No JSON object could be decoded.
     """
 
