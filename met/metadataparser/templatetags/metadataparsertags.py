@@ -232,7 +232,7 @@ def export_summary_menu(query, onclick=None):
     for mode in export_summary_modes.keys():
         urlquery = {'format': mode,
                     'export': query}
-        url = f"./?{urlencode(urlquery)}"
+        url = f'./?{urlencode(urlquery)}'
         formats.append({'url': url, 'label': mode, 'onclick': onclick})
 
     return {'formats': formats}
@@ -354,7 +354,7 @@ def mailto(value):
 def wrap(value, length):
     value = str(value)
     if len(value) > length:
-        return "%s..." % value[:length]
+        return '%s...' % value[:length]
     return value
 
 
@@ -367,7 +367,7 @@ class CanEdit(Node):
 
     @classmethod
     def __repr__(cls):
-        return "<CanEdit>"
+        return '<CanEdit>'
 
     def render(self, context):
         obj = self.obj.resolve(context, True)
@@ -381,7 +381,7 @@ class CanEdit(Node):
 def do_canedit(parser, token):
     bits = list(token.split_contents())
     if len(bits) != 2:
-        raise TemplateSyntaxError("%r takes 1 argument" % bits[0])
+        raise TemplateSyntaxError('%r takes 1 argument' % bits[0])
     end_tag = 'end' + bits[0]
     nodelist = parser.parse((end_tag,))
     obj = parser.compile_filter(bits[1])
@@ -392,7 +392,7 @@ def do_canedit(parser, token):
 @register.tag
 def canedit(parser, token):
     """
-    Outputs the contents of the block if user has edit pemission
+    Outputs the contents of the block if user has edit permission
 
     Examples::
 
