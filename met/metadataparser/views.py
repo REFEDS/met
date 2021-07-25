@@ -316,7 +316,7 @@ def federation_update_entities(request, federation_slug=None):
     federation = get_object_or_404(Federation, slug=federation_slug)
     federation.process_metadata_entities(request=request, federation_slug=federation_slug)
 
-    messages.success(request, _('Federation entities updated succesfully'))
+    messages.success(request, _('Federation entities updated successfully'))
     return HttpResponse('Done. All entities updated.', content_type='text/plain')
 
 
