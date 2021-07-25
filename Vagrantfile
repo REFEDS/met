@@ -58,21 +58,21 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Example for VirtualBox:
   #
 
-  if ENV['SMITH_VAGRANT_NFS']
+  if ENV['MET_VAGRANT_NFS']
     # Use NFS server for Mac
     config.vm.synced_folder ".", "/vagrant", mount_options: ["nolock"], type: "nfs"
   end
 
   config.vm.provider :virtualbox do |vb|
     # Use VBoxManage to customize the VM. For example to change memory:
-    if ENV['SMITH_VM_MEMORY']
-      memory = ENV['SMITH_VM_MEMORY']
+    if ENV['MET_VM_MEMORY']
+      memory = ENV['MET_VM_MEMORY']
     else
       memory = "2048"  # default memory
     end
     vb.customize ["modifyvm", :id, "--memory", memory]
 
-    if ENV['SMITH_VAGRANT_HTTPS_OPTIMIZATIONS']
+    if ENV['MET_VAGRANT_HTTPS_OPTIMIZATIONS']
       # Nat fixes for http
       vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
       vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]

@@ -26,3 +26,10 @@ env
 automatic_refresh/.cache
 saml2/edugain_metadata.xml
 /cache
+
+# Vagrant
+.vagrant
+vagrant*
+
+# Editors support files
+.idea

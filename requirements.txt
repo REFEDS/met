@@ -9,7 +9,7 @@ django-dotenv
 setuptools-rust
 python-memcached>=1.48
 simplejson
-django-silk
+django-silk==2.0.0
 pyff
 slackclient
 pyvirtualdisplay
@@ -19,3 +19,4 @@ slackclient
 Pillow
 uWSGI==2.0.19.1
 uwsgitop==0.11
+flake8==3.9.2
