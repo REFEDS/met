@@ -132,8 +132,7 @@ class FederationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         editor_users_choices = self.fields['editor_users'].widget.choices
-        self.fields['editor_users'].widget = CheckboxSelectMultiple(
-            choices=editor_users_choices)
+        self.fields['editor_users'].widget = CheckboxSelectMultiple(choices=editor_users_choices)
         self.fields['editor_users'].help_text = _('This/these user(s) can edit this '
                                                   'federation and its entities')
 
@@ -150,8 +149,7 @@ class EntityForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         editor_users_choices = self.fields['editor_users'].widget.choices
-        self.fields['editor_users'].widget = CheckboxSelectMultiple(
-            choices=editor_users_choices)
+        self.fields['editor_users'].widget = CheckboxSelectMultiple(choices=editor_users_choices)
         self.fields['editor_users'].help_text = _('These users can edit only this entity')
 
     class Meta:
@@ -160,13 +158,19 @@ class EntityForm(forms.ModelForm):
 
 
 class ChartForm(forms.Form):
-    fromDate = forms.DateField(label=_('Start date'),
-                               help_text=_("Statistics start date."), initial=timezone.now() - relativedelta(days=11),
-                               widget=SelectDateWidget(years=range(timezone.datetime.today().year, 2012, -1)))
+    fromDate = forms.DateField(
+        label=_('Start date'),
+        help_text=_("Statistics start date."),
+        initial=timezone.now() - relativedelta(days=11),
+        widget=SelectDateWidget(years=range(timezone.datetime.today().year, 2012, -1))
+    )
 
-    toDate = forms.DateField(label=_('End date'),
-                             help_text=_("Statistics end date."), initial=timezone.now() - relativedelta(days=1),
-                             widget=SelectDateWidget(years=range(timezone.datetime.today().year, 2012, -1)))
+    toDate = forms.DateField(
+        label=_('End date'),
+        help_text=_("Statistics end date."),
+        initial=timezone.now() - relativedelta(days=1),
+        widget=SelectDateWidget(years=range(timezone.datetime.today().year, 2012, -1))
+    )
 
     def is_valid(self):
         result = super().is_valid()
@@ -196,12 +200,17 @@ class ChartForm(forms.Form):
 
 
 class EntityCommentForm(forms.Form):
-    email = forms.EmailField(label=_('Your email address'),
-                             help_text=_('Please enter your email address here.'))
+    email = forms.EmailField(
+        label=_('Your email address'),
+        help_text=_('Please enter your email address here.')
+    )
 
-    comment = forms.CharField(max_length=1000, label=_('Your comment'),
-                              help_text=_('Please enter your comment here.'),
-                              widget=forms.Textarea(attrs={'cols': '100', 'rows': '10'}))
+    comment = forms.CharField(
+        max_length=1000,
+        label=_('Your comment'),
+        help_text=_('Please enter your comment here.'),
+        widget=forms.Textarea(attrs={'cols': '100', 'rows': '10'})
+    )
 
     def __init__(self, *args, **kwargs):
         self.instance = kwargs.pop('instance')
@@ -212,8 +221,10 @@ class EntityCommentForm(forms.Form):
 
 
 class EntityProposalForm(forms.Form):
-    email = forms.EmailField(label=_('Your email address'),
-                             help_text=_('Please enter your email address here.'))
+    email = forms.EmailField(
+        label=_('Your email address'),
+        help_text=_('Please enter your email address here.')
+    )
 
     federation_choices = []
     i = 0
@@ -221,12 +232,18 @@ class EntityProposalForm(forms.Form):
         i += i
         federation_choices.append(('%s' % federation, federation))
 
-    federations = forms.MultipleChoiceField(label=_('Federations'), choices=federation_choices,
-                                            help_text=_('Please select the federation(s) you want to gather the entity in.'))
+    federations = forms.MultipleChoiceField(
+        label=_('Federations'),
+        choices=federation_choices,
+        help_text=_('Please select the federation(s) you want to gather the entity in.')
+    )
 
-    comment = forms.CharField(max_length=1000, label=_('Your comment'),
-                              help_text=_('Please enter your comment here.'),
-                              widget=forms.Textarea(attrs={'cols': '100', 'rows': '10'}))
+    comment = forms.CharField(
+        max_length=1000,
+        label=_('Your comment'),
+        help_text=_('Please enter your comment here.'),
+        widget=forms.Textarea(attrs={'cols': '100', 'rows': '10'})
+    )
 
     def __init__(self, *args, **kwargs):
         self.instance = kwargs.pop('instance')
@@ -247,10 +264,12 @@ class EntityProposalForm(forms.Form):
 
 
 class ServiceSearchForm(forms.Form):
-    entityid = forms.CharField(max_length=200, label=_('Search service ID'),
-                               help_text=_(
-                                   'Enter a full or partial entityid'),
-                               widget=forms.TextInput(attrs={'size': '200'}))
+    entityid = forms.CharField(
+        max_length=200,
+        label=_('Search service ID'),
+        help_text=_('Enter a full or partial entityid'),
+        widget=forms.TextInput(attrs={'size': '200'})
+    )
 
     class Meta:
         exclude = []
@@ -269,35 +288,46 @@ class SearchEntitiesForm(forms.Form):
     for entity_category in EntityCategory.objects.all():
         category_choices.append(('%s' % entity_category, entity_category))
 
-    entity_type = forms.ChoiceField(label=_('Entity Type'),
-                                    help_text=_(
-                                        "Select the entity type you're interest in"),
-                                    choices=type_choices,
-                                    initial=['All'])
+    entity_type = forms.ChoiceField(
+        label=_('Entity Type'),
+        help_text=_("Select the entity type you're interest in"),
+        choices=type_choices,
+        initial=['All']
+    )
 
-    entity_category = forms.ChoiceField(label=_('Entity Category'),
-                                        help_text=_(
-                                            "Select the entity category you're interest in"),
-                                        choices=category_choices,
-                                        initial=['All'])
+    entity_category = forms.ChoiceField(
+        label=_('Entity Category'),
+        help_text=_("Select the entity category you're interest in"),
+        choices=category_choices,
+        initial=['All']
+    )
 
-    federations = forms.MultipleChoiceField(label=_('Federation filter'),
-                                            help_text=_(
-                                                "Select the federations you're interest in (you may select multiple)"),
-                                            widget=forms.CheckboxSelectMultiple,
-                                            choices=federation_choices,
-                                            initial=['All'])
+    federations = forms.MultipleChoiceField(
+        label=_('Federation filter'),
+        help_text=_("Select the federations you're interest in (you may select multiple)"),
+        widget=forms.CheckboxSelectMultiple,
+        choices=federation_choices,
+        initial=['All']
+    )
 
-    entityid = forms.CharField(max_length=200, label=_('Search entity ID'),
-                               help_text=_(
-                                   'Enter a full or partial entityid'),
-                               widget=forms.TextInput(attrs={'size': '200'}),
-                               required=False)
+    entityid = forms.CharField(
+        max_length=200,
+        label=_('Search entity ID'),
+        help_text=_('Enter a full or partial entityid'),
+        widget=forms.TextInput(attrs={'size': '200'}),
+        required=False
+    )
 
-    page = forms.IntegerField(min_value=0, initial=1, required=False,
-                              widget=forms.HiddenInput(attrs={'id': 'pagination_page'}))
+    page = forms.IntegerField(
+        min_value=0,
+        initial=1,
+        required=False,
+        widget=forms.HiddenInput(attrs={'id': 'pagination_page'})
+    )
     export_format = forms.CharField(
-        required=False, widget=forms.HiddenInput(attrs={'id': 'export_format'}))
+        required=False,
+        widget=forms.HiddenInput(attrs={'id': 'export_format'})
+    )
 
     class Meta:
         fields = []
