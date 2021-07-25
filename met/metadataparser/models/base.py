@@ -218,6 +218,6 @@ class XmlDescriptionError(Exception):
 
 class Dummy(models.Model):
     """
-    Dummy object necessary to thest Django funcionalities.
+    Dummy object necessary to test Django functionalities.
     """
     pass
