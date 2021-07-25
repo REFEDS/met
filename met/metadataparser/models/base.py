@@ -57,7 +57,7 @@ class JSONField(models.CharField):
     @classmethod
     def to_python(cls, value):
         """Convert our string value to JSON after we load it from the DB"""
-        if value == "":
+        if value == '':
             return None
 
         try:

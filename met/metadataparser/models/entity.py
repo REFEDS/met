@@ -435,7 +435,7 @@ class Entity(Base):
         self.certstats = self._get_property('certstats')
 
         newprotocols = self.protocols
-        if newprotocols and newprotocols != "":
+        if newprotocols and newprotocols != '':
             self._display_protocols = newprotocols
 
         if str(self._get_property('registration_authority')) != '':
