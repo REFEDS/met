@@ -2,11 +2,11 @@
 {% load i18n metadataparsertags %}
 
 {% block appendheader %}
-{% if form.instance.id %}
-<h2>{% trans "Send Proposal for " %} {{ form.instance }}</h2>
-{% else %}
-<h2>{% trans "Send Proposal" %}</h2>
-{% endif %}
+  {% if form.instance.id %}
+    <h2>{% trans "Send Proposal for " %} {{ form.instance }}</h2>
+  {% else %}
+    <h2>{% trans "Send Proposal" %}</h2>
+  {% endif %}
 {% endblock %}
 
 {% block content %}
