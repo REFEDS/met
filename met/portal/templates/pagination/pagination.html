@@ -1,28 +1,36 @@
 {% if is_paginated %}
-{% load i18n %}
-<div class="pagination">
+  {% load i18n %}
+  <div class="pagination">
     <ul>
-    {% if page_obj.has_previous %}
-    <li><a href="?page={{ page_obj.previous_page_number }}{{ getvars }}{{ hashtag }}" class="prev">&lsaquo;&lsaquo; {% trans "previous" %}</a></li>
-    {% else %}
-    <li><span class="disabled prev">&lsaquo;&lsaquo; {% trans "previous" %}</span></li>
-    {% endif %}
-    {% for page in pages %}
+      {% if page_obj.has_previous %}
+      <li>
+        <a href="?page={{ page_obj.previous_page_number }}{{ getvars }}{{ hashtag }}" class="prev">
+          &lsaquo;&lsaquo; {% trans "previous" %}
+        </a>
+      </li>
+      {% else %}
+        <li><span class="disabled prev">&lsaquo;&lsaquo; {% trans "previous" %}</span></li>
+      {% endif %}
+      {% for page in pages %}
         {% if page %}
-            {% if page == page_obj.number %}
+          {% if page == page_obj.number %}
             <li><span class="current page">{{ page }}</span></li>
-            {% else %}
+          {% else %}
             <li> <a href="?page={{ page }}{{ getvars }}{{ hashtag }}" class="page">{{ page }}</a></li>
-            {% endif %}
+          {% endif %}
         {% else %}
-        <li><span>...</span></li>
+          <li><span>...</span></li>
         {% endif %}
-    {% endfor %}
-    {% if page_obj.has_next %}
-      <li><a href="?page={{ page_obj.next_page_number }}{{ getvars }}{{ hashtag }}" class="next">{% trans "next" %} &rsaquo;&rsaquo;</a></li>
-    {% else %}
-      <li><span class="disabled next">{% trans "next" %} &rsaquo;&rsaquo;</span></li>
-    {% endif %}
-  </ul>
-</div>
+      {% endfor %}
+      {% if page_obj.has_next %}
+        <li>
+          <a href="?page={{ page_obj.next_page_number }}{{ getvars }}{{ hashtag }}" class="next">
+            {% trans "next" %} &rsaquo;&rsaquo;
+          </a>
+        </li>
+      {% else %}
+        <li><span class="disabled next">{% trans "next" %} &rsaquo;&rsaquo;</span></li>
+      {% endif %}
+    </ul>
+  </div>
 {% endif %}
