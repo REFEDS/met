@@ -30,7 +30,7 @@ from met.metadataparser.models.base import JSONField, Base
 from met.metadataparser.models.entity_type import EntityType
 from met.metadataparser.models.entity_federations import Entity_Federations
 
-TOP_LENGTH = getattr(settings, "TOP_LENGTH", 5)
+TOP_LENGTH = getattr(settings, 'TOP_LENGTH', 5)
 
 
 def update_obj(mobj, obj, attrs=None):
@@ -158,7 +158,7 @@ class Entity(Base):
         reginstant = self._get_property('registration_instant')
         if reginstant is None:
             return None
-        reginstant = "%sZ" % reginstant[0:19]
+        reginstant = '%sZ' % reginstant[0:19]
         return datetime.strptime(reginstant, '%Y-%m-%dT%H:%M:%SZ')
 
     @property
@@ -386,7 +386,7 @@ class Entity(Base):
         if hasattr(self, '_entity_cached'):
             return self._entity_cached.get(prop, None)
         else:
-            raise ValueError("Not metadata loaded")
+            raise ValueError('Not metadata loaded')
 
     def _get_or_create_etypes(self, cached_entity_types):
         entity_types = []
@@ -417,7 +417,7 @@ class Entity(Base):
 
         if self.entityid.lower() != entity_data.get('entityid').lower():
             raise ValueError(
-                "EntityID is not the same: {} != {}".format(
+                'EntityID is not the same: {} != {}'.format(
                     self.entityid.lower(), entity_data.get('entityid').lower())
             )
 
@@ -435,7 +435,7 @@ class Entity(Base):
         self.certstats = self._get_property('certstats')
 
         newprotocols = self.protocols
-        if newprotocols and newprotocols != "":
+        if newprotocols and newprotocols != '':
             self._display_protocols = newprotocols
 
         if str(self._get_property('registration_authority')) != '':
@@ -449,19 +449,19 @@ class Entity(Base):
         self.load_metadata()
 
         entity = self._entity_cached.copy()
-        entity["types"] = [str(f) for f in self.types.all()]
-        entity["federations"] = [{"name": str(f), "url": f.get_absolute_url()}
+        entity['types'] = [str(f) for f in self.types.all()]
+        entity['federations'] = [{'name': str(f), 'url': f.get_absolute_url()}
                                  for f in self.federations.all()]
 
         if self.registration_authority:
-            entity["registration_authority"] = self.registration_authority
+            entity['registration_authority'] = self.registration_authority
         if self.registration_instant:
-            entity["registration_instant"] = '%s' % self.registration_instant
+            entity['registration_instant'] = '%s' % self.registration_instant
 
-        if "file_id" in entity.keys():
-            del entity["file_id"]
-        if "entity_types" in entity.keys():
-            del entity["entity_types"]
+        if 'file_id' in entity.keys():
+            del entity['file_id']
+        if 'entity_types' in entity.keys():
+            del entity['entity_types']
 
         return entity
 
@@ -473,13 +473,13 @@ class Entity(Base):
     def get_most_federated_entities(cls, maxlength=TOP_LENGTH, cache_expire=None):
         entities = None
         if cache_expire:
-            entities = cache.get("most_federated_entities")
+            entities = cache.get('most_federated_entities')
 
         if not entities or len(entities) < maxlength:
             # Entities with count how many federations belongs to, and sorted
             # by most first
             ob_entities = Entity.objects.all().annotate(
-                federationslength=Count("federations")).order_by("-federationslength")
+                federationslength=Count('federations')).order_by('-federationslength')
             ob_entities = ob_entities.prefetch_related('types', 'federations')
             ob_entities = ob_entities[:maxlength]
 
@@ -494,7 +494,7 @@ class Entity(Base):
                 })
 
         if cache_expire:
-            cache.set("most_federated_entities", entities, cache_expire)
+            cache.set('most_federated_entities', entities, cache_expire)
 
         return entities[:maxlength]
 

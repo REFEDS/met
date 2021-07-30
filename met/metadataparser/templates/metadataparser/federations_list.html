@@ -2,11 +2,9 @@
 {% load i18n metadataparsertags %}
 
 {% block appendheader %}
-<h2>{% trans "Federations" %}</h2>
+  <h2>{% trans "Federations" %}</h2>
 {% endblock %}
 
 {% block content %}
-
-{% entity_list federations %}
-
+  {% entity_list federations %}
 {% endblock %}

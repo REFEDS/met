@@ -38,14 +38,14 @@ class SingleRun(object):
 
     def __init__(self, lock_file):
         # define the lock file name
-        self.lock_file = "/tmp/%s.pid" % lock_file
+        self.lock_file = '/tmp/%s.pid' % lock_file
 
     def __call__(self, func):
         def fnc(*args, **kwargs):
             if os.path.exists(self.lock_file):
                 # get process id, if lock file exists
-                pid = open(self.lock_file, "rt").read()
-                if not os.path.exists("/proc/%s" % pid):
+                pid = open(self.lock_file, 'rt').read()
+                if not os.path.exists('/proc/%s' % pid):
                     # if process is not alive remove the lock file
                     os.unlink(self.lock_file)
                 else:
@@ -54,7 +54,7 @@ class SingleRun(object):
 
             try:
                 # store process id
-                open(self.lock_file, "wt").write(str(os.getpid()))
+                open(self.lock_file, 'wt').write(str(os.getpid()))
                 # execute wrapped function
                 func(*args, **kwargs)
             finally:
@@ -72,45 +72,45 @@ class RefreshMetaData(object):
         logger = None
         if options.log:
             logging.config.fileConfig(options.log)
-            logger = logging.getLogger("Refresh")
+            logger = logging.getLogger('Refresh')
 
         try:
             refresh(fed_name, force_refresh, logger)
         except Exception as e:
             if logger:
-                logger.error("%s" % e)
+                logger.error('%s' % e)
 
 
-@SingleRun(lock_file="met-metadatarefresh")
+@SingleRun(lock_file='met-metadatarefresh')
 def commandline_call(convert_class=RefreshMetaData):
     opt_parser = OptionParser()
-    opt_parser.set_usage("refresh [--federation <fed_name>] [--log  <file>] [--force-refresh]")
+    opt_parser.set_usage('refresh [--federation <fed_name>] [--log  <file>] [--force-refresh]')
 
     opt_parser.add_option(
-        "-l",
-        "--log",
-        type="string",
-        dest="log",
-        help="The logger configuration file",
+        '-l',
+        '--log',
+        type='string',
+        dest='log',
+        help='The logger configuration file',
         default=None,
-        metavar="LOG")
+        metavar='LOG')
 
     opt_parser.add_option(
-        "-f",
-        "--federation",
-        type="string",
-        dest="fed_name",
-        help="The federation to be updated (None for anyone)",
+        '-f',
+        '--federation',
+        type='string',
+        dest='fed_name',
+        help='The federation to be updated (None for anyone)',
         default=None,
-        metavar="FED")
+        metavar='FED')
 
     opt_parser.add_option(
-        "-r",
-        "--force-refresh",
-        action="store_true",
-        dest="force_refresh",
-        help="Force refresh of metadata information (even if file has not changed)",
-        metavar="REF")
+        '-r',
+        '--force-refresh',
+        action='store_true',
+        dest='force_refresh',
+        help='Force refresh of metadata information (even if file has not changed)',
+        metavar='REF')
 
     (options, _) = opt_parser.parse_args()
 

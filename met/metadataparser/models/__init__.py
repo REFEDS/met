@@ -20,7 +20,7 @@ from .entity_category import EntityCategory
 from .entity_federations import Entity_Federations
 from .entity_stat import EntityStat
 
-TOP_LENGTH = getattr(settings, "TOP_LENGTH", 5)
+TOP_LENGTH = getattr(settings, 'TOP_LENGTH', 5)
 
 __all__ = ['TOP_LENGTH',
            'FEDERATION_TYPES',

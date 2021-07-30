@@ -25,7 +25,7 @@ class FunctionalTest(StaticLiveServerTestCase):
 
     def _is_text_present(self, text):
         try:
-            body = self.selenium.find_element_by_tag_name("body")
+            body = self.selenium.find_element_by_tag_name('body')
         except NoSuchElementException:
             return False
         return text in body.text  # check if the text is in body's text
@@ -34,12 +34,12 @@ class FunctionalTest(StaticLiveServerTestCase):
         """
         Tests that Home is loading properly
         """
-        self.selenium.get(self._get_full_url("/"))
+        self.selenium.get(self._get_full_url('/'))
         self.assertIn('Metadata Explorer Tool', self.selenium.title)
 
     def test_home_sections(self):
         """
         Tests that Home is showing the right sections
         """
-        self.selenium.get(self._get_full_url("/"))
-        self.assertTrue(self._is_text_present("Entities summary"))
+        self.selenium.get(self._get_full_url('/'))
+        self.assertTrue(self._is_text_present('Entities summary'))

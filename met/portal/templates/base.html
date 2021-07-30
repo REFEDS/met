@@ -44,77 +44,106 @@
     <div class="container">
       <div class="navbar row">
         <div class="navbar-inner">
-          <a class="brand" href="{% url 'index' %}"><h1 class="brand"><img class="logo"src="{{ STATIC_URL}}images/refeds.png" alt="" width="80" height="79" class="logo">&nbsp;{% trans "Metadata Explorer Tool" %}</h1></a>
+          <a class="brand" href="{% url 'index' %}">
+            <h1 class="brand">
+              <img class="logo"src="{{ STATIC_URL}}images/refeds.png" alt="" width="80" height="79" class="logo">
+              {% trans "Metadata Explorer Tool" %}
+            </h1>
+          </a>
           <ul class="nav pull-right">
-          {% if request.user.is_authenticated %}
-            <li class="divider-vertical"></li>
-            <li><p class="navbar-text">{{ request.user }}</p></li>
-            <li class="divider-vertical"></li>
-            <li><p class="navbar-text"><a href="{{ portal_settings.LOGOUT_URL }}?next={{ request.get_full_path|iriencode }}">{% trans "Logout" %}</a></p></li>
-          {% else %}
-            <li class="divider-vertical"></li>
-            <li><a href="#" class="signin">{% trans "Login" %}</a></li>
-          {% endif %}
+            {% if request.user.is_authenticated %}
+              <li class="divider-vertical"></li>
+              <li><p class="navbar-text">{{ request.user }}</p></li>
+              <li class="divider-vertical"></li>
+              <li>
+                <p class="navbar-text">
+                  <a href="{{ portal_settings.LOGOUT_URL }}?next={{ request.get_full_path|iriencode }}">
+                    {% trans "Logout" %}
+                  </a>
+                </p>
+              </li>
+            {% else %}
+              <li class="divider-vertical"></li>
+              <li><a href="#" class="signin">{% trans "Login" %}</a></li>
+            {% endif %}
           </ul>
-	</div>
-          <form class="navbar-search pull-right"
-            action="{% url 'search_service' %}" method="get">
-            {% with nav_searchform.visible_fields|first as field %}
-              <input rel="tooltip" title="{{ field.help_text }}"
-               {% if field.value %} value="{{ field.value }}" {% endif %}
-               type="text" class="search-query"
-               placeholder="{{ field.label }}" name="{{ field.name }}"/>
-		<img class="lente" src="{{ STATIC_URL}}images/search_button.png">
-            {% endwith %}
-          </form>
-       
+	      </div>
+        <form
+            class="navbar-search pull-right"
+            action="{% url 'search_service' %}"
+            method="get">
+          {% with nav_searchform.visible_fields|first as field %}
+            <input
+                rel="tooltip"
+                title="{{ field.help_text }}"
+                {% if field.value %} value="{{ field.value }}" {% endif %}
+                type="text"
+                class="search-query"
+                placeholder="{{ field.label }}"
+                name="{{ field.name }}"/>
+		        <img class="lente" src="{{ STATIC_URL}}images/search_button.png">
+          {% endwith %}
+        </form>
       </div>
+
       <div class="summary">
-      {% block appendheader %}
-      {% endblock %}
+        {% block appendheader %}
+        {% endblock %}
       </div>
+
       {% if messages %}
-      <div class="messages row">
-        {% for message in messages %}
-        <div class="alert alert-{{ message.tags|default:"info" }}">
-          <button type="button" class="close" data-dismiss="alert">×</button>
-          {{ message|safe }}
+        <div class="messages row">
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:"info" }}">
+              <button type="button" class="close" data-dismiss="alert">×</button>
+              {{ message|safe }}
+            </div>
+          {% endfor %}
         </div>
-        {% endfor %}
-      </div>
       {% endif %}
+
       <div class="summary">
-          {% block content %}
-          {% endblock %}
+        {% block content %}
+        {% endblock %}
       </div>
     </div>
 
     <footer class="container well">
-      <p><a href="http://www.terena.org/">&copy;&nbsp; Copyright 2012-2016 G&eacute;ant</a> | <a href="{% url 'about' %}">About Metadata Explorer Tool</a></p>
-      <p><a href="https://github.com/GEANT/met">Get code on Github</a> | <a href="https://github.com/GEANT/met/issues">Report errors here</a></p>
+      <p>
+        <a href="http://www.terena.org/">
+          &copy;&nbsp; Copyright 2012-2016 G&eacute;ant</a> | <a href="{% url 'about' %}">
+          About Metadata Explorer Tool
+        </a>
+      </p>
+      <p>
+        <a href="https://github.com/GEANT/met">Get code on Github</a> |
+        <a href="https://github.com/GEANT/met/issues">Report errors here</a>
+      </p>
     </footer>
     {% block extrajs %}
     {% endblock %}
 
-<!-- Start Open Web Analytics Tracker -->
-<script type="text/javascript">
-//<![CDATA[
-var owa_baseUrl = '{{ settings.OWA_BASEURL }}';
-var owa_cmds = owa_cmds || [];
-owa_cmds.push(['setSiteId', '{{ settings.OWA_SITEID }}']);
-owa_cmds.push(['trackPageView']);
-owa_cmds.push(['trackClicks']);
-owa_cmds.push(['trackDomStream']);
+    <!-- Start Open Web Analytics Tracker -->
+    <script type="text/javascript">
+      //<![CDATA[
+      var owa_baseUrl = '{{ settings.OWA_BASEURL }}';
+      var owa_cmds = owa_cmds || [];
+      owa_cmds.push(['setSiteId', '{{ settings.OWA_SITEID }}']);
+      owa_cmds.push(['trackPageView']);
+      owa_cmds.push(['trackClicks']);
+      owa_cmds.push(['trackDomStream']);
 
-(function() {
-        var _owa = document.createElement('script'); _owa.type = 'text/javascript'; _owa.async = true;
+      (function() {
+        var _owa = document.createElement('script');
+        _owa.type = 'text/javascript';
+        _owa.async = true;
         owa_baseUrl = ('https:' == document.location.protocol ? window.owa_baseSecUrl || owa_baseUrl.replace(/http:/, 'https:') : owa_baseUrl );
         _owa.src = owa_baseUrl + 'modules/base/js/owa.tracker-combined-min.js';
-        var _owa_s = document.getElementsByTagName('script')[0]; _owa_s.parentNode.insertBefore(_owa, _owa_s);
-}());
-//]]>
-</script>
-<!-- End Open Web Analytics Code -->
+        var _owa_s = document.getElementsByTagName('script')[0];
+        _owa_s.parentNode.insertBefore(_owa, _owa_s);
+      }());
+      //]]>
+    </script>
+    <!-- End Open Web Analytics Code -->
   </body>
 </html>
-

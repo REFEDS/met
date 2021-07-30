@@ -36,4 +36,4 @@ class Entity_Federations(models.Model):
 
     def __str__(self):
         cats = [c.name for c in self.entity_categories.all()]
-        return f"{self.entity.entityid} in federation {self.federation.slug} {cats}"
+        return f'{self.entity.entityid} in federation {self.federation.slug} {cats}'

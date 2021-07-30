@@ -2,39 +2,47 @@
 {% load i18n metadataparsertags %}
 
 {% block appendheader %}
-{% if form.instance.id %}
-<h2>{{ form.instance }}</h2>
-{% else %}
-<h2>{% trans "Add federation" %}</h2>
-{% endif %}
+  {% if form.instance.id %}
+    <h2>{{ form.instance }}</h2>
+  {% else %}
+    <h2>{% trans "Add federation" %}</h2>
+  {% endif %}
 {% endblock %}
 
 {% block content %}
-{% if form.instance.id and delete_federation %}
-  {% url 'federation_delete' form.instance.slug as delete_link %}
-  {% bootstrap_form form cancel_link=form.instance.get_absolute_url delete_link=delete_link %}
-{% else %}
-  {% url 'index' as cancel_link %}
-  {% bootstrap_form form cancel_link delete_link="" %}
-{% endif %}
-
+  {% if form.instance.id and delete_federation %}
+    {% url 'federation_delete' form.instance.slug as delete_link %}
+    {% bootstrap_form form cancel_link=form.instance.get_absolute_url delete_link=delete_link %}
+  {% else %}
+    {% url 'index' as cancel_link %}
+    {% bootstrap_form form cancel_link delete_link="" %}
+  {% endif %}
 {% endblock %}
 
 {% block extrajs %}
-{% if form.instance.id %}
-<div id="deleteModal" class="modal hide fade in" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    <h3 id="deleteModalLabel">{% trans "Confirm Delete" %}</h3>
-  </div>
-  <div class="modal-body">
-    <p>{% trans "This actions is unreversible, Are you sure?" %}</p>
-  </div>
-  <div class="modal-footer">
-    <button class="btn" data-dismiss="modal" aria-hidden="true">{% trans "No" %}</button>
-    <a class="btn btn-danger"
-      href="{% url 'federation_delete' form.instance.slug %}">{% trans "Delete" %}</a>
-  </div>
-</div>
-{% endif %}
+  {% if form.instance.id %}
+    <div
+        id="deleteModal"
+        class="modal hide fade in"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="deleteModalLabel"
+        aria-hidden="true">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="deleteModalLabel">{% trans "Confirm Delete" %}</h3>
+      </div>
+      <div class="modal-body">
+        <p>{% trans "This actions is unreversible, Are you sure?" %}</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">{% trans "No" %}</button>
+        <a
+            class="btn btn-danger"
+            href="{% url 'federation_delete' form.instance.slug %}">
+          {% trans "Delete" %}
+        </a>
+      </div>
+    </div>
+  {% endif %}
 {% endblock %}

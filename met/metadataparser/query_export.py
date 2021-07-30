@@ -32,7 +32,7 @@ def export_csv(model, filename, fields):
     for obj in model:
         row = []
         for field in fields:
-            row.append("%s" % obj[field])
+            row.append('%s' % obj[field])
         writer.writerow(row)
     # Return CSV file to browser as download
     return response
@@ -84,7 +84,7 @@ def _parse_xml_element(xml, father, structure):
             father.appendChild(tag)
     else:
         if type(structure) == str:
-            data = structure.encode("ascii", errors="xmlcharrefreplace")
+            data = structure.encode('ascii', errors='xmlcharrefreplace')
         else:
             data = str(structure)
         tag = xml.createTextNode(data)
@@ -95,7 +95,7 @@ def export_xml(model, filename, fields=None):
     xml = Document()
     root = xml.createElement(filename)
     for obj in model:
-        elem = xml.createElement("entity")
+        elem = xml.createElement('entity')
         _parse_xml_element(xml, elem, obj)
         root.appendChild(elem)
     xml.appendChild(root)
@@ -118,5 +118,5 @@ def export_query_set(mode, qs, filename, fields=None):
     if mode in export_modes:
         return export_modes[mode](qs, filename, fields)
     else:
-        content = "Error 400, Format %s is not supported" % mode
+        content = 'Error 400, Format %s is not supported' % mode
         return HttpResponseBadRequest(content)

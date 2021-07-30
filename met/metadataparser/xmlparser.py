@@ -40,7 +40,7 @@ DESCRIPTOR_TYPES_DISPLAY = {}
 for item in DESCRIPTOR_TYPES:
     DESCRIPTOR_TYPES_DISPLAY[item] = item.replace('SSODescriptor', '')
 
-DESCRIPTOR_TYPES_UTIL = ["md:%s" % item for item in DESCRIPTOR_TYPES]
+DESCRIPTOR_TYPES_UTIL = ['md:%s' % item for item in DESCRIPTOR_TYPES]
 
 
 def addns(node_name, namespace=SAML_METADATA_NAMESPACE):
@@ -160,7 +160,7 @@ class MetadataParser:
         for element in MetadataParser._get_entity_by_id(context, entityid, details):
             return element
 
-        raise ValueError("Entity not found: %s" % entityid)
+        raise ValueError('Entity not found: %s' % entityid)
 
     def entity_exist(self, entityid):
         entity_xpath = self.rootelem.xpath("//md:EntityDescriptor[@entityID='%s']"
@@ -189,9 +189,9 @@ class MetadataParser:
 
     @staticmethod
     def entity_types(entity):
-        expression = "|".join([desc for desc in DESCRIPTOR_TYPES_UTIL])
+        expression = '|'.join([desc for desc in DESCRIPTOR_TYPES_UTIL])
         elements = entity.xpath(expression, namespaces=NAMESPACES)
-        types = [element.tag.split("}")[1] for element in elements]
+        types = [element.tag.split('}')[1] for element in elements]
         if len(types) == 0:
             types = ['AASSODescriptor']
         return types
@@ -229,11 +229,11 @@ class MetadataParser:
             certName = 'invalid'
 
             try:
-                text = x.text.replace("\n", "").replace(
-                    " ", "").replace("\t", "")
-                text = "\n".join(MetadataParser._chunkstring(text, 64))
-                certText = "\n".join(
-                    ["-----BEGIN CERTIFICATE-----", text, '-----END CERTIFICATE-----'])
+                text = x.text.replace('\n', '').replace(
+                    ' ', '').replace('\t', '')
+                text = '\n'.join(MetadataParser._chunkstring(text, 64))
+                certText = '\n'.join(
+                    ['-----BEGIN CERTIFICATE-----', text, '-----END CERTIFICATE-----'])
                 cert = x509.load_pem_x509_certificate(
                     certText, default_backend())
                 certName = cert.signature_hash_algorithm.name

@@ -50,21 +50,21 @@ def _connect_to_smtp(server, port=25, login_type=None, username=None, password=N
 
 
 def send_slack(message):
-    slack_config_dict = getattr(settings, "SLACK_CONFIG")
+    slack_config_dict = getattr(settings, 'SLACK_CONFIG')
     if slack_config_dict and 'token' in slack_config_dict and slack_config_dict['token']:
         slack_token = slack_config_dict['token']
         slack_channel = slack_config_dict['channel'] if 'channel' in slack_config_dict else '#devops'
         sc = SlackClient(slack_token)
 
         sc.api_call(
-            "chat.postMessage",
+            'chat.postMessage',
             channel=slack_channel,
             text=message
         )
 
 
 def send_mail(from_email_address, subject, message):
-    mail_config_dict = getattr(settings, "MAIL_CONFIG")
+    mail_config_dict = getattr(settings, 'MAIL_CONFIG')
     server = mail_config_dict['email_server']
 
     if server is None:
@@ -79,7 +79,7 @@ def send_mail(from_email_address, subject, message):
     )
 
     try:
-        message = MIMEText(message.encode("utf-8"), "plain", _charset="UTF-8")
+        message = MIMEText(message.encode('utf-8'), 'plain', _charset='UTF-8')
         message['From'] = from_email_address
         message['To'] = ",".join(mail_config_dict['to_email_address'])
         message['Subject'] = subject
