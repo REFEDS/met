@@ -23,12 +23,17 @@ class Entity_Federations(models.Model):
 
     federation = models.ForeignKey('Federation')
 
-    registration_instant = models.DateField(blank=True, null=True,
-                                            verbose_name=_('Registration Instant'))
+    registration_instant = models.DateField(
+        blank=True,
+        null=True,
+        verbose_name=_('Registration Instant')
+    )
 
-    entity_categories = models.ManyToManyField('EntityCategory',
-                                               verbose_name=_('Entity categories'))
+    entity_categories = models.ManyToManyField(
+        'EntityCategory',
+        verbose_name=_('Entity categories')
+    )
 
     def __str__(self):
-        cats = [ c.name for c in self.entity_categories.all() ]
+        cats = [c.name for c in self.entity_categories.all()]
         return f"{self.entity.entityid} in federation {self.federation.slug} {cats}"

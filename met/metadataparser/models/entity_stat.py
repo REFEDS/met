@@ -22,17 +22,31 @@ class EntityStat(models.Model):
     Model describing a statistic information about an entity.
     """
 
-    time = models.DateTimeField(blank=False, null=False,
-                                verbose_name=_('Metadata time stamp'))
+    time = models.DateTimeField(
+        blank=False,
+        null=False,
+        verbose_name=_('Metadata time stamp')
+    )
 
-    feature = models.CharField(max_length=100, blank=False, null=False, db_index=True,
-                               verbose_name=_('Feature name'))
+    feature = models.CharField(
+        max_length=100,
+        blank=False,
+        null=False,
+        db_index=True,
+        verbose_name=_('Feature name')
+    )
 
-    value = models.PositiveIntegerField(blank=False, null=False,
-                                        verbose_name=_('Feature value'))
+    value = models.PositiveIntegerField(
+        blank=False,
+        null=False,
+        verbose_name=_('Feature value')
+    )
 
-    federation = models.ForeignKey('Federation', blank=False,
-                                   verbose_name=_('Federations'))
+    federation = models.ForeignKey(
+        'Federation',
+        blank=False,
+        verbose_name=_('Federations')
+    )
 
     def __str__(self):
         return self.feature

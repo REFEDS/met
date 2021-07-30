@@ -61,7 +61,7 @@ class JSONField(models.CharField):
             return None
 
         try:
-            if isinstance(value, basestring):
+            if isinstance(value, str):
                 return json.loads(value)
         except ValueError:
             return value
@@ -93,22 +93,39 @@ class Base(models.Model):
     Each object parsed from the XML extends this base class that contains shared methods.
     """
 
-    file_url = models.CharField(verbose_name='Metadata url',
-                                max_length=1000,
-                                blank=True, null=True,
-                                help_text=_('Url to fetch metadata file'))
-    file = models.FileField(upload_to='metadata', blank=True, null=True,
-                            verbose_name=_('metadata xml file'),
-                            help_text=_("if url is set, metadata url will be "
-                                        "fetched and replace file value"))
-    file_id = models.CharField(blank=True, null=True, max_length=500,
-                               verbose_name=_('File ID'))
+    file_url = models.CharField(
+        verbose_name='Metadata url',
+        max_length=1000,
+        blank=True,
+        null=True,
+        help_text=_('Url to fetch metadata file')
+    )
+    file = models.FileField(
+        upload_to='metadata',
+        blank=True,
+        null=True,
+        verbose_name=_('metadata xml file'),
+        help_text=_("if url is set, metadata url will be fetched and replace file value")
+    )
+    file_id = models.CharField(
+        blank=True,
+        null=True,
+        max_length=500,
+        verbose_name=_('File ID')
+    )
 
-    registration_authority = models.CharField(verbose_name=_('Registration Authority'),
-                                              max_length=200, blank=True, null=True)
+    registration_authority = models.CharField(
+        verbose_name=_('Registration Authority'),
+        max_length=200,
+        blank=True,
+        null=True
+    )
 
-    editor_users = models.ManyToManyField(User, blank=True,
-                                          verbose_name=_('editor users'))
+    editor_users = models.ManyToManyField(
+        User,
+        blank=True,
+        verbose_name=_('editor users')
+    )
 
     class Meta:
         abstract = True

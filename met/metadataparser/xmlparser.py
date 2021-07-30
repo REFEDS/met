@@ -78,23 +78,18 @@ class MetadataParser:
 
     @staticmethod
     def _get_entity_details(element):
-        entity = {}
-
-        entity['xml'] = etree.tostring(element, pretty_print=True)
-
-        entity['description'] = MetadataParser.entity_description(element)
-        entity['infoUrl'] = MetadataParser.entity_information_url(element)
-        entity['privacyUrl'] = MetadataParser.entity_privacy_url(element)
-        entity['organization'] = MetadataParser.entity_organization(element)
-        entity['logos'] = MetadataParser.entity_logos(element)
-        entity['scopes'] = MetadataParser.entity_attribute_scope(element)
-        entity['attr_requested'] = MetadataParser.entity_requested_attributes(
-            element)
-        entity['contacts'] = MetadataParser.entity_contacts(element)
-        entity['registration_policy'] = MetadataParser.registration_policy(
-            element)
-
-        return entity
+        return {
+            'xml': etree.tostring(element, pretty_print=True),
+            'description': MetadataParser.entity_description(element),
+            'infoUrl': MetadataParser.entity_information_url(element),
+            'privacyUrl': MetadataParser.entity_privacy_url(element),
+            'organization': MetadataParser.entity_organization(element),
+            'logos': MetadataParser.entity_logos(element),
+            'scopes': MetadataParser.entity_attribute_scope(element),
+            'attr_requested': MetadataParser.entity_requested_attributes(element),
+            'contacts': MetadataParser.entity_contacts(element),
+            'registration_policy': MetadataParser.registration_policy(element)
+        }
 
     @staticmethod
     def _entity_lang_seen(entity):
@@ -144,20 +139,24 @@ class MetadataParser:
     def get_federation(self):
         assert self.is_federation
 
-        federation = {}
-        federation['ID'] = self.rootelem.get('ID', None)
-        federation['Name'] = self.rootelem.get('Name', None)
-
-        return federation
+        return {
+            'ID': self.rootelem.get('ID', None),
+            'Name': self.rootelem.get('Name', None)
+        }
 
     @staticmethod
     def _chunkstring(string, length):
         return (string[0 + i:length + i] for i in range(0, len(string), length))
 
     def get_entity(self, entityid, details=True):
-        context = etree.iterparse(self.filename, tag=addns(
-            'EntityDescriptor'), events=('end',), huge_tree=True, remove_blank_text=True)
-        element = None
+        context = etree.iterparse(
+            self.filename,
+            tag=addns('EntityDescriptor'),
+            events=('end',),
+            huge_tree=True,
+            remove_blank_text=True
+        )
+
         for element in MetadataParser._get_entity_by_id(context, entityid, details):
             return element
 
@@ -179,8 +178,13 @@ class MetadataParser:
 
     def get_entities(self):
         # Return entityid list
-        context = etree.iterparse(self.filename, tag=addns(
-            'EntityDescriptor'), events=('end',), huge_tree=True, remove_blank_text=True)
+        context = etree.iterparse(
+            self.filename,
+            tag=addns('EntityDescriptor'),
+            events=('end',),
+            huge_tree=True,
+            remove_blank_text=True
+        )
         return list(self._get_entities_id(context))
 
     @staticmethod
@@ -233,7 +237,7 @@ class MetadataParser:
                 cert = x509.load_pem_x509_certificate(
                     certText, default_backend())
                 certName = cert.signature_hash_algorithm.name
-            except Exception as e:
+            except Exception:
                 pass
 
             if certName not in hashes:
@@ -332,11 +336,12 @@ class MetadataParser:
         for logo_node in xmllogos:
             if logo_node.text is None:
                 continue  # the file attribute is required
-            logo = {}
-            logo['width'] = int(logo_node.attrib.get('width', '0'))
-            logo['height'] = int(logo_node.attrib.get('height', '0'))
-            logo['file'] = logo_node.text
-            logo['lang'] = getlang(logo_node)
+            logo = {
+                'width': int(logo_node.attrib.get('width', '0')),
+                'height': int(logo_node.attrib.get('height', '0')),
+                'file': logo_node.text,
+                'lang': getlang(logo_node)
+            }
             logos.append(logo)
         return logos
 
@@ -375,7 +380,7 @@ class MetadataParser:
 
         scope = []
         for cur_scope in scope_node:
-            if not cur_scope.text in scope:
+            if cur_scope.text not in scope:
                 scope.append(cur_scope.text)
         return scope
 
@@ -411,8 +416,7 @@ class MetadataParser:
                 surname = surname[0].text
             else:
                 surname = None
-            email = cont_node.xpath(
-                ".//md:EmailAddress", namespaces=NAMESPACES)
+            email = cont_node.xpath(".//md:EmailAddress", namespaces=NAMESPACES)
             if email:
                 email = email[0].text
             else:

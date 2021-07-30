@@ -11,35 +11,35 @@
 #########################################################################################
 
 from setuptools import setup, find_packages
-import sys, os
 
 version = '0.1'
 
 with open('requirements.txt') as f:
     required = f.read().splitlines()
 
-setup(name='met',
-      version=version,
-      description="Metadata Explorer Tool",
-      long_description="""Terena - Metadata Explorer Tool""",
-      classifiers=[
-        '  Development Status :: 4 - Beta',
-          'Environment :: Web Environment',
-          'Framework :: Django',
-          'License :: OSI Approved :: BSD License',
-          'Operating System :: OS Independent',
-          'Programming Language :: Python',
-          ], # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
-      keywords='',
-      author='Terena',
-      author_email='',
-      url='https://github.com/TERENA/met',
-      license='BSD License',
-      packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
-      include_package_data=True,
-      zip_safe=False,
-      install_requires=required,
-      entry_points="""
-      # -*- Entry points: -*-
-      """,
-      )
+setup(
+    name='met',
+    version=version,
+    description="Metadata Explorer Tool",
+    long_description="""Terena - Metadata Explorer Tool""",
+    classifiers=[
+        'Development Status :: 4 - Beta',
+        'Environment :: Web Environment',
+        'Framework :: Django',
+        'License :: OSI Approved :: BSD License',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python',
+    ],  # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
+    keywords='',
+    author='Terena',
+    author_email='',
+    url='https://github.com/TERENA/met',
+    license='BSD License',
+    packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
+    include_package_data=True,
+    zip_safe=False,
+    install_requires=required,
+    entry_points="""
+    # -*- Entry points: -*-
+    """,
+)

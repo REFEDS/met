@@ -10,7 +10,8 @@
 # Consortium GARR, http://www.garr.it
 #########################################################################################
 
-import sys, os
+import os
+import sys
 import logging.config
 
 os.environ['PYTHON_EGG_CACHE'] = '/tmp/.python-eggs/'

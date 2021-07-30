@@ -18,8 +18,14 @@ from os import environ
 try:
     from local_settings import MYSQLPOOL_BACKEND, MYSQLPOOL_ARGUMENTS
     from local_settings import ADMINS, INTERNAL_IPS, ALLOWED_HOSTS, CACHES
-    from local_settings import SAML_CREATE_UNKNOWN_USER, SAML_DJANGO_USER_MAIN_ATTRIBUTE, SAML_ATTRIBUTE_MAPPING, ORGANIZATION_NAME, SAML2DIR
-    from local_settings import LOGIN_URL, LOGOUT_URL, SAML_DESCRIPTION, SAML_ENTITYID, SAML_CONFIG, DJANGO_FEDERATIONS, DJANGO_ADDITIONAL_IDPS
+    from local_settings import (
+        SAML_CREATE_UNKNOWN_USER, SAML_DJANGO_USER_MAIN_ATTRIBUTE, SAML_ATTRIBUTE_MAPPING,
+        ORGANIZATION_NAME, SAML2DIR
+    )
+    from local_settings import (
+        LOGIN_URL, LOGOUT_URL, SAML_DESCRIPTION, SAML_ENTITYID, SAML_CONFIG,
+        DJANGO_FEDERATIONS, DJANGO_ADDITIONAL_IDPS
+    )
     from local_settings import MAIL_CONFIG, SLACK_CONFIG, OWA_BASEURL, OWA_SITEID
 except Exception:
     raise
@@ -106,7 +112,7 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
@@ -120,7 +126,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-    #'django.template.loaders.eggs.Loader',
+    # 'django.template.loaders.eggs.Loader',
 )
 
 MIDDLEWARE_CLASSES = [
@@ -212,11 +218,11 @@ LOGGING = {
             'propagate': True,
             'level': 'ERROR',
         },
-        #'django.request': {
-        #    'handlers': ['mail_admins'],
-        #    'level': 'ERROR',
-        #    'propagate': True,
-        #},
+        # 'django.request': {
+        #     'handlers': ['mail_admins'],
+        #     'level': 'ERROR',
+        #     'propagate': True,
+        # },
         'djangosaml2': {
             'handlers': ['saml2file'],
             'level': 'ERROR',

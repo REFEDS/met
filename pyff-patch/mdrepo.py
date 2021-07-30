@@ -42,7 +42,7 @@ def _e(error_log, m=None):
     def _f(x):
         if ":WARNING:" in x:
             return False
-        if m is not None and not m in x:
+        if m is not None and m not in x:
             return False
         return True
 
@@ -157,7 +157,7 @@ The dict in the list contains three items:
             return filter(lambda s: s is not None, lst)
 
         def _match(query, e):
-            #log.debug("looking for %s in %s" % (query,",".join(_strings(e))))
+            # log.debug("looking for %s in %s" % (query,",".join(_strings(e))))
             for qstr in _strings(e):
                 if query in qstr:
                     return True
@@ -272,9 +272,9 @@ The dict in the list contains three items:
             raise MetadataException(
                 "I can only add EntityAttribute(s) to EntityDescriptor elements")
 
-        #log.debug("set %s" % d)
+        # log.debug("set %s" % d)
         for attr, value in d.iteritems():
-            #log.debug("set %s to %s" % (attr,value))
+            # log.debug("set %s to %s" % (attr,value))
             a = self._eattribute(e, attr, nf)
             # log.debug(etree.tostring(a))
             velt = etree.Element("{%s}AttributeValue" % NS['saml'])
@@ -306,7 +306,7 @@ and verified.
             stats = {}
 
         def producer(q, resources, cache=self.metadata_cache_enabled):
-            print resources
+            print(resources)
             for url, verify, id, tries in resources:
                 log.debug("starting fetcher for '%s'" % url)
                 thread = URLFetch(
@@ -407,7 +407,7 @@ and verified.
                     else:
                         raise MetadataException(
                             "unknown metadata type for '%s' (%s)" % (thread.url, relt.tag))
-                except Exception, ex:
+                except Exception as ex:
                     # traceback.print_exc(ex)
                     log.warn("problem fetching '%s' (will retry): %s" %
                              (thread.url, ex))
@@ -477,12 +477,12 @@ and verified.
                 # Having removed the invalid entities this should now never
                 # happen...
                 schema().assertValid(t)
-        except DocumentInvalid, ex:
+        except DocumentInvalid as ex:
             traceback.print_exc()
             log.debug("schema validation failed on '%s': %s" % (
                 base_url, _e(ex.error_log, m=base_url)))
             raise MetadataException("schema validation failed")
-        except Exception, ex:
+        except Exception as ex:
             # log.debug(_e(schema().error_log))
             log.error(ex)
             if fail_on_error:
@@ -496,16 +496,16 @@ and verified.
                     raise MetadataException(
                         "XML metadata contains %d signatures - exactly 1 is required" % len(refs))
                 t = refs[0]  # prevent wrapping attacks
-            except Exception, ex:
+            except Exception as ex:
                 tb = traceback.format_exc()
-                print tb
+                print(tb)
                 log.error(ex)
                 return None
 
         return t
 
     def _index_entity(self, e):
-        #log.debug("adding %s to index" % e.get('entityID'))
+        # log.debug("adding %s to index" % e.get('entityID'))
         if 'ID' in e.attrib:
             del e.attrib['ID']
         self.index.add(e)
@@ -566,7 +566,7 @@ starting with '.' are excluded.
         if url is None:
             url = directory
         log.debug("walking %s" % directory)
-        if not directory in self.md:
+        if directory not in self.md:
             entities = []
             for top, dirs, files in os.walk(directory):
                 for dn in dirs:
@@ -580,7 +580,7 @@ starting with '.' are excluded.
                             t = self.parse_metadata(fn, fail_on_error=True)
                             # local metadata is assumed to be ok
                             entities.extend(self.entities(t))
-                        except Exception, ex:
+                        except Exception as ex:
                             log.error(ex)
             self.import_metadata(self.entity_set(entities, url))
         return self.md[url]
@@ -670,10 +670,10 @@ Find a (set of) EntityDescriptor element(s) based on the specified 'member' expr
             if e is not None:
                 return self._lookup(e, xp)
 
-            # hackish but helps save people from their misstakes
+            # hackish but helps save people from their mistakes
             e = self.get("%s.xml" % member, None)
             if e is not None:
-                if not "://" in member:  # not an absolute URL
+                if "://" not in member:  # not an absolute URL
                     log.warn(
                         "Found %s.xml as an alias - AVOID extensions in 'select as' statements" % member)
                 return self._lookup(e, xp)
@@ -758,9 +758,9 @@ Produce an EntityDescriptors set from a list of entities. Optional Name, cacheDu
         if validate:
             try:
                 schema().assertValid(t)
-            except DocumentInvalid, ex:
+            except DocumentInvalid as ex:
                 log.debug(_e(ex.error_log))
-                #raise MetadataException(
+                # raise MetadataException(
                 #    "XML schema validation failed: %s" % name)
         return t
 
@@ -831,10 +831,10 @@ merge the resultant EntityDescriptor is added to the index before it is used to
 replace old_e in t.
         """
         if strategy_name is not None:
-            if not '.' in strategy_name:
+            if '.' not in strategy_name:
                 strategy_name = "pyff.merge_strategies.%s" % strategy_name
             (mn, sep, fn) = strategy_name.rpartition('.')
-            #log.debug("import %s from %s" % (fn,mn))
+            # log.debug("import %s from %s" % (fn,mn))
             module = None
             if '.' in mn:
                 (pn, sep, modn) = mn.rpartition('.')
@@ -842,8 +842,7 @@ replace old_e in t.
                     pn, globals(), locals(), [modn], -1), modn)
             else:
                 module = __import__(mn, globals(), locals(), [], -1)
-            # we might aswell let this fail early if the strategy is wrongly
-            # named
+            # we might as well let this fail early if the strategy is wrongly named
             strategy = getattr(module, fn)
 
         if strategy is None:
@@ -854,19 +853,19 @@ replace old_e in t.
             # we assume ddup:ed tree
             old_e = t.find(
                 ".//{%s}EntityDescriptor[@entityID='%s']" % (NS['md'], entityID))
-            #log.debug("merging %s into %s" % (e,old_e))
+            # log.debug("merging %s into %s" % (e,old_e))
             # update index!
 
             try:
                 self.index.remove(old_e)
-                #log.debug("removed old entity from index")
+                # log.debug("removed old entity from index")
                 strategy(old_e, e)
                 new_e = t.find(
                     ".//{%s}EntityDescriptor[@entityID='%s']" % (NS['md'], entityID))
                 if new_e:
                     # we don't know which strategy was employed
                     self.index.add(new_e)
-            except Exception, ex:
+            except Exception as ex:
                 traceback.print_exc()
                 self.index.add(old_e)
                 raise ex

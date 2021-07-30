@@ -29,7 +29,7 @@ def _e(error_log, m=None):
     def _f(x):
         if ":WARNING:" in x:
             return False
-        if m is not None and not m in x:
+        if m is not None and m not in x:
             return False
         return True
 
@@ -172,7 +172,7 @@ def schema():
             parser.resolvers.add(ResourceResolver())
             st = etree.parse(pkg_resources.resource_stream(__name__, "schema/schema.xsd"), parser)
             _SCHEMA = etree.XMLSchema(st)
-        except etree.XMLSchemaParseError, ex:
+        except etree.XMLSchemaParseError as ex:
             log.error(_e(ex.error_log))
             raise ex
     return _SCHEMA
@@ -194,13 +194,13 @@ def safe_write(fn, data):
         if os.path.exists(tmpn) and os.stat(tmpn).st_size > 0:
             os.rename(tmpn, fn)
             return True
-    except Exception, ex:
+    except Exception as ex:
         log.error(ex)
     finally:
         if tmpn is not None and os.path.exists(tmpn):
             try:
                 os.unlink(tmpn)
-            except Exception, ex:
+            except Exception as ex:
                 log.warn(ex)
                 pass
     return False
@@ -270,7 +270,8 @@ class URLFetch(threading.Thread):
                     self.last_modified = datetime.fromtimestamp(os.stat(path).st_mtime)
             else:
                 self.resp = requests.get(self.url, timeout=60, verify=False)
-                self.last_modified = _parse_date(self.resp.headers.get('last-modified', self.resp.headers.get('date', None)))
+                self.last_modified = _parse_date(
+                    self.resp.headers.get('last-modified', self.resp.headers.get('date', None)))
                 self.date = _parse_date(self.resp.headers['date'])
                 self.cached = getattr(self.resp, 'from_cache', False)
                 self.status = self.resp.status_code
@@ -279,7 +280,7 @@ class URLFetch(threading.Thread):
                 self.result = self.resp.content
 
             log.debug("got %d bytes from '%s'" % (len(self.result), self.url))
-        except Exception, ex:
+        except Exception as ex:
             traceback.print_exc()
             log.warn("unable to fetch '%s': %s" % (self.url, ex))
             self.ex = ex
@@ -296,8 +297,16 @@ def root(t):
 
 
 def duration2timedelta(period):
-    regex = re.compile(
-        r'(?P<sign>[-+]?)P(?:(?P<years>\d+)[Yy])?(?:(?P<months>\d+)[Mm])?(?:(?P<days>\d+)[Dd])?(?:T(?:(?P<hours>\d+)[Hh])?(?:(?P<minutes>\d+)[Mm])?(?:(?P<seconds>\d+)[Ss])?)?')
+    pattern = r"""
+        (?P<sign>[-+]?)P
+        (?:(?P<years>\d+)[Yy])?
+        (?:(?P<months>\d+)[Mm])?
+        (?:(?P<days>\d+)[Dd])?
+        (?:T(?:(?P<hours>\d+)[Hh])?
+        (?:(?P<minutes>\d+)[Mm])?
+        (?:(?P<seconds>\d+)[Ss])?)?
+    """
+    regex = re.compile(pattern, re.VERBOSE)
 
     # Fetch the match groups with default value of 0 (not None)
     m = regex.match(period)
