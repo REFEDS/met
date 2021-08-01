@@ -1,10 +1,10 @@
-from pyvirtualdisplay import Display
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
-from django.core.urlresolvers import reverse
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from django.utils import formats
-from ..testing_utilities import populate_test_db
+
+from pyvirtualdisplay import Display
+from tests.testing_utilities import populate_test_db
 
 
 class FunctionalTest(StaticLiveServerTestCase):
@@ -25,8 +25,8 @@ class FunctionalTest(StaticLiveServerTestCase):
 
     def _is_text_present(self, text):
         try:
-            body = self.selenium.find_element_by_tag_name("body")
-        except NoSuchElementException, e:
+            body = self.selenium.find_element_by_tag_name('body')
+        except NoSuchElementException:
             return False
         return text in body.text  # check if the text is in body's text
 
@@ -34,12 +34,12 @@ class FunctionalTest(StaticLiveServerTestCase):
         """
         Tests that Home is loading properly
         """
-        self.selenium.get(self._get_full_url("/"))
-        self.assertIn(u'Metadata Explorer Tool', self.selenium.title)
+        self.selenium.get(self._get_full_url('/'))
+        self.assertIn('Metadata Explorer Tool', self.selenium.title)
 
     def test_home_sections(self):
         """
         Tests that Home is showing the right sections
         """
-        self.selenium.get(self._get_full_url("/"))
-        self.assertTrue(self._is_text_present("Entities summary"))
+        self.selenium.get(self._get_full_url('/'))
+        self.assertTrue(self._is_text_present('Entities summary'))

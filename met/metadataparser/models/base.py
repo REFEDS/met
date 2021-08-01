@@ -20,7 +20,7 @@ from django.core import validators
 from django.core.files.base import ContentFile
 from django.utils.translation import ugettext_lazy as _
 
-from pyff.mdrepo import MDRepository
+from pyff.repo import MDRepository
 from pyff.pipes import Plumbing
 
 from met.metadataparser.xmlparser import MetadataParser
@@ -29,7 +29,7 @@ from met.metadataparser.utils import compare_filecontents
 
 class JSONField(models.CharField):
     """
-    JSONField is a generic textfield that neatly serializes/unserializes
+    JSONField is a generic textfield that neatly serializes/deserializes
     JSON objects seamlessly
 
     The json spec claims you must use a collection type at the top level of
@@ -38,30 +38,30 @@ class JSONField(models.CharField):
     The to_python method relies on the value being an instance of basestring
     to ensure that it is encoded.  If a string is the sole value at the
     point the field is instanced, to_python attempts to decode the sting because
-    it is derived from basestring but cannot be encodeded and throws the
+    it is derived from basestring but cannot be encoded and throws the
     exception ValueError: No JSON object could be decoded.
     """
 
     # Used so to_python() is called
     __metaclass__ = models.SubfieldBase
-    description = _("JSON object")
+    description = _('JSON object')
 
     def __init__(self, *args, **kwargs):
-        super(JSONField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.validators.append(validators.MaxLengthValidator(self.max_length))
 
     @classmethod
     def get_internal_type(cls):
-        return "TextField"
+        return 'TextField'
 
     @classmethod
     def to_python(cls, value):
         """Convert our string value to JSON after we load it from the DB"""
-        if value == "":
+        if value == '':
             return None
 
         try:
-            if isinstance(value, basestring):
+            if isinstance(value, str):
                 return json.loads(value)
         except ValueError:
             return value
@@ -71,20 +71,20 @@ class JSONField(models.CharField):
     def get_prep_value(self, value):
         """Convert our JSON object to a string before we save"""
 
-        if not value or value == "":
+        if not value or value == '':
             return None
 
         db_value = json.dumps(value)
-        return super(JSONField, self).get_prep_value(db_value)
+        return super().get_prep_value(db_value)
 
     def get_db_prep_value(self, value, connection, prepared=False):
         """Convert our JSON object to a string before we save"""
 
-        if not value or value == "":
+        if not value or value == '':
             return None
 
         db_value = json.dumps(value)
-        return super(JSONField, self).get_db_prep_value(db_value, connection, prepared)
+        return super().get_db_prep_value(db_value, connection, prepared)
 
 
 class Base(models.Model):
@@ -93,31 +93,48 @@ class Base(models.Model):
     Each object parsed from the XML extends this base class that contains shared methods.
     """
 
-    file_url = models.CharField(verbose_name='Metadata url',
-                                max_length=1000,
-                                blank=True, null=True,
-                                help_text=_(u'Url to fetch metadata file'))
-    file = models.FileField(upload_to='metadata', blank=True, null=True,
-                            verbose_name=_(u'metadata xml file'),
-                            help_text=_("if url is set, metadata url will be "
-                                        "fetched and replace file value"))
-    file_id = models.CharField(blank=True, null=True, max_length=500,
-                               verbose_name=_(u'File ID'))
+    file_url = models.CharField(
+        verbose_name='Metadata url',
+        max_length=1000,
+        blank=True,
+        null=True,
+        help_text=_('Url to fetch metadata file')
+    )
+    file = models.FileField(
+        upload_to='metadata',
+        blank=True,
+        null=True,
+        verbose_name=_('metadata xml file'),
+        help_text=_('if url is set, metadata url will be fetched and replace file value')
+    )
+    file_id = models.CharField(
+        blank=True,
+        null=True,
+        max_length=500,
+        verbose_name=_('File ID')
+    )
 
-    registration_authority = models.CharField(verbose_name=_('Registration Authority'),
-                                              max_length=200, blank=True, null=True)
+    registration_authority = models.CharField(
+        verbose_name=_('Registration Authority'),
+        max_length=200,
+        blank=True,
+        null=True
+    )
 
-    editor_users = models.ManyToManyField(User, null=True, blank=True,
-                                          verbose_name=_('editor users'))
+    editor_users = models.ManyToManyField(
+        User,
+        blank=True,
+        verbose_name=_('editor users')
+    )
 
-    class Meta(object):
+    class Meta:
         abstract = True
 
     class XmlError(Exception):
         pass
 
-    def __unicode__(self):
-        return self.url or u"Metadata %s" % self.id
+    def __str__(self):
+        return self.url or 'Metadata %s' % self.id
 
     def load_file(self):
         if not hasattr(self, '_loaded_file'):
@@ -134,13 +151,13 @@ class Base(models.Model):
 
             count = 1
             for stream in load_streams:
-                curid = "%s%d" % (self.slug, count)
-                load.append("%s as %s" % (stream[0], curid))
+                curid = '%s%d' % (self.slug, count)
+                load.append(f'{stream[0]} as {curid}')
                 if stream[1] == 'SP' or stream[1] == 'IDP':
                     select.append(
-                        "%s!//md:EntityDescriptor[md:%sSSODescriptor]" % (curid, stream[1]))
+                        f'{curid}!//md:EntityDescriptor[md:{stream[1]}SSODescriptor]')
                 else:
-                    select.append("%s" % curid)
+                    select.append('%s' % curid)
                 count = count + 1
 
             if len(select) > 0:
@@ -152,9 +169,9 @@ class Base(models.Model):
             entities = Plumbing(pipeline=pipeline, id=self.slug).process(
                 md, state={'batch': True, 'stats': {}})
             return etree.tostring(entities)
-        except Exception, e:
+        except Exception as e:
             raise Exception(
-                'Getting metadata from %s failed.\nError: %s' % (load_streams, e))
+                f'Getting metadata from {load_streams} failed.\nError: {e}')
 
     def fetch_metadata_file(self, file_name):
         file_url = self.file_url
@@ -162,11 +179,11 @@ class Base(models.Model):
             return
 
         metadata_files = []
-        files = file_url.split("|")
+        files = file_url.split('|')
         for curfile in files:
-            cursource = curfile.split(";")
+            cursource = curfile.split(';')
             if len(cursource) == 1:
-                cursource.append("All")
+                cursource.append('All')
             metadata_files.append(cursource)
 
         req = self._get_metadata_stream(metadata_files)
@@ -179,7 +196,7 @@ class Base(models.Model):
         except Exception:
             pass
 
-        filename = path.basename("%s-metadata.xml" % file_name)
+        filename = path.basename('%s-metadata.xml' % file_name)
         self.file.delete(save=False)
         self.file.save(filename, ContentFile(req), save=False)
         return True
@@ -201,6 +218,6 @@ class XmlDescriptionError(Exception):
 
 class Dummy(models.Model):
     """
-    Dummy object necessary to thest Django funcionalities.
+    Dummy object necessary to test Django functionalities.
     """
     pass

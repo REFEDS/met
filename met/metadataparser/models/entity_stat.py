@@ -14,7 +14,7 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-stats = getattr(settings, "STATS")
+stats = getattr(settings, 'STATS')
 
 
 class EntityStat(models.Model):
@@ -22,17 +22,31 @@ class EntityStat(models.Model):
     Model describing a statistic information about an entity.
     """
 
-    time = models.DateTimeField(blank=False, null=False,
-                                verbose_name=_(u'Metadata time stamp'))
+    time = models.DateTimeField(
+        blank=False,
+        null=False,
+        verbose_name=_('Metadata time stamp')
+    )
 
-    feature = models.CharField(max_length=100, blank=False, null=False, db_index=True,
-                               verbose_name=_(u'Feature name'))
+    feature = models.CharField(
+        max_length=100,
+        blank=False,
+        null=False,
+        db_index=True,
+        verbose_name=_('Feature name')
+    )
 
-    value = models.PositiveIntegerField(max_length=100, blank=False, null=False,
-                                        verbose_name=_(u'Feature value'))
+    value = models.PositiveIntegerField(
+        blank=False,
+        null=False,
+        verbose_name=_('Feature value')
+    )
 
-    federation = models.ForeignKey('Federation', blank=False,
-                                   verbose_name=_(u'Federations'))
+    federation = models.ForeignKey(
+        'Federation',
+        blank=False,
+        verbose_name=_('Federations')
+    )
 
-    def __unicode__(self):
+    def __str__(self):
         return self.feature

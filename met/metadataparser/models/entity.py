@@ -11,8 +11,8 @@
 
 import simplejson as json
 
-from urlparse import urlparse
-from urllib import quote_plus
+from urllib.parse import urlparse
+from urllib.parse import quote_plus
 from datetime import datetime
 
 from django.conf import settings
@@ -30,7 +30,7 @@ from met.metadataparser.models.base import JSONField, Base
 from met.metadataparser.models.entity_type import EntityType
 from met.metadataparser.models.entity_federations import Entity_Federations
 
-TOP_LENGTH = getattr(settings, "TOP_LENGTH", 5)
+TOP_LENGTH = getattr(settings, 'TOP_LENGTH', 5)
 
 
 def update_obj(mobj, obj, attrs=None):
@@ -49,18 +49,16 @@ class EntityQuerySet(QuerySet):
 
     def iterator(self):
         cached_federations = {}
-        for entity in super(EntityQuerySet, self).iterator():
+        for entity in super().iterator():
             if entity.file:
                 continue
 
             federations = entity.federations.all()
-            if federations:
-                federation = federations[0]
-            else:
+            if not federations:
                 raise ValueError("Can't find entity metadata")
 
             for federation in federations:
-                if not federation.id in cached_federations:
+                if federation.id not in cached_federations:
                     cached_federations[federation.id] = federation
 
                 cached_federation = cached_federations[federation.id]
@@ -86,7 +84,7 @@ class EntityManager(models.Manager):
 
 class Entity(Base):
     """
-    Model describin a federation entity (IdP, SP or AA).
+    Model describing a federation entity (IdP, SP or AA).
     """
 
     READABLE_PROTOCOLS = {
@@ -95,22 +93,47 @@ class Entity(Base):
         'urn:mace:shibboleth:1.0': 'Shiboleth 1.0',
     }
 
-    entityid = models.CharField(blank=False, max_length=200, unique=True,
-                                verbose_name=_(u'EntityID'), db_index=True)
+    entityid = models.CharField(
+        blank=False,
+        max_length=200,
+        unique=True,
+        verbose_name=_('EntityID'),
+        db_index=True
+    )
 
-    federations = models.ManyToManyField('Federation', through='Entity_Federations',
-                                         verbose_name=_(u'Federations'))
+    federations = models.ManyToManyField(
+        'Federation',
+        through='Entity_Federations',
+        verbose_name=_('Federations')
+    )
 
-    types = models.ManyToManyField('EntityType', verbose_name=_(u'Type'))
+    types = models.ManyToManyField(
+        'EntityType',
+        verbose_name=_('Type')
+    )
 
-    name = JSONField(blank=True, null=True, max_length=2000,
-                     verbose_name=_(u'Display Name'))
+    name = JSONField(
+        blank=True,
+        null=True,
+        max_length=2000,
+        verbose_name=_('Display Name')
+    )
 
-    certstats = models.CharField(blank=True, null=True, max_length=200,
-                                 unique=False, verbose_name=_(u'Certificate Stats'))
+    certstats = models.CharField(
+        blank=True,
+        null=True,
+        max_length=200,
+        unique=False,
+        verbose_name=_('Certificate Stats')
+    )
 
-    _display_protocols = models.CharField(blank=True, null=True, max_length=300,		
-                                          unique=False, verbose_name=_(u'Display Protocols'))
+    _display_protocols = models.CharField(
+        blank=True,
+        null=True,
+        max_length=300,
+        unique=False,
+        verbose_name=_('Display Protocols')
+    )
 
     objects = models.Manager()
 
@@ -135,7 +158,7 @@ class Entity(Base):
         reginstant = self._get_property('registration_instant')
         if reginstant is None:
             return None
-        reginstant = "%sZ" % reginstant[0:19]
+        reginstant = '%sZ' % reginstant[0:19]
         return datetime.strptime(reginstant, '%Y-%m-%dT%H:%M:%SZ')
 
     @property
@@ -293,7 +316,7 @@ class Entity(Base):
         contacts = []
         for cur_contact in self._get_property('contacts'):
             if cur_contact['name'] and cur_contact['surname']:
-                contact_name = '%s %s' % (
+                contact_name = '{} {}'.format(
                     cur_contact['name'], cur_contact['surname'])
             elif cur_contact['name']:
                 contact_name = cur_contact['name']
@@ -318,11 +341,11 @@ class Entity(Base):
 
         return logos
 
-    class Meta(object):
-        verbose_name = _(u'Entity')
-        verbose_name_plural = _(u'Entities')
+    class Meta:
+        verbose_name = _('Entity')
+        verbose_name_plural = _('Entities')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.entityid
 
     def load_metadata(self, federation=None, entity_data=None):
@@ -363,7 +386,7 @@ class Entity(Base):
         if hasattr(self, '_entity_cached'):
             return self._entity_cached.get(prop, None)
         else:
-            raise ValueError("Not metadata loaded")
+            raise ValueError('Not metadata loaded')
 
     def _get_or_create_etypes(self, cached_entity_types):
         entity_types = []
@@ -373,14 +396,18 @@ class Entity(Base):
                 break
 
             if cached_entity_types is None:
-                entity_type, _ = EntityType.objects.get_or_create(xmlname=etype,
-                                                                  name=DESCRIPTOR_TYPES_DISPLAY[etype])
+                entity_type, _ = EntityType.objects.get_or_create(
+                    xmlname=etype,
+                    name=DESCRIPTOR_TYPES_DISPLAY[etype]
+                )
             else:
                 if etype in cached_entity_types:
                     entity_type = cached_entity_types[etype]
                 else:
-                    entity_type = EntityType.objects.create(xmlname=etype,
-                                                            name=DESCRIPTOR_TYPES_DISPLAY[etype])
+                    entity_type = EntityType.objects.create(
+                        xmlname=etype,
+                        name=DESCRIPTOR_TYPES_DISPLAY[etype]
+                    )
             entity_types.append(entity_type)
         return entity_types
 
@@ -389,8 +416,10 @@ class Entity(Base):
             self.load_metadata()
 
         if self.entityid.lower() != entity_data.get('entityid').lower():
-            raise ValueError("EntityID is not the same: %s != %s" % (
-                self.entityid.lower(), entity_data.get('entityid').lower()))
+            raise ValueError(
+                'EntityID is not the same: {} != {}'.format(
+                    self.entityid.lower(), entity_data.get('entityid').lower())
+            )
 
         self._entity_cached = entity_data
 
@@ -405,8 +434,8 @@ class Entity(Base):
 
         self.certstats = self._get_property('certstats')
 
-        newprotocols = self.protocols		
-        if newprotocols and newprotocols != "":		
+        newprotocols = self.protocols
+        if newprotocols and newprotocols != '':
             self._display_protocols = newprotocols
 
         if str(self._get_property('registration_authority')) != '':
@@ -420,36 +449,37 @@ class Entity(Base):
         self.load_metadata()
 
         entity = self._entity_cached.copy()
-        entity["types"] = [unicode(f) for f in self.types.all()]
-        entity["federations"] = [{u"name": unicode(f), u"url": f.get_absolute_url()}
+        entity['types'] = [str(f) for f in self.types.all()]
+        entity['federations'] = [{'name': str(f), 'url': f.get_absolute_url()}
                                  for f in self.federations.all()]
 
         if self.registration_authority:
-            entity["registration_authority"] = self.registration_authority
+            entity['registration_authority'] = self.registration_authority
         if self.registration_instant:
-            entity["registration_instant"] = '%s' % self.registration_instant
+            entity['registration_instant'] = '%s' % self.registration_instant
 
-        if "file_id" in entity.keys():
-            del entity["file_id"]
-        if "entity_types" in entity.keys():
-            del entity["entity_types"]
+        if 'file_id' in entity.keys():
+            del entity['file_id']
+        if 'entity_types' in entity.keys():
+            del entity['entity_types']
 
         return entity
 
-    def display_etype(value, separator=', '):
-        return separator.join([unicode(item) for item in value.all()])
+    # TODO this method doesn't seem to work. Let's comment it for now, until we verify it can be removed
+    # def display_etype(value, separator=', '):
+    #    return separator.join([str(item) for item in value.all()])
 
     @classmethod
-    def get_most_federated_entities(self, maxlength=TOP_LENGTH, cache_expire=None):
+    def get_most_federated_entities(cls, maxlength=TOP_LENGTH, cache_expire=None):
         entities = None
         if cache_expire:
-            entities = cache.get("most_federated_entities")
+            entities = cache.get('most_federated_entities')
 
         if not entities or len(entities) < maxlength:
             # Entities with count how many federations belongs to, and sorted
             # by most first
             ob_entities = Entity.objects.all().annotate(
-                federationslength=Count("federations")).order_by("-federationslength")
+                federationslength=Count('federations')).order_by('-federationslength')
             ob_entities = ob_entities.prefetch_related('types', 'federations')
             ob_entities = ob_entities[:maxlength]
 
@@ -459,12 +489,12 @@ class Entity(Base):
                     'entityid': entity.entityid,
                     'name': entity.name,
                     'absolute_url': entity.get_absolute_url(),
-                    'types': [unicode(item) for item in entity.types.all()],
-                    'federations': [(unicode(item.name), item.get_absolute_url()) for item in entity.federations.all()],
+                    'types': [str(item) for item in entity.types.all()],
+                    'federations': [(str(item.name), item.get_absolute_url()) for item in entity.federations.all()],
                 })
 
         if cache_expire:
-            cache.set("most_federated_entities", entities, cache_expire)
+            cache.set('most_federated_entities', entities, cache_expire)
 
         return entities[:maxlength]
 

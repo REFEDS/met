@@ -2,30 +2,30 @@
 {% load i18n metadataparsertags %}
 
 {% block extrajs %}
-<script language="javascript">
+  <script language="javascript">
     function change_page(pagenum) {
-        $('#pagination_page').val(pagenum);
-        var form = $('#pagination_page').parents('form:first');
-        form.submit();
-        return false;
+      $('#pagination_page').val(pagenum);
+      var form = $('#pagination_page').parents('form:first');
+      form.submit();
+      return false;
     }
 
     function change_export(newtype) {
-        $('#export_format').val(newtype);
-        var form = $('#export_format').parents('form:first');
-        form.submit();
-        $('#export_format').val(null);
-        return false;
+      $('#export_format').val(newtype);
+      var form = $('#export_format').parents('form:first');
+      form.submit();
+      $('#export_format').val(null);
+      return false;
     }
 
     $(document).ready(function(){
-        $('#export_format').val(null);
+      $('#export_format').val(null);
     });
-</script>
+  </script>
 {% endblock %}
 
 {% block appendheader %}
-<h2>{% trans "Entity search" %}</h2>
+  <h2>{% trans "Entity search" %}</h2>
 {% endblock %}
 
 {% block content %}

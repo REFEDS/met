@@ -29,7 +29,7 @@ format
    Is the output style. Allowed values: xml, json, csv.
 
 federation_slug
-   Is the url firendly version of a federation name.
+   Is the url friendly version of a federation name.
 
 
 Federations Lists

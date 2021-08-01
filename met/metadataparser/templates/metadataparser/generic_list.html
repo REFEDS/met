@@ -2,33 +2,30 @@
 {% load i18n metadataparsertags %}
 
 {% block appendheader %}
-
-<h2>{{ title }} ({{ objects|length }})</h2>
+  <h2>{{ title }} ({{ objects|length }})</h2>
 {% endblock %}
 
 {% block content %}
+  {% include "metadataparser/inc.export-menu.html" %}
+  {% paginator objs_page %}
 
-{% include "metadataparser/inc.export-menu.html" %}
-{% paginator objs_page %}
-<table class="table table-bordered">
-<thead>
-  {% for column in headers %}
-    <th>{{ column }}</th>
-  {% endfor %}
-</thead>
-<tbody>
-  {% for obj in objs_page %}
-    <tr>
-      {% for field in fields %}
-      <td>{% get_property obj field %}</td>
+  <table class="table table-bordered">
+    <thead>
+      {% for column in headers %}
+        <th>{{ column }}</th>
       {% endfor %}
-    </tr>
-  {% endfor %}
-</tbody>
-</table>
+    </thead>
+    <tbody>
+      {% for obj in objs_page %}
+        <tr>
+          {% for field in fields %}
+          <td>{% get_property obj field %}</td>
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 
-{% include "metadataparser/inc.export-menu.html" %}
-{% paginator objs_page %}
-
-
+  {% include "metadataparser/inc.export-menu.html" %}
+  {% paginator objs_page %}
 {% endblock %}

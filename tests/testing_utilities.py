@@ -27,7 +27,7 @@ def is_json(myjson):
     tests if a string is valid JSON
     """
     try:
-        json_object = json.loads(myjson)
+        json.loads(myjson)
     except ValueError:
         return False
     return True

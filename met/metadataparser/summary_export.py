@@ -28,7 +28,7 @@ def export_summary_csv(qs, relation, filename, counters):
     writer.writerow(labels)
     # Write data to CSV file
     for obj in qs:
-        row = [unicode(obj).encode('utf-8')]
+        row = [str(obj).encode('utf-8')]
         for _, counter_filter in counters:
             row.append(getattr(obj, relation).filter(**counter_filter).count())
         writer.writerow(row)
@@ -43,7 +43,7 @@ def export_summary_json(qs, relation, filename, counters):
         for counter_label, counter_filter in counters:
             item[counter_label] = getattr(
                 obj, relation).filter(**counter_filter).count()
-        objs[unicode(obj)] = item
+        objs[str(obj)] = item
     # Return JS file to browser as download
     serialized = json.dumps(objs)
     response = HttpResponse(serialized, content_type='application/json')
@@ -57,12 +57,12 @@ def export_summary_xml(qs, relation, filename, counters):
     root = xml.createElement(filename)
     # Write data to CSV file
     for obj in qs:
-        item = xml.createElement("federation")
-        item.setAttribute("name", unicode(obj))
+        item = xml.createElement('federation')
+        item.setAttribute('name', str(obj))
         for counter_label, counter_filter in counters:
             val = getattr(obj, relation).filter(**counter_filter).count()
             element = xml.createElement(counter_label)
-            xmlval = xml.createTextNode(unicode(val))
+            xmlval = xml.createTextNode(str(val))
             element.appendChild(xmlval)
             item.appendChild(element)
         root.appendChild(item)
@@ -86,5 +86,5 @@ def export_summary(mode, qs, relation, filename, counters):
     if mode in export_summary_modes:
         return export_summary_modes[mode](qs, relation, filename, counters)
     else:
-        content = "Error 400, Format %s is not supported" % mode
+        content = 'Error 400, Format %s is not supported' % mode
         return HttpResponseBadRequest(content)

@@ -14,7 +14,7 @@ import hashlib
 import smtplib
 from email.mime.text import MIMEText
 from django.conf import settings
-from slackclient import SlackClient
+from slack import RTMClient as SlackClient
 
 
 def compare_filecontents(a, b):
@@ -41,8 +41,8 @@ def _connect_to_smtp(server, port=25, login_type=None, username=None, password=N
             if login_type:
                 smtp_send.esmtp_features['auth'] = login_type
             smtp_send.login(username, password)
-        except Exception, errorMessage:
-            print('Error occurred while trying to login to the email server with user %s: %s' % (
+        except Exception as errorMessage:
+            print('Error occurred while trying to login to the email server with user {}: {}'.format(
                 username, errorMessage))
             raise
 
@@ -50,32 +50,36 @@ def _connect_to_smtp(server, port=25, login_type=None, username=None, password=N
 
 
 def send_slack(message):
-    slack_config_dict = getattr(settings, "SLACK_CONFIG")
+    slack_config_dict = getattr(settings, 'SLACK_CONFIG')
     if slack_config_dict and 'token' in slack_config_dict and slack_config_dict['token']:
         slack_token = slack_config_dict['token']
         slack_channel = slack_config_dict['channel'] if 'channel' in slack_config_dict else '#devops'
         sc = SlackClient(slack_token)
 
         sc.api_call(
-            "chat.postMessage",
+            'chat.postMessage',
             channel=slack_channel,
             text=message
         )
 
 
 def send_mail(from_email_address, subject, message):
-    mail_config_dict = getattr(settings, "MAIL_CONFIG")
+    mail_config_dict = getattr(settings, 'MAIL_CONFIG')
     server = mail_config_dict['email_server']
-    smtp_send = None
 
     if server is None:
         return
 
-    smtp_send = _connect_to_smtp(server, mail_config_dict['email_server_port'],
-                                 mail_config_dict['login_type'], mail_config_dict['username'], mail_config_dict['password'])
+    smtp_send = _connect_to_smtp(
+        server,
+        mail_config_dict['email_server_port'],
+        mail_config_dict['login_type'],
+        mail_config_dict['username'],
+        mail_config_dict['password']
+    )
 
     try:
-        message = MIMEText(message.encode("utf-8"), "plain", _charset="UTF-8")
+        message = MIMEText(message.encode('utf-8'), 'plain', _charset='UTF-8')
         message['From'] = from_email_address
         message['To'] = ",".join(mail_config_dict['to_email_address'])
         message['Subject'] = subject
@@ -85,7 +89,7 @@ def send_mail(from_email_address, subject, message):
             mail_config_dict['to_email_address'],
             message.as_string()
         )
-    except Exception, errorMessage:
+    except Exception as errorMessage:
         print('Error occurred while trying to send an email to %s: %s' %
               (mail_config_dict['to_email_address'], errorMessage))
         raise

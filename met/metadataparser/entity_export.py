@@ -28,20 +28,19 @@ class SetEncoder(json.JSONEncoder):
 def _serialize_value_to_csv(value):
     if type(value) is list:
         vallist = [_serialize_value_to_csv(v) for v in value]
-        serialized = ", ".join(vallist)
+        serialized = ', '.join(vallist)
     elif type(value) is dict:
         vallist = [_serialize_value_to_csv(v) for v in value.values()]
-        serialized = ", ".join(vallist)
+        serialized = ', '.join(vallist)
     else:
-        serialized = "%s" % value
+        serialized = '%s' % value
 
     return serialized
 
 
 def export_entity_csv(entity):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = ('attachment; filename=%s.csv'
-                                       % slugify(entity))
+    response['Content-Disposition'] = ('attachment; filename=%s.csv' % slugify(entity))
     writer = csv.writer(response)
     edict = entity.to_dict()
 
@@ -50,7 +49,7 @@ def export_entity_csv(entity):
     row = []
     for _, value in edict.items():
         row.append(_serialize_value_to_csv(value))
-    row_ascii = [v.encode("ascii", "ignore") for v in row]
+    row_ascii = [v.encode('ascii', 'ignore') for v in row]
 
     writer.writerow(row_ascii)
     # Return CSV file to browser as download
@@ -61,8 +60,7 @@ def export_entity_json(entity):
     # Return JS file to browser as download
     serialized = json.dumps(entity.to_dict(), cls=SetEncoder)
     response = HttpResponse(serialized, content_type='application/json')
-    response['Content-Disposition'] = ('attachment; filename=%s.json'
-                                       % slugify(entity))
+    response['Content-Disposition'] = ('attachment; filename=%s.json' % slugify(entity))
     return response
 
 
@@ -71,8 +69,7 @@ def export_entity_xml(entity):
 
     # Return XML file to browser as download
     response = HttpResponse(str(entity_xml), content_type='application/xml')
-    response['Content-Disposition'] = ('attachment; filename=%s.xml'
-                                       % slugify(entity))
+    response['Content-Disposition'] = ('attachment; filename=%s.xml' % slugify(entity))
     return response
 
 
@@ -87,5 +84,5 @@ def export_entity(mode, entity):
     if mode in export_entity_modes:
         return export_entity_modes[mode](entity)
     else:
-        content = "Error 400, Format %s is not supported" % mode
+        content = 'Error 400, Format %s is not supported' % mode
         return HttpResponseBadRequest(content)

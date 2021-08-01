@@ -1,302 +1,344 @@
 {% extends "metadataparser/base_metadataparser.html" %}
-
 {% load i18n metadataparsertags %}
 
 {% block appendheader %}
+  {% if entity.name %}
+    <h2 style="clear:both; margin-bottom:25px">{% l10n_property entity.name lang %}</h2>
+  {% else %}
+    <h2 style="clear:both; margin-bottom:25px">{{ entity }}</h2>
+  {% endif %}
 
+  <p style="margin-top:9.5px; float:left; clear:both; margin-right:10px">
+    <i>{% trans "Information retrieved from federation: " %}</i>
+  </p>
 
-
-
-{% if entity.name %}
-  <h2 style="clear:both; margin-bottom:25px">{% l10n_property entity.name lang %}</h2>
-{% else %}
-  <h2 style="clear:both; margin-bottom:25px">{{ entity }}</h2>
-{% endif %}
-
-<p style="margin-top:9.5px; float:left; clear:both; margin-right:10px"><i>{% trans "Information retrieved from federation: " %}</i></p>
-<div class="btn-group pull-left" style="margin-right:10px; margin-bottom:5px">
-  <a class="btn btn1 dropdown-toggle" data-toggle="dropdown" href="#">
+  <div class="btn-group pull-left" style="margin-right:10px; margin-bottom:5px">
+    <a class="btn btn1 dropdown-toggle" data-toggle="dropdown" href="#">
       {% if entity.curfed %}{{ entity.curfed }}{% else %}{% trans "Unknown" %}{% endif %}
       <span> &nbsp; <font class="freccia" color=white size=3>&#9661;</font></span>
-  </a>
-  <ul class="dropdown-menu">
-  {% for curfed in entity.federations.all %}
-  <li><a href="?federation={{ curfed.slug }}">{{ curfed }}</a></li>
-  {% endfor %}
-  </ul>
-</div>
+    </a>
+    <ul class="dropdown-menu">
+      {% for curfed in entity.federations.all %}
+        <li><a href="?federation={{ curfed.slug }}">{{ curfed }}</a></li>
+      {% endfor %}
+    </ul>
+  </div>
 
-<p style="margin-top:9.5px; float:left"><i>{% trans "on" %} {{ entity.curfed.metadata_update }} ({{ entity.curfed.metadata_update|timesince }} {% trans "ago" %})</i></p>
+  <p style="margin-top:9.5px; float:left">
+    <i>
+      {% trans "on" %}
+      {{ entity.curfed.metadata_update }}
+      ({{ entity.curfed.metadata_update|timesince }}
+      {% trans "ago" %})
+    </i>
+  </p>
 
-<!--form method="get" action="{{ entity.absolute_url }}"><i>{% trans "Information retrieved from federation: " %}</i>
-  <select name="federation" onchange="this.form.submit()">
-  {% for curfed in entity.federations.all %}
-  <option value="{{ curfed.slug }}" {% if curfed.slug == entity.curfed.slug %}selected{% endif %}>{{ curfed }}</option>
-  {% endfor %}
-  </select>
-</form-->
+  <!--form method="get" action="{{ entity.absolute_url }}"><i>{% trans "Information retrieved from federation: " %}</i>
+    <select name="federation" onchange="this.form.submit()">
+    {% for curfed in entity.federations.all %}
+    <option value="{{ curfed.slug }}" {% if curfed.slug == entity.curfed.slug %}selected{% endif %}>{{ curfed }}</option>
+    {% endfor %}
+    </select>
+  </form-->
 
-<br/><br/><br/>
-<!--div class="btn-group pull-right">
-  <a class="btn" href="{ % url 'entity_comment' entity.id %}">{ % trans "Comment" %}</a>
-</div>
+  <br/><br/><br/>
+  <!--div class="btn-group pull-right">
+    <a class="btn" href="{ % url 'entity_comment' entity.id %}">{ % trans "Comment" %}</a>
+  </div>
 
-<div class="btn-group pull-right">
-  <a class="btn" href="{ % url 'entity_proposal' entity.id %}">{ % trans "Proposal" %}</a>
-</div-->
+  <div class="btn-group pull-right">
+    <a class="btn" href="{ % url 'entity_proposal' entity.id %}">{ % trans "Proposal" %}</a>
+  </div-->
 
-<div class="summary" style="clear:both">
+  <div class="summary" style="clear:both">
+	  {% export_menu entities %}
 
-	{% export_menu entities %}
+	  {% canedit entity %}
+      <div class="btn-group pull-right">
+        <a
+            class="btn"
+            href="{% url 'entity_edit' entity.id %}"
+            style="margin-left:10px">
+          {% trans "edit" %}
+        </a>
+      </div>
+    {% endcanedit %}
 
-	{% canedit entity %}
-	<div class="btn-group pull-right">
-	  <a class="btn" href="{% url 'entity_edit' entity.id %}" style="margin-left:10px">{% trans "edit" %}</a>
-	</div>
-	{% endcanedit %}
-
-	<div class="btn-group pull-right">
-	  <a class="btn" href="{% url 'entity_view' entity.entityid %}?viewxml=true{% if entity.curfed %}&federation={{ entity.curfed.slug }}{% endif %}" target="_blank">{% trans "view xml" %}</a>
-	</div>
+	  <div class="btn-group pull-right">
+	    <a
+          class="btn"
+          href="{% url 'entity_view' entity.entityid %}?viewxml=true{% if entity.curfed %}&federation={{ entity.curfed.slug }}{% endif %}"
+          target="_blank">
+        {% trans "view xml" %}
+      </a>
+	  </div>
 
 {% endblock %}
 
 {% block content %}
-<div style="height:25px"></div>
-<div class="summary">
-	<table id=tablepress-6 class="table tablepress">
-	  <tbody>
-		<tr>
-		  <td class="first-col"><strong class="tabella">{% trans "Entity ID" %}:</strong></td>
-		  <td>{{ entity.entityid }}</td>
-		</tr>
-		<tr>
-		  <td class="first-col"><strong class="tabella">{% trans "Entity type" %}:</strong></td>
-		  <td>{{ entity.types|display_etype }}</td>
-		</tr>
-		<tr>
-		  <td class="first-col"><strong class="tabella">{% trans "Registration authority" %}:</strong></td>
-		  <td>{{ entity.registration_authority_xml }}
-		  {% if entity.registration_instant %}
-			 <i>({% trans "since" %} {{ entity.registration_instant|date:"d/m/Y" }})</i>
-		  {% endif %}</td>
-		</tr>
-		<tr>
-		  <td class="first-col"><strong class="tabella">{% trans "Registration policy" %}:</strong></td>
-		  <td><a href="{% l10n_property entity.registration_policy lang %}" target="_blank">{% l10n_property entity.registration_policy lang %}</a></td>
-		</tr>
-		<tr>
-		  <td class="first-col"><strong class="tabella">{% trans "Federations" %}:</strong></td>
-		  <td>
-			  <ul id="pipelist">
-				  {% for curfed in entity.federations.all %}
-				  <li><a href="{% url 'federation_view' curfed.slug %}">{{ curfed }}</a></li>
-				  {% endfor %}
-			  </ul>
-		  </td>
-		</tr>
-		<tr>
-		  <td class="first-col"><strong class="tabella">{% trans "Certificates statistics" %}:</strong></td>
-		  <td>
-			  <ul id="pipelist">
-				  {% for key,val in entity.certificates.items %}
-				  <li>{{ key }}: {{ val }}</li>
-				  {% endfor %}
-			  </ul>
-		  </td>
-		</tr>
-		<tr>
-		  <td class="first-col"><strong class="tabella">{% trans "Entity Categories" %}:</strong></td>
-		  <td>
-			  <ul>
-				  {% for curcat in entity.entity_categories.all %}
-				  <li>{{ curcat }}</li>
-				  {% endfor %}
-			  </ul>
-		  </td>
-		</tr>
-	  </tbody>
-	</table>
+  <div style="height:25px"></div>
+  <div class="summary">
+    <table id="tablepress-6" class="table tablepress">
+      <tbody>
+      <tr>
+        <td class="first-col"><strong class="tabella">{% trans "Entity ID" %}:</strong></td>
+        <td>{{ entity.entityid }}</td>
+      </tr>
+      <tr>
+        <td class="first-col"><strong class="tabella">{% trans "Entity type" %}:</strong></td>
+        <td>{{ entity.types|display_etype }}</td>
+      </tr>
+      <tr>
+        <td class="first-col"><strong class="tabella">{% trans "Registration authority" %}:</strong></td>
+        <td>
+          {{ entity.registration_authority_xml }}
+          {% if entity.registration_instant %}
+            <i>({% trans "since" %} {{ entity.registration_instant|date:"d/m/Y" }})</i>
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <td class="first-col"><strong class="tabella">{% trans "Registration policy" %}:</strong></td>
+        <td>
+          <a
+              href="{% l10n_property entity.registration_policy lang %}"
+              target="_blank">
+            {% l10n_property entity.registration_policy lang %}
+          </a>
+        </td>
+      </tr>
+      <tr>
+        <td class="first-col"><strong class="tabella">{% trans "Federations" %}:</strong></td>
+        <td>
+          <ul id="pipelist">
+            {% for curfed in entity.federations.all %}
+              <li><a href="{% url 'federation_view' curfed.slug %}">{{ curfed }}</a></li>
+            {% endfor %}
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <td class="first-col"><strong class="tabella">{% trans "Certificates statistics" %}:</strong></td>
+        <td>
+          <ul id="pipelist">
+            {% for key,val in entity.certificates.items %}
+              <li>{{ key }}: {{ val }}</li>
+            {% endfor %}
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <td class="first-col"><strong class="tabella">{% trans "Entity Categories" %}:</strong></td>
+        <td>
+          <ul>
+            {% for curcat in entity.entity_categories.all %}
+              <li>{{ curcat }}</li>
+            {% endfor %}
+          </ul>
+        </td>
+      </tr>
+      </tbody>
+    </table>
 
-{% for logo in entity.logos %}
-  {% if logo.external %}
-     <img class="img-polaroid" alt="{{ logo.alt }}" src="{{ logo.file }}">
-  {% else %}
-     <img class="img-polaroid" alt="{{ logo.alt }}" src="{{ MEDIA_URL }}{{ logo.file }}">
-  {% endif %}
-{% endfor %}
-
-<ul class="entity unstyled">
-	<li>
-  <h2 class="labelview" style="clear:both">{% trans "Entity properties" %}:</h2>
-  </li>
-
-<div class="btn-group pull-right" style="margin-bottom:8px">
- <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-      {% trans "language" %} [{{lang}}]
-      <span> &nbsp; <font class="freccia" color=white size=3>&#9661;</font></span>
-  </a>
-  <ul class="dropdown-menu">
-    {% for lang in entity.languages|split:" " %}
-    <li><a href="?lang={{ lang }}{% if entity.curfed %}&federation={{ entity.curfed.slug }}{% endif %}">{{ lang }}</a></li>
+    {% for logo in entity.logos %}
+      {% if logo.external %}
+        <img class="img-polaroid" alt="{{ logo.alt }}" src="{{ logo.file }}">
+      {% else %}
+        <img class="img-polaroid" alt="{{ logo.alt }}" src="{{ MEDIA_URL }}{{ logo.file }}">
+      {% endif %}
     {% endfor %}
-  </ul>
-</div>
-  
-</ul>
 
+    <ul class="entity unstyled">
+      <li>
+        <h2 class="labelview" style="clear:both">{% trans "Entity properties" %}:</h2>
+      </li>
 
-<table id=tablepress-6 class="table tablepress">
-  <tbody>
-    <tr>
-      <td class="first-col"><strong class="tabella">{% trans "Display name" %}:</strong></td>
-      {% if entity.display_name %}
-      <td>{% l10n_property entity.display_name lang %}</td>
-      {% else %}
-      <td>{% trans "No information provided." %}</td>
-      {% endif %}
-    </tr>
-    <tr>
-      <td class="first-col"><strong class="tabella">{% trans "Description" %}:</strong></td>
-      {% if entity.description %}
-      <td>{% l10n_property entity.description lang %}</td>
-      {% else %}
-      <td>{% trans "No information provided." %}</td>
-      {% endif %}
-    </tr>
-    <tr>
-      <td class="first-col"><strong class="tabella">{% trans "Information URL" %}:</strong></td>
-      {% if entity.info_url %}
-      <td><a href="{% l10n_property entity.info_url lang %}">{% l10n_property entity.info_url lang %}</a></td>
-      {% else %}
-      <td>{% trans "No information provided." %}</td>
-      {% endif %}
-    </tr>
-    <tr>
-      <td class="first-col"><strong class="tabella">{% trans "Privacy statement URL" %}:</strong></td>
-      {% if entity.privacy_url %}
-      <td><a href="{% l10n_property entity.privacy_url lang %}">{% l10n_property entity.privacy_url lang %}</a></td>
-      {% else %}
-      <td>{% trans "No information provided." %}</td>
-      {% endif %}
-    </tr>
-    <tr>
-      <td class="first-col"><strong class="tabella">{% trans "Organization name" %}:</strong></td>
-      {% if entity.organization %}
-      <td>
-          {% organization_property entity.organization 'name' lang %}
-      </td>
-      {% else %}
-      <td>{% trans "No information provided." %}</td>
-      {% endif %}
-    </tr>
-    <tr>
-      <td class="first-col"><strong class="tabella">{% trans "Organization display name" %}:</strong></td>
-      {% if entity.organization %}
-      <td>
-          {% organization_property entity.organization 'displayName' lang %}
-      </td>
-      {% else %}
-      <td>{% trans "No information provided." %}</td>
-      {% endif %}
-    </tr>
-    <tr>
-      <td class="first-col"><strong class="tabella">{% trans "Organization URL" %}:</strong></td>
-      {% if entity.organization %}
-      <td>
-          <a href="{% organization_property entity.organization 'URL' lang %}">{% organization_property entity.organization 'URL' lang %}</a><br/>
-      </td>
-      {% else %}
-      <td>{% trans "No information provided." %}</td>
-      {% endif %}
-    </tr>
-  </tbody>
-</table>
+      <div class="btn-group pull-right" style="margin-bottom:8px">
+        <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+          {% trans "language" %} [{{lang}}]
+          <span> &nbsp; <font class="freccia" color=white size=3>&#9661;</font></span>
+        </a>
+        <ul class="dropdown-menu">
+          {% for lang in entity.languages|split:" " %}
+            <li>
+              <a
+                  href="?lang={{ lang }}{% if entity.curfed %}&federation={{ entity.curfed.slug }}{% endif %}">
+                {{ lang }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </ul>
 
-<ul class="entity unstyled">
-  <li>
-  <h2 class="labelview">{% trans "Technical details" %}:</h2>
-  </li>
-</ul>
+    <table id="tablepress-6" class="table tablepress">
+      <tbody>
+      <tr>
+        <td class="first-col"><strong class="tabella">{% trans "Display name" %}:</strong></td>
+        <td>
+          {% if entity.display_name %}
+            {% l10n_property entity.display_name lang %}
+          {% else %}
+            {% trans "No information provided." %}
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <td class="first-col"><strong class="tabella">{% trans "Description" %}:</strong></td>
+        <td>
+          {% if entity.description %}
+            {% l10n_property entity.description lang %}
+          {% else %}
+            {% trans "No information provided." %}
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <td class="first-col"><strong class="tabella">{% trans "Information URL" %}:</strong></td>
+        <td>
+          {% if entity.info_url %}
+          <a href="{% l10n_property entity.info_url lang %}">{% l10n_property entity.info_url lang %}</a>
+        {% else %}
+          {% trans "No information provided." %}
+        {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <td class="first-col"><strong class="tabella">{% trans "Privacy statement URL" %}:</strong></td>
+        <td>
+        {% if entity.privacy_url %}
+          <a href="{% l10n_property entity.privacy_url lang %}">{% l10n_property entity.privacy_url lang %}</a>
+        {% else %}
+          {% trans "No information provided." %}
+        {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <td class="first-col"><strong class="tabella">{% trans "Organization name" %}:</strong></td>
+        <td>
+          {% if entity.organization %}
+            {% organization_property entity.organization 'name' lang %}
+          {% else %}
+            {% trans "No information provided." %}
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <td class="first-col"><strong class="tabella">{% trans "Organization display name" %}:</strong></td>
+        <td>
+          {% if entity.organization %}
+            {% organization_property entity.organization 'displayName' lang %}
+          {% else %}
+            {% trans "No information provided." %}
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <td class="first-col"><strong class="tabella">{% trans "Organization URL" %}:</strong></td>
+        <td>
+          {% if entity.organization %}
+            <a href="{% organization_property entity.organization 'URL' lang %}">
+              {% organization_property entity.organization 'URL' lang %}
+            </a>
+            <br/>
+          {% else %}
+            {% trans "No information provided." %}
+          {% endif %}
+        </td>
+      </tr>
+      </tbody>
+    </table>
 
-<table id=tablepress-6 class="table tablepress">
-  <tbody>
-    <tr>
-      <td class="first-col"><strong class="tabella">{% trans "Supported protocols" %}:</strong></td>
-      {% if entity.display_protocols and entity.display_protocols|length > 0 %}
-      <td>
-          <ul>
-              {% for proto in entity.display_protocols %}
+    <ul class="entity unstyled">
+      <li>
+        <h2 class="labelview">{% trans "Technical details" %}:</h2>
+      </li>
+    </ul>
+
+    <table id="tablepress-6" class="table tablepress">
+      <tbody>
+        <tr>
+          <td class="first-col"><strong class="tabella">{% trans "Supported protocols" %}:</strong></td>
+          <td>
+            {% if entity.display_protocols and entity.display_protocols|length > 0 %}
+              <ul>
+                {% for proto in entity.display_protocols %}
                   <li>{{ proto }}</li>
-              {% endfor %}
-          </ul>
-      </td>
-      {% else %}
-      <td>{% trans "No information provided." %}</td>
-      {% endif %}
-    </tr>
-    {% if 'IDP' in entity.types|display_etype %}
-    <tr>
-      <td class="first-col"><strong class="tabella">{% trans "Scopes" %}:</strong></td>
-      {% if entity.scopes %}
-      <td>
-          <ul>
-              {% for scope in entity.scopes|split:" " %}
-              <li>{{ scope }}</li>
-              {% endfor %}
-          </ul>
-      </td>
-      {% else %}
-      <td>{% trans "No information provided." %}</td>
-      {% endif %}
-    </tr>
-    {% endif %}
-    {% if 'SP' in entity.types|display_etype %}
-    <tr>
-      <td class="first-col"><strong class="tabella">{% trans "Required attributes" %}:</strong></td>
-      {% if entity.attributes and entity.display_attributes.items|length > 0 %}
-      <td>
-          <ul>
-              {% for attr in entity.display_attributes.items %}
-                  <li>{{ attr.0 }} ({{ attr.1 }})</li>
-              {% endfor %}
-          </ul>
-      </td>
-      {% else %}
-      <td>{% trans "No information provided." %}</td>
-      {% endif %}
-    </tr>
-    <tr>
-      <td class="first-col"><strong class="tabella">{% trans "Optional attributes" %}:</strong></td>
-      {% if entity.attributes_optional and entity.display_attributes_optional.items|length > 0 %}
-      <td>
-          <ul>
-              {% for attr in entity.display_attributes_optional.items %}
-                  <li>{{ attr.0 }} ({{ attr.1 }})</li>
-              {% endfor %}
-          </ul>
-      </td>
-      {% else %}
-      <td>{% trans "No information provided." %}</td>
-      {% endif %}
-    </tr>
-    {% endif %}
-    <tr>
-      <td class="first-col"><strong class="tabella">{% trans "Contacts" %}:</strong></td>
-      {% if entity.contacts %}
-      <td>
-          <ul>
-              {% for cont in entity.contacts %}
-                  <li><a href="{{ cont.email|mailto }}" target="_blank">{{ cont.name }}</a> [{{ cont.type }}]</li>
-              {% endfor %}
-          </ul>
-      </td>
-      {% else %}
-      <td>{% trans "No information provided." %}</td>
-      {% endif %}
-    </tr>
-  </tbody>
-</table>
-</div>	
-</div>	
+                {% endfor %}
+              </ul>
+            {% else %}
+              {% trans "No information provided." %}
+            {% endif %}
+          </td>
+        </tr>
+
+        {% if 'IDP' in entity.types|display_etype %}
+          <tr>
+            <td class="first-col"><strong class="tabella">{% trans "Scopes" %}:</strong></td>
+            <td>
+              {% if entity.scopes %}
+                <ul>
+                  {% for scope in entity.scopes|split:" " %}
+                    <li>{{ scope }}</li>
+                  {% endfor %}
+                </ul>
+              {% else %}
+                {% trans "No information provided." %}
+              {% endif %}
+            </td>
+          </tr>
+        {% endif %}
+
+        {% if 'SP' in entity.types|display_etype %}
+          <tr>
+            <td class="first-col"><strong class="tabella">{% trans "Required attributes" %}:</strong></td>
+            <td>
+              {% if entity.attributes and entity.display_attributes.items|length > 0 %}
+                <ul>
+                  {% for attr in entity.display_attributes.items %}
+                    <li>{{ attr.0 }} ({{ attr.1 }})</li>
+                  {% endfor %}
+                </ul>
+              {% else %}
+                {% trans "No information provided." %}
+              {% endif %}
+            </td>
+          </tr>
+          <tr>
+            <td class="first-col"><strong class="tabella">{% trans "Optional attributes" %}:</strong></td>
+            <td>
+              {% if entity.attributes_optional and entity.display_attributes_optional.items|length > 0 %}
+                <ul>
+                  {% for attr in entity.display_attributes_optional.items %}
+                    <li>{{ attr.0 }} ({{ attr.1 }})</li>
+                  {% endfor %}
+                </ul>
+              {% else %}
+                {% trans "No information provided." %}
+              {% endif %}
+            </td>
+          </tr>
+        {% endif %}
+
+        <tr>
+          <td class="first-col"><strong class="tabella">{% trans "Contacts" %}:</strong></td>
+          <td>
+            {% if entity.contacts %}
+              <ul>
+                {% for cont in entity.contacts %}
+                  <li>
+                    <a href="{{ cont.email|mailto }}" target="_blank">{{ cont.name }}</a>
+                    [{{ cont.type }}]
+                  </li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              {% trans "No information provided." %}
+            {% endif %}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
 {% endblock %}

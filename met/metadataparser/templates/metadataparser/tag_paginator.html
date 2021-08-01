@@ -1,26 +1,27 @@
 {% load i18n %}
+
 {% if objs.has_other_pages %}
-<div class="pagination">
+  <div class="pagination">
     <ul>
-    {% if objs.has_previous %}
-      <li><a href="?page={{ objs.previous_page_number }}{{ append_url }}"> &lsaquo;&lsaquo;</a></li>
-    {% else %}
-      <li><a class="disabled prev" href="#"> &lsaquo;&lsaquo;</a></li>
-    {% endif %}
+      {% if objs.has_previous %}
+        <li><a href="?page={{ objs.previous_page_number }}{{ append_url }}"> &lsaquo;&lsaquo;</a></li>
+      {% else %}
+        <li><a class="disabled prev" href="#"> &lsaquo;&lsaquo;</a></li>
+      {% endif %}
 
-    {% for page in pages %}
+      {% for page in pages %}
         {% ifequal page objs.number %}
-            <li class="current page active"><a href="#">{{ page }}</a></li>
+          <li class="current page active"><a href="#">{{ page }}</a></li>
         {% else %}
-            <li><a class="page" href="?page={{ page }}{{ append_url }}">{{page}}</a></li>
+          <li><a class="page" href="?page={{ page }}{{ append_url }}">{{page}}</a></li>
         {% endifequal %}
-    {% endfor %}
+      {% endfor %}
 
-    {% if objs.has_next %}
-      <li><a class="next" href="?page={{ objs.next_page_number }}{{ append_url }}">&rsaquo;&rsaquo;</a></li>
-    {% else %}
-      <li><a class="disabled next" href="#">&rsaquo;&rsaquo;</a></li>
-    {% endif %}
+      {% if objs.has_next %}
+        <li><a class="next" href="?page={{ objs.next_page_number }}{{ append_url }}">&rsaquo;&rsaquo;</a></li>
+      {% else %}
+        <li><a class="disabled next" href="#">&rsaquo;&rsaquo;</a></li>
+      {% endif %}
     </ul>
-</div>
+  </div>
 {% endif %}

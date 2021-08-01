@@ -10,7 +10,8 @@
 # Consortium GARR, http://www.garr.it
 #########################################################################################
 
-import sys, os
+import os
+import sys
 import logging.config
 
 os.environ['PYTHON_EGG_CACHE'] = '/tmp/.python-eggs/'
@@ -29,7 +30,7 @@ django.setup()
 from django.conf import settings
 from met.metadataparser.utils import send_mail
 
-mail_config_dict = getattr(settings, "MAIL_CONFIG")
+mail_config_dict = getattr(settings, 'MAIL_CONFIG')
 
 m_subj = 'Email test'
 m_message = 'Body of the test email'

@@ -26,8 +26,11 @@ framework.
 
 """
 import os
+import dotenv
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "met.settings")
+dotenv.read_dotenv(os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'))
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'met.settings')
 
 # This application object is used by any WSGI server configured to use this
 # file. This includes Django's development server, if the WSGI_APPLICATION

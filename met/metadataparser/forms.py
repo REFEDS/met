@@ -27,19 +27,21 @@ from met.metadataparser.models import Federation, Entity, EntityType, EntityCate
 class MultiURLforMetadata(Widget):
     def render(self, name, value, attrs=None):
         if value is None:
-            value = ""
+            value = ''
 
         final_attrs = self.build_attrs(attrs, name=name)
         output = []
         output.append(format_html(
-            '<table id="metadata_type" class="display" cellspacing="0" width="100%"><thead><tr><th>Metadata</th><th>Type</th></tr></thead><tbody>', flatatt(final_attrs)))
+            '<table id="metadata_type" class="display" cellspacing="0" width="100%"><thead><tr><th>Metadata</th><th>Type</th></tr></thead><tbody>',
+            flatatt(final_attrs))
+        )
 
-        for curpair in value.split("|"):
+        for curpair in value.split('|'):
             val = ''.join(curpair)
-            val = curpair.split(";")
+            val = curpair.split(';')
 
             if len(val) == 1:
-                val.append("All")
+                val.append('All')
 
             if val[0]:
                 output.append('<tr><td>%s</th><td>%s</td></tr>' %
@@ -54,43 +56,45 @@ class MultiURLforMetadata(Widget):
 
             <fieldset class="control-group" id="new_URL_set">
             Meta URL: <input type="url" name="meta_URL" id="meta_URL" />
-            <select name="type_URL" id="type_URL"><option value="All">All</option><option value="IDP">IDP</option><option value="SP">SP</option></select>
+            <select name="type_URL" id="type_URL">
+            <option value="All">All</option><option value="IDP">IDP</option><option value="SP">SP</option>
+            </select>
             <input id="add" type="button" value="Add URL" />
             </fieldset>
         ''')
 
         output.append(
-            '<input type="hidden" id="id_%s" name="%s" value=""><br/><br/>' % (name, name))
+            f'<input type="hidden" id="id_{name}" name="{name}" value=""><br/><br/>')
 
         output.append('''<script>
-            $(document).ready(function() {
-                $.extend( $.fn.dataTable.defaults, {
+            $(document).ready(function() {{
+                $.extend( $.fn.dataTable.defaults, {{
                     "searching": false,
                     "ordering":  false,
                     "paging":    false,
                     "info":      false
-                }); 
-   
+                }});
+
                 var table = $('#metadata_type').DataTable();
-                $('#metadata_type tbody').on( 'click', 'tr', function () {
+                $('#metadata_type tbody').on( 'click', 'tr', function () {{
                     $(this).toggleClass('selected');
-                });
+                }});
                 var text = "";
-                table.rows().every( function () {
+                table.rows().every( function () {{
                     var data = this.data();
                     text += data[0] +  ";" + data[1] + "|";
-                } );
+                }} );
                 text = text.substring(0, text.length - 1);
-                $('#id_%s').val(text);
+                $('#id_{}').val(text);
 
-                $('#add').click( function () {
+                $('#add').click( function () {{
                     if ($('#meta_URL').val() == undefined) return;
                     texturl = $('#meta_URL').val();
-                    var urlpattern = new RegExp('([a-zA-Z\d]+:\\/\\/)?((\\w+:\\w+@)?([a-zA-Z\\d.-]+\\.[A-Za-z]{2,4})(:\\d+)?(\\/.*)?)','i'); // fragment locater
-                    if (!urlpattern.test($('#meta_URL').val())) {
+                    var urlpattern = new RegExp('([a-zA-Z\\d]+:\\/\\/)?((\\w+:\\w+@)?([a-zA-Z\\d.-]+\\.[A-Za-z]{{2,4}})(:\\d+)?(\\/.*)?)','i'); // fragment locater
+                    if (!urlpattern.test($('#meta_URL').val())) {{
                         $('#new_URL_set').addClass("error");
-                        return; 
-                    }
+                        return;
+                    }}
 
                     $('#new_URL_set').removeClass("error");
                     table.row.add([$('#meta_URL').val(), $('#type_URL').val()]).draw();
@@ -98,27 +102,27 @@ class MultiURLforMetadata(Widget):
                     $('#type_URL').val("All");
 
                     var text = "";
-                    table.rows().every( function () {
+                    table.rows().every( function () {{
                         var data = this.data();
                         text +=data[0] +  ";" + data[1] + "|";
-                    } );
+                    }} );
                     text = text.substring(0, text.length - 1);
-                    $('#id_%s').val(text);
-                });
+                    $('#id_{}').val(text);
+                }});
 
-                $('#delete').click( function () {
+                $('#delete').click( function () {{
                     table.row('.selected').remove().draw(false);
-                   
+
                     var text = "";
-                    table.rows().every( function () {
+                    table.rows().every( function () {{
                         var data = this.data();
                         text +=data[0] +  ";" + data[1] + "|";
-                    } );
+                    }} );
                     text = text.substring(0, text.length - 1);
-                    $('#id_%s').val(text); 
-                });
-            });
-            </script>''' % (name, name, name))
+                    $('#id_{}').val(text);
+                }});
+            }});
+            </script>'''.format(name, name, name))
 
         return mark_safe('\n'.join(output))
 
@@ -126,16 +130,15 @@ class MultiURLforMetadata(Widget):
 class FederationForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
-        super(FederationForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         editor_users_choices = self.fields['editor_users'].widget.choices
-        self.fields['editor_users'].widget = CheckboxSelectMultiple(
-            choices=editor_users_choices)
-        self.fields['editor_users'].help_text = _("This/these user(s) can edit this "
-                                                  "federation and its entities")
+        self.fields['editor_users'].widget = CheckboxSelectMultiple(choices=editor_users_choices)
+        self.fields['editor_users'].help_text = _('This/these user(s) can edit this '
+                                                  'federation and its entities')
 
         self.fields['file_url'].widget = MultiURLforMetadata()
 
-    class Meta(object):
+    class Meta:
         model = Federation
         fields = ['name', 'url', 'registration_authority', 'country', 'logo',
                   'is_interfederation', 'type', 'fee_schedule_url', 'file_url', 'file', 'editor_users']
@@ -144,29 +147,33 @@ class FederationForm(forms.ModelForm):
 class EntityForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
-        super(EntityForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         editor_users_choices = self.fields['editor_users'].widget.choices
-        self.fields['editor_users'].widget = CheckboxSelectMultiple(
-            choices=editor_users_choices)
-        self.fields['editor_users'].help_text = _("These users can edit only "
-                                                  "this entity")
+        self.fields['editor_users'].widget = CheckboxSelectMultiple(choices=editor_users_choices)
+        self.fields['editor_users'].help_text = _('These users can edit only this entity')
 
-    class Meta(object):
+    class Meta:
         model = Entity
         fields = ['registration_authority', 'file_url', 'file', 'editor_users']
 
 
 class ChartForm(forms.Form):
-    fromDate = forms.DateField(label=_(u'Start date'),
-                               help_text=_(u"Statistics start date."), initial=timezone.now() - relativedelta(days=11),
-                               widget=SelectDateWidget(years=range(timezone.datetime.today().year, 2012, -1)))
+    fromDate = forms.DateField(
+        label=_('Start date'),
+        help_text=_("Statistics start date."),
+        initial=timezone.now() - relativedelta(days=11),
+        widget=SelectDateWidget(years=range(timezone.datetime.today().year, 2012, -1))
+    )
 
-    toDate = forms.DateField(label=_(u'End date'),
-                             help_text=_(u"Statistics end date."), initial=timezone.now() - relativedelta(days=1),
-                             widget=SelectDateWidget(years=range(timezone.datetime.today().year, 2012, -1)))
+    toDate = forms.DateField(
+        label=_('End date'),
+        help_text=_("Statistics end date."),
+        initial=timezone.now() - relativedelta(days=1),
+        widget=SelectDateWidget(years=range(timezone.datetime.today().year, 2012, -1))
+    )
 
     def is_valid(self):
-        result = super(ChartForm, self).is_valid()
+        result = super().is_valid()
 
         if result:
             result = self.cleaned_data['fromDate'] <= self.cleaned_data['toDate']
@@ -186,31 +193,38 @@ class ChartForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         self.instance = kwargs.pop('instance')
-        super(ChartForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
-    class Meta(object):
+    class Meta:
         exclude = []
 
 
 class EntityCommentForm(forms.Form):
-    email = forms.EmailField(label=_(u'Your email address'),
-                             help_text=_(u"Please enter your email address here."))
+    email = forms.EmailField(
+        label=_('Your email address'),
+        help_text=_('Please enter your email address here.')
+    )
 
-    comment = forms.CharField(max_length=1000, label=_(u"Your comment"),
-                              help_text=_(u"Please enter your comment here."),
-                              widget=forms.Textarea(attrs={'cols': '100', 'rows': '10'}))
+    comment = forms.CharField(
+        max_length=1000,
+        label=_('Your comment'),
+        help_text=_('Please enter your comment here.'),
+        widget=forms.Textarea(attrs={'cols': '100', 'rows': '10'})
+    )
 
     def __init__(self, *args, **kwargs):
         self.instance = kwargs.pop('instance')
-        super(EntityCommentForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
-    class Meta(object):
+    class Meta:
         exclude = []
 
 
 class EntityProposalForm(forms.Form):
-    email = forms.EmailField(label=_(u'Your email address'),
-                             help_text=_(u"Please enter your email address here."))
+    email = forms.EmailField(
+        label=_('Your email address'),
+        help_text=_('Please enter your email address here.')
+    )
 
     federation_choices = []
     i = 0
@@ -218,16 +232,22 @@ class EntityProposalForm(forms.Form):
         i += i
         federation_choices.append(('%s' % federation, federation))
 
-    federations = forms.MultipleChoiceField(label=_(u'Federations'), choices=federation_choices,
-                                            help_text=_(u"Please select the federation(s) you want to gather the entity in."))
+    federations = forms.MultipleChoiceField(
+        label=_('Federations'),
+        choices=federation_choices,
+        help_text=_('Please select the federation(s) you want to gather the entity in.')
+    )
 
-    comment = forms.CharField(max_length=1000, label=_(u"Your comment"),
-                              help_text=_(u"Please enter your comment here."),
-                              widget=forms.Textarea(attrs={'cols': '100', 'rows': '10'}))
+    comment = forms.CharField(
+        max_length=1000,
+        label=_('Your comment'),
+        help_text=_('Please enter your comment here.'),
+        widget=forms.Textarea(attrs={'cols': '100', 'rows': '10'})
+    )
 
     def __init__(self, *args, **kwargs):
         self.instance = kwargs.pop('instance')
-        super(EntityProposalForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         gatherd_federations = self.instance.federations.all()
         federation_choices = []
@@ -239,17 +259,19 @@ class EntityProposalForm(forms.Form):
 
         self.fields['federations'].widget.choices = federation_choices
 
-    class Meta(object):
+    class Meta:
         exclude = []
 
 
 class ServiceSearchForm(forms.Form):
-    entityid = forms.CharField(max_length=200, label=_(u"Search service ID"),
-                               help_text=_(
-                                   u"Enter a full or partial entityid"),
-                               widget=forms.TextInput(attrs={'size': '200'}))
+    entityid = forms.CharField(
+        max_length=200,
+        label=_('Search service ID'),
+        help_text=_('Enter a full or partial entityid'),
+        widget=forms.TextInput(attrs={'size': '200'})
+    )
 
-    class Meta(object):
+    class Meta:
         exclude = []
 
 
@@ -266,35 +288,46 @@ class SearchEntitiesForm(forms.Form):
     for entity_category in EntityCategory.objects.all():
         category_choices.append(('%s' % entity_category, entity_category))
 
-    entity_type = forms.ChoiceField(label=_(u"Entity Type"),
-                                    help_text=_(
-                                        u"Select the entity type you're interest in"),
-                                    choices=type_choices,
-                                    initial=['All'])
+    entity_type = forms.ChoiceField(
+        label=_('Entity Type'),
+        help_text=_("Select the entity type you're interest in"),
+        choices=type_choices,
+        initial=['All']
+    )
 
-    entity_category = forms.ChoiceField(label=_(u'Entity Category'),
-                                        help_text=_(
-                                            u"Select the entity category you're interest in"),
-                                        choices=category_choices,
-                                        initial=['All'])
+    entity_category = forms.ChoiceField(
+        label=_('Entity Category'),
+        help_text=_("Select the entity category you're interest in"),
+        choices=category_choices,
+        initial=['All']
+    )
 
-    federations = forms.MultipleChoiceField(label=_(u"Federation filter"),
-                                            help_text=_(
-                                                u"Select the federations you're interest in (you may select multiple)"),
-                                            widget=forms.CheckboxSelectMultiple,
-                                            choices=federation_choices,
-                                            initial=['All'])
+    federations = forms.MultipleChoiceField(
+        label=_('Federation filter'),
+        help_text=_("Select the federations you're interest in (you may select multiple)"),
+        widget=forms.CheckboxSelectMultiple,
+        choices=federation_choices,
+        initial=['All']
+    )
 
-    entityid = forms.CharField(max_length=200, label=_(u"Search entity ID"),
-                               help_text=_(
-                                   u"Enter a full or partial entityid"),
-                               widget=forms.TextInput(attrs={'size': '200'}),
-                               required=False)
+    entityid = forms.CharField(
+        max_length=200,
+        label=_('Search entity ID'),
+        help_text=_('Enter a full or partial entityid'),
+        widget=forms.TextInput(attrs={'size': '200'}),
+        required=False
+    )
 
-    page = forms.IntegerField(min_value=0, initial=1, required=False,
-                              widget=forms.HiddenInput(attrs={'id': 'pagination_page'}))
+    page = forms.IntegerField(
+        min_value=0,
+        initial=1,
+        required=False,
+        widget=forms.HiddenInput(attrs={'id': 'pagination_page'})
+    )
     export_format = forms.CharField(
-        required=False, widget=forms.HiddenInput(attrs={'id': 'export_format'}))
+        required=False,
+        widget=forms.HiddenInput(attrs={'id': 'export_format'})
+    )
 
-    class Meta(object):
+    class Meta:
         fields = []
