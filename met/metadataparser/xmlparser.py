@@ -126,7 +126,7 @@ class MetadataParser:
                     entity_details = MetadataParser._get_entity_details(
                         element)
                     entity.update(entity_details)
-                    entity = {k: v for k, v in entity.iteritems() if v}
+                    entity = {k: v for k, v in entity.items() if v}
 
                 entity['languages'] = MetadataParser._entity_lang_seen(entity)
                 yield entity

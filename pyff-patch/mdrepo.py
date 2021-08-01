@@ -273,7 +273,7 @@ The dict in the list contains three items:
                 "I can only add EntityAttribute(s) to EntityDescriptor elements")
 
         # log.debug("set %s" % d)
-        for attr, value in d.iteritems():
+        for attr, value in d.items():
             # log.debug("set %s to %s" % (attr,value))
             a = self._eattribute(e, attr, nf)
             # log.debug(etree.tostring(a))
