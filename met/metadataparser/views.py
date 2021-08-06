@@ -856,11 +856,14 @@ def search_entities(request):
                 eid_args = (reduce(operator.or_, eid_list),)
                 ob_entities = ob_entities.filter(*eid_args)
 
+            export_format = form.cleaned_data['export_format']
+
             ob_entities = ob_entities.prefetch_related('types', 'federations')
             pagination = _paginate_fed(ob_entities, form.cleaned_data['page'])
+            results = pagination['objects'] if not export_format else ob_entities
 
             entities = []
-            for entity in pagination['objects']:
+            for entity in results:
                 entities.append({
                     'entityid': entity.entityid,
                     'name': entity.name,
@@ -869,7 +872,6 @@ def search_entities(request):
                     'federations': [(str(item.name), item.get_absolute_url()) for item in entity.federations.all()],
                 })
 
-            export_format = form.cleaned_data['export_format']
             if export_format:
                 return export_query_set(
                     export_format,
