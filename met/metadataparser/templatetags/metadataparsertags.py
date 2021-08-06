@@ -283,7 +283,7 @@ def l10n_property(context, prop, lang):
         if lang and lang in prop:
             return prop.get(lang)
         else:
-            return prop[prop.keys()[0]]
+            return prop[list(prop.keys())[0]]
     return prop
 
 
