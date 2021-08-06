@@ -198,6 +198,8 @@ def _paginate_fed(ob_entities, page):
 
 @profile(name='Federation view')
 def federation_view(request, federation_slug=None):
+    format = request.GET.get('format')
+
     if federation_slug:
         request.session['%s_process_done' % federation_slug] = False
         request.session['%s_num_entities' % federation_slug] = 0
@@ -229,7 +231,10 @@ def federation_view(request, federation_slug=None):
     pagination = _paginate_fed(ob_entities, request.GET.get('page'))
 
     entities = []
-    for entity in pagination['objects']:
+
+    results = pagination['objects'] if not format else ob_entities
+
+    for entity in results:
         entity.curfed = federation
         if entity_category is None or entity_category in [c.category_id for c in entity.entity_categories.all()]:
             entities.append({
@@ -240,9 +245,9 @@ def federation_view(request, federation_slug=None):
                 'federations': [(str(item.name), item.get_absolute_url()) for item in entity.federations.all()],
             })
 
-    if 'format' in request.GET:
+    if format:
         return export_query_set(
-            request.GET.get('format'), entities, 'entities_search_result', ('entityid', 'types', 'federations'))
+            format, entities, 'entities_search_result', ('entityid', 'types', 'federations'))
 
     context = RequestContext(request)
     user = context.get('user', None)
