@@ -19,6 +19,7 @@ import numpy as np
 from urllib.parse import unquote
 from datetime import datetime
 from dateutil import tz
+from functools import reduce
 
 from django.conf import settings
 from django.db.models import Count, Q
