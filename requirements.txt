@@ -8,6 +8,7 @@ django-chartit
 django-dotenv
 setuptools-rust
 python-memcached>=1.48
+mysqlclient==2.0.3
 simplejson
 django-silk==2.0.0
 pyff
