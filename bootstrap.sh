@@ -44,7 +44,6 @@ echo "export LC_ALL='en_US.UTF-8'" >> /home/vagrant/.profile
 echo "export LC_CTYPE='en_US.UTF-8'" >> /home/vagrant/.profile
 echo "cd /vagrant/" >> /home/vagrant/.profile
 echo "source ~/venvs/met/bin/activate" >> /home/vagrant/.profile
-echo "export PATH=$PATH:/home/vagrant/.local/bin/"
 
 su vagrant << EOF
 virtualenv --python=python3 ~/venvs/met
