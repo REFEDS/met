@@ -27,7 +27,7 @@ from met.metadataparser.xmlparser import MetadataParser
 from met.metadataparser.utils import compare_filecontents
 
 
-class JSONField(models.CharField):
+class JSONField(models.CharField, metaclass=models.SubfieldBase):
     """
     JSONField is a generic textfield that neatly serializes/deserializes
     JSON objects seamlessly
@@ -43,7 +43,6 @@ class JSONField(models.CharField):
     """
 
     # Used so to_python() is called
-    __metaclass__ = models.SubfieldBase
     description = _('JSON object')
 
     def __init__(self, *args, **kwargs):
