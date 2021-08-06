@@ -174,25 +174,25 @@ def _paginate_fed(ob_entities, page):
     paginator = Paginator(ob_entities, 20)
 
     try:
-        ob_entities = paginator.page(page)
+        paginated_entities = paginator.page(page)
     except PageNotAnInteger:
-        ob_entities = paginator.page(1)
+        paginated_entities = paginator.page(1)
     except EmptyPage:
-        ob_entities = paginator.page(paginator.num_pages)
+        paginated_entities = paginator.page(paginator.num_pages)
 
     adjacent_pages = 5
     page_range = [
         n for n in
-        range(ob_entities.number - adjacent_pages, ob_entities.number + adjacent_pages + 1)
-        if 0 < n <= ob_entities.paginator.num_pages
+        range(paginated_entities.number - adjacent_pages, paginated_entities.number + adjacent_pages + 1)
+        if 0 < n <= paginated_entities.paginator.num_pages
     ]
 
     return {
         'page_range': page_range,
-        'cur_page_number': ob_entities.number,
-        'num_pages': ob_entities.paginator.num_pages,
-        'num_objects': ob_entities.paginator.count,
-        'objects': ob_entities.object_list,
+        'cur_page_number': paginated_entities.number,
+        'num_pages': paginated_entities.paginator.num_pages,
+        'num_objects': paginated_entities.paginator.count,
+        'objects': paginated_entities.object_list,
     }
 
 
