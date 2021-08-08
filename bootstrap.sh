@@ -22,23 +22,14 @@ apt-get -y install python3-mysqldb
 apt-get -y install python3-virtualenv
 apt-get -y install python3-pip
 
-# Postgresql 10
-echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list
-wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-apt-get update
-apt-get -y install postgresql-10
+mysql -uroot -e "CREATE USER 'met'@'localhost' IDENTIFIED BY 'met';"
+mysql -uroot -e "CREATE DATABASE met;"
+mysql -uroot -e "GRANT ALL ON *.* TO 'met'@'localhost';"
 
-echo "local all postgres peer" > /etc/postgresql/10/main/pg_hba.conf
-echo "local met met md5" >> /etc/postgresql/10/main/pg_hba.conf
-echo "local test_met met md5" >> /etc/postgresql/10/main/pg_hba.conf
-echo "local all all peer" >> /etc/postgresql/10/main/pg_hba.conf
-echo "host all all 127.0.0.1/32 md5" >> /etc/postgresql/10/main/pg_hba.conf
-echo "host all all ::1/128 md5" >> /etc/postgresql/10/main/pg_hba.conf
+# update mysql conf file to allow remote access to the db
+sudo sed -i "s/.*bind-address.*/bind-address = 0.0.0.0/" /etc/mysql/mysql.conf.d/mysqld.cnf
 
-service postgresql restart
-
-sudo -u postgres bash -c "psql -c \"CREATE USER met WITH SUPERUSER PASSWORD 'met';\""
-sudo -u postgres createdb --owner=met --encoding=UTF8 met
+service mysql restart
 
 echo "export LC_ALL='en_US.UTF-8'" >> /home/vagrant/.profile
 echo "export LC_CTYPE='en_US.UTF-8'" >> /home/vagrant/.profile
