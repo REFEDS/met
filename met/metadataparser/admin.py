@@ -12,7 +12,7 @@
 
 from django.contrib import admin
 
-from met.metadataparser.models import Federation, Entity
+from met.metadataparser.models import Federation, Entity, EntityCategory, EntityStat, EntityType
 
 
 class FederationAdmin(admin.ModelAdmin):
@@ -23,5 +23,11 @@ class EntityAdmin(admin.ModelAdmin):
     list_filter = ('federations', )
     search_fields = ('entityid', 'name')
 
+
+class EntityCategoryAdmin(admin.ModelAdmin):
+    search_fields = ('category_id', 'name')
+
+
 admin.site.register(Federation, FederationAdmin)
 admin.site.register(Entity, EntityAdmin)
+admin.site.register(EntityCategory, EntityCategoryAdmin)
