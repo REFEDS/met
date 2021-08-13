@@ -187,7 +187,8 @@ you just need to configure a cronjob on your server such as:
 
 .. code-block:: bash
 
-   0 * * * * cd /opt/met/ && /home/met/venvs/met/bin/python /opt/met/automatic_refresh/refresh.py --log /opt/met/automatic_refresh/pylog.conf
+   SHELL=/bin/bash
+   0 * * * * cd /opt/met/ && source /home/met/venvs/met/bin/activate && /opt/met/automatic_refresh/refresh.py --log /opt/met/automatic_refresh/pylog.conf
 
 With the option --log the script will log as configured in the logging configuration file.
 
