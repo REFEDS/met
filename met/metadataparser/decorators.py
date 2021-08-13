@@ -43,11 +43,21 @@ def user_can_edit(objtype, login_url=None, delete=False):
                     return kwargs.get(key)
             return None
 
+        def _get_objslug(kwargs):
+            for key in kwargs.keys():
+                if key.endswith('_slug'):
+                    return kwargs.get(key)
+            return None
+
         @wraps(view_func, assigned=available_attrs(view_func))
         def _wrapped_view(request, *args, **kwargs):
             objid = _get_objid(kwargs)
-            if objtype and objid:
-                obj = objtype.objects.get(id=objid)
+            objslug = _get_objslug(kwargs)
+            if objtype and (objid or objslug):
+                if objid:
+                    obj = objtype.objects.get(id=objid)
+                else:
+                    obj = objtype.objects.get(slug=objslug)
                 if obj.can_edit(request.user, delete):
                     return view_func(request, *args, **kwargs)
             elif request.user.is_authenticated():
