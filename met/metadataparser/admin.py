@@ -16,7 +16,7 @@ from met.metadataparser.models import Federation, Entity
 
 
 class FederationAdmin(admin.ModelAdmin):
-    pass
+    search_fields = ('name', )
 
 
 class EntityAdmin(admin.ModelAdmin):
