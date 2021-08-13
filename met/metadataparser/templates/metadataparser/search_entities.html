@@ -31,6 +31,8 @@
 {% block content %}
   {% if object_list %}
     {% entity_list object_list pagination=pagination onclick_page="change_page" onclick_export="change_export" %}
+  {% else %}
+    <p>No entities found with these criteria.</p>
   {% endif %}
 
   {% bootstrap_form form cancel_link='/' delete_link=False %}
