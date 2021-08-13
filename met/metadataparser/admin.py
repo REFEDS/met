@@ -20,8 +20,7 @@ class FederationAdmin(admin.ModelAdmin):
 
 
 class EntityAdmin(admin.ModelAdmin):
-    pass
-
+    list_filter = ('federations', )
 
 admin.site.register(Federation, FederationAdmin)
 admin.site.register(Entity, EntityAdmin)
