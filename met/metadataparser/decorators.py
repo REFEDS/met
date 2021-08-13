@@ -45,7 +45,6 @@ def user_can_edit(objtype, login_url=None, delete=False):
 
         @wraps(view_func, assigned=available_attrs(view_func))
         def _wrapped_view(request, *args, **kwargs):
-            path = request.build_absolute_uri()
             objid = _get_objid(kwargs)
             if objtype and objid:
                 obj = objtype.objects.get(id=objid)
@@ -57,6 +56,6 @@ def user_can_edit(objtype, login_url=None, delete=False):
             if request.user.is_authenticated():
                 return HttpResponseForbidden("You can't edit this object")
 
-            return login_request(path, login_url)
+            return login_request(request, login_url)
         return _wrapped_view
     return decorator
