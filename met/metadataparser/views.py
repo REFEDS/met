@@ -228,6 +228,12 @@ def federation_view(request, federation_slug=None):
     if request.GET and 'entity_category' in request.GET:
         entity_category = request.GET['entity_category']
 
+    if entity_category:
+        ob_entities = ob_entities.filter(
+            entity_federations__federation=federation,
+            entity_federations__entity_categories__category_id=entity_category,
+        )
+
     ob_entities = ob_entities.prefetch_related('types', 'federations')
     pagination = _paginate_fed(ob_entities, request.GET.get('page'))
 
@@ -237,14 +243,13 @@ def federation_view(request, federation_slug=None):
 
     for entity in results:
         entity.curfed = federation
-        if entity_category is None or entity_category in [c.category_id for c in entity.entity_categories.all()]:
-            entities.append({
-                'entityid': entity.entityid,
-                'name': entity.name,
-                'absolute_url': entity.get_absolute_url(),
-                'types': [str(item) for item in entity.types.all()],
-                'federations': [(str(item.name), item.get_absolute_url()) for item in entity.federations.all()],
-            })
+        entities.append({
+            'entityid': entity.entityid,
+            'name': entity.name,
+            'absolute_url': entity.get_absolute_url(),
+            'types': [str(item) for item in entity.types.all()],
+            'federations': [(str(item.name), item.get_absolute_url()) for item in entity.federations.all()],
+        })
 
     if format:
         return export_query_set(
