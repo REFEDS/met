@@ -21,6 +21,7 @@ class FederationAdmin(admin.ModelAdmin):
 
 class EntityAdmin(admin.ModelAdmin):
     list_filter = ('federations', )
+    search_fields = ('entityid', 'name')
 
 admin.site.register(Federation, FederationAdmin)
 admin.site.register(Entity, EntityAdmin)
