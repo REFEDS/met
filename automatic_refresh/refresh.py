@@ -12,11 +12,14 @@
 # Consortium GARR, http://www.garr.it
 #########################################################################################
 
+import dotenv
 import os
 import sys
 import logging
 import logging.config
 from optparse import OptionParser
+
+dotenv.read_dotenv(os.environ.get('DOTENV_FILE', '/opt/met/.env'))
 
 os.environ['PYTHON_EGG_CACHE'] = '/tmp/.python-eggs/'
 
