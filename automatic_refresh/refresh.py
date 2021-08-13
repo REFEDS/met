@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 #################################################################
 # MET v2 Metadate Explorer Tool
 #

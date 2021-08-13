@@ -207,7 +207,7 @@ Logrotate can be configured to avoid the continuous growth of the refresh metada
 
 .. code-block:: javascript
 
-   /var/log/met_refresh.log {
+   /opt/met/logs/met_refresh.log {
         rotate 7
         daily
         missingok
@@ -215,8 +215,8 @@ Logrotate can be configured to avoid the continuous growth of the refresh metada
         delaycompress
         compress
         postrotate
-                touch /var/log/met_refresh.log >/dev/null 2>&1 || true
-                chown www-data.www-data /var/log/met_refresh.log >/dev/null 2>&1 || true
+                touch /opt/met/logs/met_refresh.log >/dev/null 2>&1 || true
+                chown www-data.www-data /opt/met/logs/met_refresh.log >/dev/null 2>&1 || true
                 reload rsyslog >/dev/null 2>&1 || true
         endscript
   }
