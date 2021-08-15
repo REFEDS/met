@@ -168,6 +168,16 @@
           };
           var chart = new google.visualization.GeoChart(document.getElementById('regions_div'));
           chart.draw(data, options);
+
+          function mapSelectHandler () {
+            var selectedItem = chart.getSelection()[0];
+            if (selectedItem) {
+              var selectedCountry = data.getValue(selectedItem.row, 0);
+              $('#country_search').val(selectedCountry);
+              $('#country_search').keyup();
+            }
+          }
+          google.visualization.events.addListener(chart, 'select', mapSelectHandler);
         }
       </script>
     </div>
@@ -181,7 +191,7 @@
     <div class="summary">
       <div>
         <strong>Country:</strong>
-        <input type="text" onkeyup="filterFederationsByCountry(this.value)">
+        <input id="country_search" type="text" onkeyup="filterFederationsByCountry(this.value)">
       </div>
       {% federations_summary "federations" counts federations %}
     </div>
