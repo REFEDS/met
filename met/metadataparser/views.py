@@ -858,8 +858,11 @@ def search_entities(request):
                     feds = feds.filter(entity_categories__category_id=entity_category)
                     eid_list.extend([Q(entityid=f.entity.entityid) for f in feds])
 
-                eid_args = (reduce(operator.or_, eid_list),)
-                ob_entities = ob_entities.filter(*eid_args)
+                if eid_list:
+                    eid_args = (reduce(operator.or_, eid_list),)
+                    ob_entities = ob_entities.filter(*eid_args)
+                else:
+                    ob_entities = Entity.objects.none()
 
             export_format = form.cleaned_data['export_format']
 
