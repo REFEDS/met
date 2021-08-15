@@ -172,7 +172,7 @@ def most_federated_entities(request):
 
 
 def _paginate_fed(ob_entities, page):
-    paginator = Paginator(ob_entities, 500)
+    paginator = Paginator(ob_entities, 20)
 
     try:
         paginated_entities = paginator.page(page)
