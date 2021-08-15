@@ -223,6 +223,11 @@ LOGGING = {
         #     'level': 'ERROR',
         #     'propagate': True,
         # },
+        'django.request': {
+             'handlers': ['console'],
+             'level': 'ERROR',
+             'propagate': True,
+        },
         'djangosaml2': {
             'handlers': ['saml2file'],
             'level': 'ERROR',
