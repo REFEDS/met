@@ -13,6 +13,16 @@
         });
       });
     })(jQuery);
+
+    function searchEntities (federation, entity_type) {
+      $('<form action="{% url 'search_entities' %}" method="POST"/>')
+        .append('<input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">')
+        .append('<input type="hidden" name="entity_category" value="All">')
+        .append($('<input type="hidden" name="federations">').val(federation))
+        .append($('<input type="hidden" name="entity_type">').val(entity_type))
+        .appendTo($(document.body))
+        .submit();
+    }
   </script>
 {% endblock %}
 
