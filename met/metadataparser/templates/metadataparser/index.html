@@ -13,6 +13,37 @@
         });
       });
     })(jQuery);
+
+    function searchEntities (federation, entity_type) {
+      $('<form action="{% url 'search_entities' %}" method="POST"/>')
+        .append('<input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">')
+        .append('<input type="hidden" name="entity_category" value="All">')
+        .append($('<input type="hidden" name="federations">').val(federation))
+        .append($('<input type="hidden" name="entity_type">').val(entity_type))
+        .appendTo($(document.body))
+        .submit();
+    }
+
+    function filterFederationsByCountry (countryName) {
+      countryName = (countryName || '').toLowerCase();
+      var federationRows = $('.federations-summary');
+      var noFederationMatch = true;
+      federationRows.children('tr').each(function () {
+        var row_country = $($(this).children('.column-2')).html() || '';
+        if (row_country.toLowerCase().indexOf(countryName) > -1) {
+          noFederationMatch = false;
+          $(this).show();
+        } else {
+          $(this).hide();
+        }
+      });
+
+      if (noFederationMatch) {
+        var noResultsRow = $('<tr>')
+          .append('<td colspan="6" style="text-align: center">No results found</td>');
+        federationRows.append(noResultsRow);
+      }
+    }
   </script>
 {% endblock %}
 
@@ -137,6 +168,16 @@
           };
           var chart = new google.visualization.GeoChart(document.getElementById('regions_div'));
           chart.draw(data, options);
+
+          function mapSelectHandler () {
+            var selectedItem = chart.getSelection()[0];
+            if (selectedItem) {
+              var selectedCountry = data.getValue(selectedItem.row, 0);
+              $('#country_search').val(selectedCountry);
+              $('#country_search').keyup();
+            }
+          }
+          google.visualization.events.addListener(chart, 'select', mapSelectHandler);
         }
       </script>
     </div>
@@ -148,6 +189,10 @@
     </div>
 
     <div class="summary">
+      <div>
+        <strong>Country:</strong>
+        <input id="country_search" type="text" onkeyup="filterFederationsByCountry(this.value)">
+      </div>
       {% federations_summary "federations" counts federations %}
     </div>
   </div>
