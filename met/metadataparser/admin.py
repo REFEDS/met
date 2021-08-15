@@ -12,16 +12,24 @@
 
 from django.contrib import admin
 
-from met.metadataparser.models import Federation, Entity
+from met.metadataparser.models import Federation, Entity, EntityCategory
 
 
 class FederationAdmin(admin.ModelAdmin):
-    pass
+    search_fields = ('name', )
+    filter_horizontal = ('editor_users',)
 
 
 class EntityAdmin(admin.ModelAdmin):
-    pass
+    list_filter = ('federations', )
+    search_fields = ('entityid', 'name')
+    filter_horizontal = ('editor_users',)
+
+
+class EntityCategoryAdmin(admin.ModelAdmin):
+    search_fields = ('category_id', 'name')
 
 
 admin.site.register(Federation, FederationAdmin)
 admin.site.register(Entity, EntityAdmin)
+admin.site.register(EntityCategory, EntityCategoryAdmin)
