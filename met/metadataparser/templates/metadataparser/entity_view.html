@@ -73,6 +73,14 @@
       </a>
 	  </div>
 
+    <div class="btn-group pull-right">
+	    <a
+          class="btn"
+          href="{% url 'entity_metadata_comparator' entity.entityid %}{% if entity.curfed %}?federation={{ entity.curfed.slug }}{% endif %}">
+        {% trans "metadata comparator" %}
+      </a>
+	  </div>
+
 {% endblock %}
 
 {% block content %}

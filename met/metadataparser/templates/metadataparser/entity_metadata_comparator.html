@@ -1,0 +1,23 @@
+{% extends "metadataparser/base_metadataparser.html" %}
+{% load i18n metadataparsertags %}
+
+{% block appendheader %}
+  {% if entity.name %}
+    <h2 style="clear:both; margin-bottom:25px">Metadata comparator for {% l10n_property entity.name lang %}</h2>
+  {% else %}
+    <h2 style="clear:both; margin-bottom:25px">Metadata comparator for {{ entity }}</h2>
+  {% endif %}
+
+  <div class="btn-group pull-left" style="margin-right:10px; margin-bottom:5px">
+    <a class="btn btn1 dropdown-toggle" data-toggle="dropdown" href="#">
+      {% if entity.curfed %}{{ entity.curfed }}{% else %}{% trans "Unknown" %}{% endif %}
+      <span> &nbsp; <font class="freccia" color=white size=3>&#9661;</font></span>
+    </a>
+    <ul class="dropdown-menu">
+      {% for curfed in entity.federations.all %}
+        <li><a href="?federation={{ curfed.slug }}">{{ curfed }}</a></li>
+      {% endfor %}
+    </ul>
+  </div>
+
+{% endblock %}
