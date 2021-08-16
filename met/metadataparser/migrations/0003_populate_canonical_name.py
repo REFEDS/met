@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import unicodedata
 from django.db import transaction
 from django.db import migrations, models
 from django.db.utils import OperationalError
@@ -18,8 +19,7 @@ def populate_entities(apps, schema_editor):
             with transaction.atomic():
                 entity.save(update_fields=('canonical_name', ))
         except OperationalError:
-            # TODO: Fix it
-            entity.canonical_name = 'OperationalError'
+            entity.canonical_name = unicodedata.normalize('NFKD', canonical_name).encode('ASCII', 'ignore')
             entity.save(update_fields=('canonical_name', ))
 
 
