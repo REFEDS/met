@@ -119,6 +119,14 @@ class Entity(Base):
         verbose_name=_('Display Name')
     )
 
+    canonical_name = models.CharField(
+        blank=True,
+        null=True,
+        max_length=500,
+        verbose_name=_('Canonical Name'),
+        db_index=True,
+    )
+
     certstats = models.CharField(
         blank=True,
         null=True,
