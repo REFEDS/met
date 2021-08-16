@@ -78,11 +78,13 @@
 {% endblock %}
 
 {% block content %}
-  {% if entity.name %}
-    <h2 style="clear:both; margin-bottom:25px">Metadata comparator for {% l10n_property entity.name lang %}</h2>
-  {% else %}
-    <h2 style="clear:both; margin-bottom:25px">Metadata comparator for {{ entity }}</h2>
-  {% endif %}
+  <h2 style="clear:both; margin-bottom:25px">
+    Metadata comparator for
+    {% if entity.name %}{% l10n_property entity.name lang %}{% else %}{{ entity }}{% endif %}
+    <small style="margin-left: 15px;">
+      <a href="{% url 'entity_view' entity.entityid %}?federation={{ entity.curfed.slug }}">Back</a>
+    </small>
+  </h2>
 
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom:5px; margin-right: 5px;">
     <div class="btn-group">
