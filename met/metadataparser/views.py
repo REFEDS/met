@@ -756,13 +756,15 @@ def entity_metadata_comparator(request, entityid):
     entityid = RESCUE_SLASH.sub("\\1/\\2", entityid)
 
     entity = get_object_or_404(Entity, entityid=entityid)
-    entity.curfed = entity.federations.all()[0]
+    left_panel_federation = entity.federations.all()[0]
+    right_panel_federation = left_panel_federation
+
     return render_to_response(
         'metadataparser/entity_metadata_comparator.html',
         {
             'entity': entity,
-            'left_data': entity.xml,
-            'right_data': entity.xml,
+            'left_panel_federation': left_panel_federation,
+            'right_panel_federation': right_panel_federation,
         },
         context_instance=RequestContext(request)
     )

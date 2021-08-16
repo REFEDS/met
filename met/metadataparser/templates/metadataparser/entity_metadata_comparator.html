@@ -1,23 +1,110 @@
 {% extends "metadataparser/base_metadataparser.html" %}
 {% load i18n metadataparsertags %}
 
-{% block appendheader %}
+{% block extrajs %}
+  <script src="{{ STATIC_URL }}js/codemirror-5.32.0.min.js"></script>
+  <script src="{{ STATIC_URL }}js/mergely-4.3.2.js"></script>
+  <link href="{{ STATIC_URL }}css/codemirror-5.32.0.css" rel="stylesheet">
+  <link href="{{ STATIC_URL }}css/mergely-4.3.2.css" rel="stylesheet">
+
+  <script type="text/javascript">
+    function loadLeftPanel(fedSlug, fedName) {
+      loadMetadata(fedSlug, 'lhs');
+      $('#left-panel-federation-name').text(fedName);
+    }
+
+    function loadRightPanel(fedSlug, fedName) {
+      loadMetadata(fedSlug, 'rhs');
+      $('#right-panel-federation-name').text(fedName);
+    }
+
+    function loadMetadata(federation, panel) {
+      var url = "{% url 'entity_view' entity.entityid %}?viewxml=true&federation=" + federation;
+      $.ajax({
+        type: 'GET', async: true, dataType: 'text',
+        url: url,
+        success: function (response) {
+          $('#path-' + panel).text(url);
+          $('#compare').mergely(panel, response);
+        }
+      });
+    }
+
+    (function($) {
+      $(document).ready(function () {
+        var comp = $('#compare');
+
+        comp.mergely({
+				  width: 'auto',
+				  height: 'auto',
+          license: 'lgpl-separate-notice',
+          wrap_lines: false,
+          cmsettings: {
+            readOnly: true,
+          },
+        });
+
+        loadLeftPanel('{{ left_panel_federation.slug }}');
+        loadRightPanel('{{ right_panel_federation.slug }}');
+
+        $('#prev_diff').click(function() { comp.mergely('scrollToDiff', 'prev'); });
+        $('#next_diff').click(function() { comp.mergely('scrollToDiff', 'next'); });
+        $('#wraplines').click(function() {
+				  comp.mergely('options', { wrap_lines: this.checked });
+			  });
+      });
+    })(jQuery);
+
+  </script>
+{% endblock %}
+
+{% block content %}
   {% if entity.name %}
     <h2 style="clear:both; margin-bottom:25px">Metadata comparator for {% l10n_property entity.name lang %}</h2>
   {% else %}
     <h2 style="clear:both; margin-bottom:25px">Metadata comparator for {{ entity }}</h2>
   {% endif %}
 
-  <div class="btn-group pull-left" style="margin-right:10px; margin-bottom:5px">
-    <a class="btn btn1 dropdown-toggle" data-toggle="dropdown" href="#">
-      {% if entity.curfed %}{{ entity.curfed }}{% else %}{% trans "Unknown" %}{% endif %}
-      <span> &nbsp; <font class="freccia" color=white size=3>&#9661;</font></span>
-    </a>
-    <ul class="dropdown-menu">
-      {% for curfed in entity.federations.all %}
-        <li><a href="?federation={{ curfed.slug }}">{{ curfed }}</a></li>
-      {% endfor %}
-    </ul>
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom:5px; margin-right: 5px;">
+    <div class="btn-group">
+      <a class="btn btn1 dropdown-toggle" data-toggle="dropdown" href="#">
+        <span id="left-panel-federation-name">{{ left_panel_federation }}</span>
+        <span> &nbsp; <font class="freccia" color=white size=3>&#9661;</font></span>
+      </a>
+      <ul class="dropdown-menu">
+        {% for curfed in entity.federations.all %}
+          <li><a onclick="loadLeftPanel('{{ curfed.slug }}', '{{ curfed }}')">{{ curfed }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; align-items: center">
+      <div style="margin-right: 10px"><strong>Navigate:</strong></div>
+      <div style="margin-right: 5px"><a id="prev_diff" style="cursor: pointer">Previous</a></div>
+      <div style="margin-right: 10px"><a id="next_diff" style="cursor: pointer">Next</a></div>
+      <div style="margin-right: 10px"><strong>|</strong></div>
+      <div style="display: flex; align-items: center">
+        <input type="checkbox" id="wraplines">
+        <span style="margin-left: 3px">Wrap lines</span>
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <a class="btn btn1 dropdown-toggle" data-toggle="dropdown" href="#">
+        <span id="right-panel-federation-name">{{ right_panel_federation }}</span>
+        <span> &nbsp; <font class="freccia" color=white size=3>&#9661;</font></span>
+      </a>
+      <ul class="dropdown-menu">
+        {% for curfed in entity.federations.all %}
+          <li><a onclick="loadRightPanel('{{ curfed.slug }}', '{{ curfed }}')">{{ curfed }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
   </div>
 
+  <div style="height: 500px; width: 100%; margin-bottom: 70px;">
+    <div class="mergely-resizer">
+      <div id="compare"></div>
+    </div>
+  </div>
 {% endblock %}
