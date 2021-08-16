@@ -66,7 +66,7 @@
         {% endfor %}
       </tr>
       </thead>
-      <tbody class="row-hover">
+      <tbody class="row-hover federations-summary">
       {% for federation in federations %}
         <tr>
           <td class="column-1">
@@ -75,9 +75,21 @@
           {% if queryname == 'federations' %}
             <td class="column-2">{{ federation.country }}</td>
           {% endif %}
-          <td class="column-3">{% get_fed_count counts federation.id %}</td>
+          <td class="column-3">
+            <a
+                style="cursor: pointer;"
+                onclick="searchEntities('{{ federation.id }}', 'All')">
+              {% get_fed_count counts federation.id %}
+            </a>
+          </td>
           {% for etype in entity_types %}
-            <td class="column-{{forloop.counter|add:3}}">{% get_fed_count counts federation.id etype %}</td>
+            <td class="column-{{forloop.counter|add:3}}">
+              <a
+                  style="cursor: pointer;"
+                  onclick="searchEntities('{{ federation.id }}', '{{ etype|display_etype }}')">
+                {% get_fed_count counts federation.id etype %}
+              </a>
+            </td>
           {% endfor %}
         </tr>
       {% endfor %}
