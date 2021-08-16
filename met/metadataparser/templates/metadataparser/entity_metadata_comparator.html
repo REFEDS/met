@@ -47,6 +47,25 @@
         loadLeftPanel('{{ left_panel_federation.slug }}');
         loadRightPanel('{{ right_panel_federation.slug }}');
 
+        $('#compare').on('updated', function () {
+          var changes = $('#compare').mergely('summary');
+          if (changes.numChanges > 0) {
+            $('#prev_diff').removeClass('muted');
+            $('#prev_diff').addClass('text-error');
+            $('#next_diff').removeClass('muted');
+            $('#next_diff').addClass('text-error');
+            $('#prev_diff').css('cursor', 'pointer');
+            $('#next_diff').css('cursor', 'pointer');
+          } else {
+            $('#prev_diff').addClass('muted');
+            $('#prev_diff').removeClass('text-error');
+            $('#next_diff').addClass('muted');
+            $('#next_diff').removeClass('text-error');
+            $('#prev_diff').css('cursor', '');
+            $('#next_diff').css('cursor', '');
+          }
+        });
+
         $('#prev_diff').click(function() { comp.mergely('scrollToDiff', 'prev'); });
         $('#next_diff').click(function() { comp.mergely('scrollToDiff', 'next'); });
         $('#wraplines').click(function() {
@@ -80,8 +99,8 @@
 
     <div style="display: flex; justify-content: space-between; align-items: center">
       <div style="margin-right: 10px"><strong>Navigate:</strong></div>
-      <div style="margin-right: 5px"><a id="prev_diff" style="cursor: pointer">Previous</a></div>
-      <div style="margin-right: 10px"><a id="next_diff" style="cursor: pointer">Next</a></div>
+      <div style="margin-right: 5px"><span id="prev_diff">Previous</span></div>
+      <div style="margin-right: 10px"><span id="next_diff">Next</span></div>
       <div style="margin-right: 10px"><strong>|</strong></div>
       <div style="display: flex; align-items: center">
         <input type="checkbox" id="wraplines">
