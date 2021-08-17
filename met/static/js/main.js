@@ -13,7 +13,7 @@ $(document).ready(function() {
 });
 
 $(document).ready(function() {
-  // Do not use the JS sorting as we sort the entire queryset and not only the seen page
+  // Not using the JS sorting as we sort the entire queryset and not only the seen page
   // $("#tablepress-3").tablesorter();
 });
 
