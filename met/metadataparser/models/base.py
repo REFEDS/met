@@ -20,8 +20,9 @@ from django.core import validators
 from django.core.files.base import ContentFile
 from django.utils.translation import ugettext_lazy as _
 
-from pyff.repo import MDRepository
+from pyff.builtins import load, select  # NOQA
 from pyff.pipes import Plumbing
+from pyff.repo import MDRepository
 
 from met.metadataparser.xmlparser import MetadataParser
 from met.metadataparser.utils import compare_filecontents
