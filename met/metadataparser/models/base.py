@@ -195,6 +195,9 @@ class Base(models.Model):
                 return False
         except Exception:
             pass
+        finally:
+            import ipdb; ipdb.set_trace()
+            self.file.close()
 
         filename = path.basename('%s-metadata.xml' % file_name)
         self.file.delete(save=False)
