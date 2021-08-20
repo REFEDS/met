@@ -166,7 +166,7 @@ class Base(models.Model):
                 pipeline = [{'load': load}, 'select']
 
             md = MDRepository()
-            entities = Plumbing(pipeline=pipeline, id=self.slug).process(
+            entities = Plumbing(pipeline=pipeline, pid=self.slug).process(
                 md, state={'batch': True, 'stats': {}})
             return etree.tostring(entities)
         except Exception as e:
