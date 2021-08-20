@@ -64,22 +64,22 @@
       </div>
     {% endcanedit %}
 
-	  <div class="btn-group pull-right">
-	    <a
+    <div class="btn-group pull-right">
+      <a
           class="btn"
           href="{% url 'entity_view' entity.entityid %}?viewxml=true{% if entity.curfed %}&federation={{ entity.curfed.slug }}{% endif %}"
           target="_blank">
         {% trans "view xml" %}
       </a>
-	  </div>
+    </div>
 
     <div class="btn-group pull-right" style="margin-right: 10px;">
-	    <a
+      <a
           class="btn"
           href="{% url 'entity_metadata_comparator' entity.entityid %}{% if entity.curfed %}?federation={{ entity.curfed.slug }}{% endif %}">
         {% trans "metadata comparator" %}
       </a>
-	  </div>
+    </div>
 
 {% endblock %}
 
