@@ -229,10 +229,16 @@ def federation_view(request, federation_slug=None):
         entity_category = request.GET['entity_category']
 
     if entity_category:
-        ob_entities = ob_entities.filter(
-            entity_federations__federation=federation,
-            entity_federations__entity_categories__category_id=entity_category,
-        )
+        if entity_category == 'No Category':
+            ob_entities = ob_entities.filter(
+                entity_federations__federation=federation,
+                entity_federations__entity_categories=None,
+            )
+        else:
+            ob_entities = ob_entities.filter(
+                entity_federations__federation=federation,
+                entity_federations__entity_categories__category_id=entity_category,
+            )
 
     ob_entities = ob_entities.prefetch_related('types', 'federations')
     pagination = _paginate_fed(ob_entities, request.GET.get('page'))
