@@ -11,7 +11,7 @@ python-memcached>=1.48
 mysqlclient==2.0.3
 simplejson
 django-silk==2.0.0
-pyff==0.9.4
+pyff==2.0.0
 slackclient
 pyvirtualdisplay
 selenium
