@@ -229,13 +229,14 @@ class MetadataParser:
             certName = 'invalid'
 
             try:
-                text = x.text.replace('\n', '').replace(
-                    ' ', '').replace('\t', '')
+                text = x.text.replace('\n', '').replace(' ', '').replace('\t', '')
                 text = '\n'.join(MetadataParser._chunkstring(text, 64))
-                certText = '\n'.join(
+                cert_text = '\n'.join(
                     ['-----BEGIN CERTIFICATE-----', text, '-----END CERTIFICATE-----'])
+                # load_pem_x509_certificate requires bytes, not a str
+                cert_text_encoded = cert_text.encode('utf-8')
                 cert = x509.load_pem_x509_certificate(
-                    certText, default_backend())
+                    cert_text_encoded, default_backend())
                 certName = cert.signature_hash_algorithm.name
             except Exception:
                 pass
