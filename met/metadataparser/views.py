@@ -755,6 +755,33 @@ def entity_proposal(request, federation_slug=None, entity_id=None):
     )
 
 
+@profile(name='Entity metadata comparator')
+def entity_metadata_comparator(request, entityid):
+    # Compare metatada of an entity retrieved from different federations
+    entityid = unquote(entityid)
+    entityid = RESCUE_SLASH.sub("\\1/\\2", entityid)
+
+    entity = get_object_or_404(Entity, entityid=entityid)
+    first_federation = entity.federations.all()[0]
+    if 'federation' in request.GET:
+        entity.curfed = get_object_or_404(Federation, slug=request.GET.get('federation'))
+    else:
+        entity.curfed = first_federation
+
+    left_panel_federation = entity.curfed
+    right_panel_federation = first_federation
+
+    return render_to_response(
+        'metadataparser/entity_metadata_comparator.html',
+        {
+            'entity': entity,
+            'left_panel_federation': left_panel_federation,
+            'right_panel_federation': right_panel_federation,
+        },
+        context_instance=RequestContext(request)
+    )
+
+
 def search_service(request):
     filters = {}
     objects = []
