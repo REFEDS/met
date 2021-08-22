@@ -135,6 +135,20 @@ class Entity(Base):
         verbose_name=_('Display Protocols')
     )
 
+    organization_name = JSONField(
+        blank=True,
+        null=True,
+        max_length=2000,
+        verbose_name=_('Organization Name')
+    )
+
+    organization_display_name = JSONField(
+        blank=True,
+        null=True,
+        max_length=2000,
+        verbose_name=_('Organization Display Name')
+    )
+
     objects = models.Manager()
 
     longlist = EntityManager()
