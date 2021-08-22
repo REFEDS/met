@@ -13,6 +13,7 @@
 from django.conf import settings
 
 from .base import Dummy
+from .contact import ContactPerson
 from .federation import Federation, FEDERATION_TYPES
 from .entity import Entity
 from .entity_type import EntityType
@@ -30,4 +31,5 @@ __all__ = ['TOP_LENGTH',
            'Entity',
            'Entity_Federations',
            'EntityStat',
-           'Dummy']
+           'Dummy',
+           'ContactPerson', ]

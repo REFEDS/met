@@ -149,6 +149,12 @@ class Entity(Base):
         verbose_name=_('Organization Display Name')
     )
 
+    contacts = models.ManyToManyField(
+        to='ContactPerson',
+        verbose_name=_('Contact People'),
+        related_name='entities',
+    )
+
     objects = models.Manager()
 
     longlist = EntityManager()
