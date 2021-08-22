@@ -467,8 +467,12 @@ class Entity(Base):
                     new_display_names[new_org['lang']] = new_org['displayName']
             if new_names:
                 self.organization_name = new_names
+            else:
+                self.organization_name = None
             if new_display_names:
                 self.organization_display_name = new_display_names
+            else:
+                self.organization_display_name = None
 
         if auto_save:
             self.save()
