@@ -86,7 +86,6 @@ class MetadataParser:
             'logos': MetadataParser.entity_logos(element),
             'scopes': MetadataParser.entity_attribute_scope(element),
             'attr_requested': MetadataParser.entity_requested_attributes(element),
-            'contacts': MetadataParser.entity_contacts(element),
             'registration_policy': MetadataParser.registration_policy(element)
         }
 
@@ -121,6 +120,7 @@ class MetadataParser:
                     element, entity['entity_types'])
                 entity['certstats'] = MetadataParser.get_certstats(element)
                 entity['organization'] = MetadataParser.entity_organization(element)
+                entity['contacts'] = MetadataParser.entity_contacts(element)
 
                 if details:
                     entity_details = MetadataParser._get_entity_details(
