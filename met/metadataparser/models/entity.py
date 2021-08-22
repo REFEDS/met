@@ -456,6 +456,20 @@ class Entity(Base):
             self.registration_authority = self._get_property(
                 'registration_authority')
 
+        new_organization = self.organization
+        if new_organization and new_organization != '':
+            new_names = {}
+            new_display_names = {}
+            for new_org in new_organization:
+                if 'name' in new_org:
+                    new_names[new_org['lang']] = new_org['name']
+                if 'displayName' in new_org:
+                    new_display_names[new_org['lang']] = new_org['displayName']
+            if new_names:
+                self.organization_name = new_names
+            if new_display_names:
+                self.organization_display_name = new_display_names
+
         if auto_save:
             self.save()
 
@@ -526,7 +540,8 @@ class Entity(Base):
 
         return False
 
-    def has_changed(self, entityid, name, registration_authority, certstats, display_protocols):
+    def has_changed(self, entityid, name, registration_authority, certstats, display_protocols,
+                    organization_name, organization_display_name):
         if self.entityid != entityid:
             return True
         if self.name != name:
@@ -536,6 +551,10 @@ class Entity(Base):
         if self.certstats != certstats:
             return True
         if self._display_protocols != display_protocols:
+            return True
+        if self.organization_name != organization_name:
+            return True
+        if self.organization_display_name != organization_display_name:
             return True
 
         return False
