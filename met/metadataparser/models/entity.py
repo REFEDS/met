@@ -332,7 +332,7 @@ class Entity(Base):
         return attributes
 
     @property
-    def contacts(self):
+    def xml_contacts(self):
         contacts = []
         for cur_contact in self._get_property('contacts'):
             if cur_contact['name'] and cur_contact['surname']:

@@ -331,9 +331,9 @@
         <tr>
           <td class="first-col"><strong class="tabella">{% trans "Contacts" %}:</strong></td>
           <td>
-            {% if entity.contacts %}
+            {% if entity.xml_contacts %}
               <ul>
-                {% for cont in entity.contacts %}
+                {% for cont in entity.xml_contacts %}
                   <li>
                     <a href="{{ cont.email|mailto }}" target="_blank">{{ cont.name }}</a>
                     [{{ cont.type }}]
