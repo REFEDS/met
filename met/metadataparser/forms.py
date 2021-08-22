@@ -318,6 +318,22 @@ class SearchEntitiesForm(forms.Form):
         required=False
     )
 
+    organization_name = forms.CharField(
+        max_length=200,
+        label=_('Organization Name'),
+        help_text=_('Enter a full or partial organization name'),
+        widget=forms.TextInput(attrs={'size': '200'}),
+        required=False
+    )
+
+    organization_display_name = forms.CharField(
+        max_length=200,
+        label=_('Organization Display Name'),
+        help_text=_('Enter a full or partial organization display name'),
+        widget=forms.TextInput(attrs={'size': '200'}),
+        required=False
+    )
+
     page = forms.IntegerField(
         min_value=0,
         initial=1,
