@@ -24,6 +24,7 @@ from django.utils import timezone
 from django.dispatch import receiver
 from django.template.defaultfilters import slugify
 
+from met.metadataparser.models import ContactPerson
 from met.metadataparser.xmlparser import MetadataParser
 
 from met.metadataparser.models.base import Base, XmlDescriptionError
@@ -218,6 +219,22 @@ class Federation(Base):
                 membership.entity_categories.clear()
 
             membership.save()
+
+            # Contact people
+            # It should be always loaded, but playing safe just in case
+            e.load_metadata()
+            e.contacts.clear()
+            for xml_contact in e.xml_contacts:
+                contact, _ = ContactPerson.objects.get_or_create(
+                    type=ContactPerson.get_type_by_description(xml_contact['type']),
+                    name=xml_contact['name'],
+                    email=xml_contact['email'],
+                )
+                e.contacts.add(contact)
+
+        # Remove orphaned contacts
+        ContactPerson.objects.filter(entity=None).delete()
+
 
     def _add_new_entities(self, entities, entities_from_xml, request, federation_slug):
         db_entity_types = EntityType.objects.all()
