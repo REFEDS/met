@@ -11,6 +11,7 @@
 ##########################################################################
 
 from django.contrib import admin
+from django.utils.safestring import mark_safe
 
 from met.metadataparser.models import Federation, Entity, EntityCategory, ContactPerson
 
@@ -33,6 +34,15 @@ class EntityCategoryAdmin(admin.ModelAdmin):
 class ContactPersonAdmin(admin.ModelAdmin):
     search_fields = ('name', 'email')
     list_display = ('name', 'email', 'type')
+    readonly_fields = ('entity_list', )
+
+    def entity_list(self, instance):
+        response = '<ul>'
+        for entity in instance.entities.all():
+            response += '<li>{}</li>'.format(entity.entityid)
+        response += '</ul>'
+        return mark_safe(response)
+    entity_list.short_description = 'Entities'
 
 
 admin.site.register(Federation, FederationAdmin)
