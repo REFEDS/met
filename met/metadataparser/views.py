@@ -899,6 +899,33 @@ def search_entities(request):
 
             export_format = form.cleaned_data['export_format']
 
+            use_python_filters = False
+            organization_name = form.cleaned_data['organization_name']
+            if organization_name and organization_name != '':
+                use_python_filters = True
+            organization_display_name = form.cleaned_data['organization_display_name']
+            if organization_display_name and organization_display_name != '':
+                use_python_filters = True
+
+            if use_python_filters:
+                entity_ids = set()
+                for ob_entity in ob_entities.all():
+                    entity_found = False
+                    if organization_name and organization_name != '':
+                        if ob_entity.organization_name:
+                            for entity_org_name in ob_entity.organization_name.values():
+                                if organization_name.lower() in entity_org_name.lower():
+                                    entity_ids.add(ob_entity.id)
+                                    entity_found = True
+                                    break
+                    if not entity_found and organization_display_name and organization_display_name != '':
+                        if ob_entity.organization_display_name:
+                            for entity_org_disp_name in ob_entity.organization_display_name.values():
+                                if organization_display_name.lower() in entity_org_disp_name.lower():
+                                    entity_ids.add(ob_entity.id)
+
+                ob_entities = ob_entities.filter(id__in=entity_ids)
+
             ob_entities = ob_entities.prefetch_related('types', 'federations')
             pagination = _paginate_fed(ob_entities, form.cleaned_data['page'])
             results = pagination['objects'] if not export_format else ob_entities
