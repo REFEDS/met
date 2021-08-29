@@ -35,5 +35,8 @@ class EntityCategory(models.Model):
         help_text=_('The name of the entity category')
     )
 
+    class Meta:
+        verbose_name_plural = 'entity categories'
+
     def __str__(self):
         return self.name or self.category_id

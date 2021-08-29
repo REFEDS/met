@@ -55,6 +55,9 @@ class ContactPerson(models.Model):
         help_text=_('The email of the contact')
     )
 
+    class Meta:
+        verbose_name_plural = 'contact people'
+
     def __str__(self):
         return self.name or self.email
 
