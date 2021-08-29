@@ -13,7 +13,9 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 
-from met.metadataparser.models import Federation, Entity, EntityCategory, ContactPerson
+from met.metadataparser.models import (
+    Federation, Entity, EntityCategory, ContactPerson, EntityScope
+)
 
 
 class FederationAdmin(admin.ModelAdmin):
@@ -45,7 +47,12 @@ class ContactPersonAdmin(admin.ModelAdmin):
     entity_list.short_description = 'Entities'
 
 
+class EntityScopeAdmin(admin.ModelAdmin):
+    list_display = ('entity', 'name', )
+
+
 admin.site.register(Federation, FederationAdmin)
 admin.site.register(Entity, EntityAdmin)
 admin.site.register(EntityCategory, EntityCategoryAdmin)
 admin.site.register(ContactPerson, ContactPersonAdmin)
+admin.site.register(EntityScope, EntityScopeAdmin)
