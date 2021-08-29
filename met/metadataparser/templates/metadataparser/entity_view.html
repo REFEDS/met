@@ -284,9 +284,9 @@
           <tr>
             <td class="first-col"><strong class="tabella">{% trans "Scopes" %}:</strong></td>
             <td>
-              {% if entity.scopes %}
+              {% if entity.xml_scopes %}
                 <ul>
-                  {% for scope in entity.scopes|split:" " %}
+                  {% for scope in entity.xml_scopes|split:" " %}
                     <li>{{ scope }}</li>
                   {% endfor %}
                 </ul>

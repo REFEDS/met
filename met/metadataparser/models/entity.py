@@ -196,7 +196,7 @@ class Entity(Base):
             return ''
 
     @property
-    def scopes(self):
+    def xml_scopes(self):
         try:
             return ' '.join(self._get_property('scopes'))
         except Exception:
