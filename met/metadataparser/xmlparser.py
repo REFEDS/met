@@ -420,8 +420,14 @@ class MetadataParser:
             email = cont_node.xpath(".//md:EmailAddress", namespaces=NAMESPACES)
             if email:
                 email = email[0].text
+                stripped_email = email[7:] if email.startswith('mailto:') else email
             else:
-                email = None
-            cont.append({'type': c_type, 'name': name,
-                         'surname': surname, 'email': email})
+                email = stripped_email = None
+            cont.append({
+                'type': c_type,
+                'name': name,
+                'surname': surname,
+                'email': email,
+                'stripped_email': stripped_email
+            })
         return cont

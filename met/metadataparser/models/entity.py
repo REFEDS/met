@@ -348,8 +348,12 @@ class Entity(Base):
             c_type = 'undefined'
             if cur_contact['type']:
                 c_type = cur_contact['type']
-            contacts.append(
-                {'name': contact_name, 'email': cur_contact['email'], 'type': c_type})
+            contacts.append({
+                'name': contact_name,
+                'email': cur_contact['email'],
+                'stripped_email': cur_contact['stripped_email'],
+                'type': c_type,
+            })
         return contacts
 
     @property

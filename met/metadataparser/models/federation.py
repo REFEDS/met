@@ -228,12 +228,12 @@ class Federation(Base):
                 contact, _ = ContactPerson.objects.get_or_create(
                     type=ContactPerson.get_type_by_description(xml_contact['type']),
                     name=xml_contact['name'],
-                    email=xml_contact['email'],
+                    email=xml_contact['stripped_email'],
                 )
                 e.contacts.add(contact)
 
         # Remove orphaned contacts
-        ContactPerson.objects.filter(entity=None).delete()
+        ContactPerson.objects.filter(entities=None).delete()
 
 
     def _add_new_entities(self, entities, entities_from_xml, request, federation_slug):
