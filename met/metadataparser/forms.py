@@ -334,6 +334,22 @@ class SearchEntitiesForm(forms.Form):
         required=False
     )
 
+    contact_name = forms.CharField(
+        max_length=200,
+        label=_('Contact Name'),
+        help_text=_('Enter a full or partial contact name'),
+        widget=forms.TextInput(attrs={'size': '200'}),
+        required=False
+    )
+
+    contact_email = forms.CharField(
+        max_length=200,
+        label=_('Contact Email'),
+        help_text=_('Enter a full or partial contact email'),
+        widget=forms.TextInput(attrs={'size': '200'}),
+        required=False
+    )
+
     page = forms.IntegerField(
         min_value=0,
         initial=1,

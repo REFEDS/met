@@ -869,6 +869,14 @@ def search_entities(request):
             if entity_id and entity_id != '':
                 filters['entityid__icontains'] = entity_id
 
+            contact_name = form.cleaned_data['contact_name']
+            if contact_name and contact_name != '':
+                filters['contacts__name__icontains'] = contact_name
+
+            contact_email = form.cleaned_data['contact_email']
+            if contact_email and contact_email != '':
+                filters['contacts__email__icontains'] = contact_email
+
             ob_entities = Entity.objects.all()
             if args:
                 ob_entities = ob_entities.filter(*args)
@@ -907,6 +915,9 @@ def search_entities(request):
                         feds.prefetch_related('entity_categories')
                         feds = feds.filter(entity_categories__category_id=entity_category)
                         category_eid_list.extend([Q(entityid=f.entity.entityid) for f in feds])
+
+                    if search_by_contact_name or search_by_contact_email:
+                        pass
 
                     if search_by_org_name or search_by_org_disp_name:
                         entity_found = False
