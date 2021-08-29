@@ -32,6 +32,15 @@ class EntityAdmin(admin.ModelAdmin):
     search_fields = ('entityid', 'name')
     filter_horizontal = ('editor_users', 'contacts')
     inlines = (ScopesInline, )
+    readonly_fields = ('federation_list', )
+
+    def federation_list(self, instance):
+        response = '<ul>'
+        for federation in instance.federations.all():
+            response += '<li>{}</li>'.format(federation.name)
+        response += '</ul>'
+        return mark_safe(response)
+    federation_list.short_description = 'Federations'
 
 
 class EntityCategoryAdmin(admin.ModelAdmin):
