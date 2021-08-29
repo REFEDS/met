@@ -504,6 +504,10 @@ class Entity(Base):
             del entity['file_id']
         if 'entity_types' in entity.keys():
             del entity['entity_types']
+        if 'contacts' in entity.keys():
+            for contact in entity['contacts']:
+                if 'stripped_email' in contact.keys():
+                    del contact['stripped_email']
 
         return entity
 
