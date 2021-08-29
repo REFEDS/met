@@ -350,6 +350,14 @@ class SearchEntitiesForm(forms.Form):
         required=False
     )
 
+    scope = forms.CharField(
+        max_length=200,
+        label=_('Scope'),
+        help_text=_('Enter a full or partial scope'),
+        widget=forms.TextInput(attrs={'size': '200'}),
+        required=False
+    )
+
     page = forms.IntegerField(
         min_value=0,
         initial=1,
