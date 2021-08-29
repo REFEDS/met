@@ -23,10 +23,15 @@ class FederationAdmin(admin.ModelAdmin):
     filter_horizontal = ('editor_users',)
 
 
+class ScopesInline(admin.TabularInline):
+    model = EntityScope
+
+
 class EntityAdmin(admin.ModelAdmin):
     list_filter = ('federations', )
     search_fields = ('entityid', 'name')
     filter_horizontal = ('editor_users', 'contacts')
+    inlines = (ScopesInline, )
 
 
 class EntityCategoryAdmin(admin.ModelAdmin):
