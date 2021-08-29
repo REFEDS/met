@@ -33,6 +33,7 @@ from met.metadataparser.models.entity_type import EntityType
 from met.metadataparser.models.entity_stat import EntityStat, stats
 from met.metadataparser.models.entity_category import EntityCategory
 from met.metadataparser.models.entity_federations import Entity_Federations
+from met.metadataparser.models.entity_scope import EntityScope
 
 FEDERATION_TYPES = (
     (None, ''),
@@ -231,6 +232,14 @@ class Federation(Base):
                     email=xml_contact['stripped_email'],
                 )
                 e.contacts.add(contact)
+
+            # Scopes
+            e.entityscope_set.all().delete()
+            for xml_scope in e.xml_scopes.split():
+                EntityScope.objects.create(
+                    entity=e,
+                    name=xml_scope,
+                )
 
         # Remove orphaned contacts
         ContactPerson.objects.filter(entities=None).delete()
