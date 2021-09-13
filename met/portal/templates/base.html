@@ -13,31 +13,11 @@
     <script src="{{ STATIC_URL }}js/jquery.tablesorter.min.js"></script>
     <script src="{{ STATIC_URL }}js/sort_startup.js"></script>
     <script src="{{ STATIC_URL }}js/highcharts.js"></script>
-    <script src="{{ STATIC_URL }}js/discojuice-3.0.en.min.js"></script>
     <script src="{{ STATIC_URL }}js/jquery.dataTables.min.js"></script>
-    <script type="text/javascript">
-      var djc = DiscoJuice.Hosted.getConfig(
-        {
-          "target": "a.signin",
-          "title": "{{ portal_settings.SAML_DESCRIPTION }}",
-          "spentityid": "{{ portal_settings.SAML_ENTITYID }}",
-          "responseurl": "static/response.html",
-          "redirectURL": "{{ portal_settings.LOGIN_URL }}?next={{ request.get_full_path|iriencode }}&idp=",
-          "feeds": {{ portal_settings.DJANGO_FEDERATIONS|safe }}
-        }
-      );
-
-      djc.inlinemetadata = {{ portal_settings.DJANGO_ADDITIONAL_IDPS|safe }};
-
-      $(document).ready(function() {
-        $("a.signin").DiscoJuice(djc);
-      });
-    </script>
     <!-- Bootstrap -->
     <link href="{{ STATIC_URL }}css/bootstrap.css" rel="stylesheet">
     <!--link href="{{ STATIC_URL }}css/bootstrap-responsive.css" rel="stylesheet"-->
     <link href="{{ STATIC_URL }}css/styles.css" rel="stylesheet">
-    <link href="{{ STATIC_URL }}css/discojuice.css" rel="stylesheet" />
     <link href="{{ STATIC_URL }}css/jquery.dataTables.css" rel="stylesheet" />
   </head>
   <body>
@@ -64,7 +44,8 @@
               </li>
             {% else %}
               <li class="divider-vertical"></li>
-              <li><a href="#" class="signin">{% trans "Login" %}</a></li>
+              <li><a href="{{ portal_settings.LOGIN_URL }}" class="signin">{% trans "Login" %}</a></li>
+              <li><div id='wayf-button'></div></li>
             {% endif %}
           </ul>
 	      </div>

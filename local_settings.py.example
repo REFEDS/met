@@ -56,6 +56,7 @@ SAML2DIR = os.path.join(BASEDIR, 'saml2')
 
 LOGIN_URL = '%s/saml2/login' % BASEURL
 LOGOUT_URL = '%s/met/logout' % BASEURL
+LOGIN_REDIRECT_URL = '%s/' % BASEURL
 
 SAML_DESCRIPTION = 'Metadata Explorer Tool'
 SAML_ENTITYID = 'https://met-hostname.example.com/saml2/metadata/'
@@ -69,6 +70,10 @@ SAML_CONFIG = {
 
   # directory with attribute mapping
   'attribute_map_dir': os.path.join(SAML2DIR, 'attribute-maps'),
+
+  # Permits to have attributes not configured in attribute-mappings
+  # otherwise...without OID will be rejected
+  'allow_unknown_attributes': True,
 
   'name': SAML_DESCRIPTION,
 
@@ -117,6 +122,11 @@ SAML_CONFIG = {
 
       # attributes that may be useful to have but not required
       'optional_attributes': ['givenName', 'sn'],
+
+      # When set to true, the SP will consume unsolicited SAML
+      # Responses, i.e. SAML Responses for which it has not sent
+      # a respective SAML Authentication Request.
+      'allow_unsolicited': True,
 
       # Extensions for request initiator
       'extensions': {
