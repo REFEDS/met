@@ -135,6 +135,26 @@ class Entity(Base):
         verbose_name=_('Display Protocols')
     )
 
+    organization_name = JSONField(
+        blank=True,
+        null=True,
+        max_length=2000,
+        verbose_name=_('Organization Name')
+    )
+
+    organization_display_name = JSONField(
+        blank=True,
+        null=True,
+        max_length=2000,
+        verbose_name=_('Organization Display Name')
+    )
+
+    contacts = models.ManyToManyField(
+        to='ContactPerson',
+        verbose_name=_('Contact People'),
+        related_name='entities',
+    )
+
     objects = models.Manager()
 
     longlist = EntityManager()
@@ -176,7 +196,7 @@ class Entity(Base):
             return ''
 
     @property
-    def scopes(self):
+    def xml_scopes(self):
         try:
             return ' '.join(self._get_property('scopes'))
         except Exception:
@@ -312,7 +332,7 @@ class Entity(Base):
         return attributes
 
     @property
-    def contacts(self):
+    def xml_contacts(self):
         contacts = []
         for cur_contact in self._get_property('contacts'):
             if cur_contact['name'] and cur_contact['surname']:
@@ -328,8 +348,12 @@ class Entity(Base):
             c_type = 'undefined'
             if cur_contact['type']:
                 c_type = cur_contact['type']
-            contacts.append(
-                {'name': contact_name, 'email': cur_contact['email'], 'type': c_type})
+            contacts.append({
+                'name': contact_name,
+                'email': cur_contact['email'],
+                'stripped_email': cur_contact['stripped_email'],
+                'type': c_type,
+            })
         return contacts
 
     @property
@@ -442,6 +466,24 @@ class Entity(Base):
             self.registration_authority = self._get_property(
                 'registration_authority')
 
+        new_organization = self.organization
+        if new_organization and new_organization != '':
+            new_names = {}
+            new_display_names = {}
+            for new_org in new_organization:
+                if 'name' in new_org:
+                    new_names[new_org['lang']] = new_org['name']
+                if 'displayName' in new_org:
+                    new_display_names[new_org['lang']] = new_org['displayName']
+            if new_names:
+                self.organization_name = new_names
+            else:
+                self.organization_name = None
+            if new_display_names:
+                self.organization_display_name = new_display_names
+            else:
+                self.organization_display_name = None
+
         if auto_save:
             self.save()
 
@@ -462,6 +504,10 @@ class Entity(Base):
             del entity['file_id']
         if 'entity_types' in entity.keys():
             del entity['entity_types']
+        if 'contacts' in entity.keys():
+            for contact in entity['contacts']:
+                if 'stripped_email' in contact.keys():
+                    del contact['stripped_email']
 
         return entity
 
@@ -512,7 +558,8 @@ class Entity(Base):
 
         return False
 
-    def has_changed(self, entityid, name, registration_authority, certstats, display_protocols):
+    def has_changed(self, entityid, name, registration_authority, certstats, display_protocols,
+                    organization_name, organization_display_name):
         if self.entityid != entityid:
             return True
         if self.name != name:
@@ -522,6 +569,10 @@ class Entity(Base):
         if self.certstats != certstats:
             return True
         if self._display_protocols != display_protocols:
+            return True
+        if self.organization_name != organization_name:
+            return True
+        if self.organization_display_name != organization_display_name:
             return True
 
         return False

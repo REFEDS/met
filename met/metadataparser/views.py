@@ -869,33 +869,81 @@ def search_entities(request):
             if entity_id and entity_id != '':
                 filters['entityid__icontains'] = entity_id
 
+            contact_name = form.cleaned_data['contact_name']
+            if contact_name and contact_name != '':
+                filters['contacts__name__icontains'] = contact_name
+
+            contact_email = form.cleaned_data['contact_email']
+            if contact_email and contact_email != '':
+                filters['contacts__email__icontains'] = contact_email
+
+            scope = form.cleaned_data['scope']
+            if scope and scope != '':
+                filters['entityscope__name__icontains'] = scope
+
             ob_entities = Entity.objects.all()
             if args:
                 ob_entities = ob_entities.filter(*args)
             if filters:
                 ob_entities = ob_entities.filter(**filters)
 
+            search_by_entity_category = False
             entity_category = form.cleaned_data['entity_category']
             if entity_category and entity_category != 'All':
-                eid_list = []
+                search_by_entity_category = False
+
+            search_by_org_name = False
+            organization_name = form.cleaned_data['organization_name']
+            if organization_name and organization_name != '':
+                organization_name = organization_name.lower()
+                search_by_org_name = True
+            search_by_org_disp_name = False
+            organization_display_name = form.cleaned_data['organization_display_name']
+            if organization_display_name and organization_display_name != '':
+                organization_display_name = organization_display_name.lower()
+                search_by_org_disp_name = True
+
+            if search_by_entity_category or search_by_org_name or search_by_org_disp_name:
+                category_eid_list = []
+                org_entity_ids_list = []
 
                 for entity in ob_entities.all():
-                    feds = Entity_Federations.objects.filter(entity=entity)
+                    if search_by_entity_category:
+                        feds = Entity_Federations.objects.filter(entity=entity)
 
-                    if federations and 'All' not in federations:
-                        ec_list = [Q(federation__id=f) for f in federations]
-                        ec_args = (reduce(operator.or_, ec_list),)
-                        feds = feds.filter(*ec_args)
+                        if federations and 'All' not in federations:
+                            ec_list = [Q(federation__id=f) for f in federations]
+                            ec_args = (reduce(operator.or_, ec_list),)
+                            feds = feds.filter(*ec_args)
 
-                    feds.prefetch_related('entity_categories')
-                    feds = feds.filter(entity_categories__category_id=entity_category)
-                    eid_list.extend([Q(entityid=f.entity.entityid) for f in feds])
+                        feds.prefetch_related('entity_categories')
+                        feds = feds.filter(entity_categories__category_id=entity_category)
+                        category_eid_list.extend([Q(entityid=f.entity.entityid) for f in feds])
 
-                if eid_list:
-                    eid_args = (reduce(operator.or_, eid_list),)
-                    ob_entities = ob_entities.filter(*eid_args)
-                else:
-                    ob_entities = Entity.objects.none()
+                    if search_by_org_name or search_by_org_disp_name:
+                        entity_found = False
+                        if search_by_org_name:
+                            if entity.organization_name:
+                                for entity_org_name in entity.organization_name.values():
+                                    if organization_name in entity_org_name.lower():
+                                        org_entity_ids_list.append(entity.id)
+                                        entity_found = True
+                                        break
+                        if not entity_found and search_by_org_disp_name:
+                            if entity.organization_display_name:
+                                for entity_org_disp_name in entity.organization_display_name.values():
+                                    if organization_display_name in entity_org_disp_name.lower():
+                                        org_entity_ids_list.append(entity.id)
+
+                if search_by_entity_category:
+                    if category_eid_list:
+                        eid_args = (reduce(operator.or_, category_eid_list),)
+                        ob_entities = ob_entities.filter(*eid_args)
+                    else:
+                        ob_entities = Entity.objects.none()
+
+                if search_by_org_name or search_by_org_disp_name:
+                    ob_entities = ob_entities.filter(id__in=org_entity_ids_list)
 
             export_format = form.cleaned_data['export_format']
 
