@@ -146,14 +146,15 @@ class Federation(Base):
 
     def process_metadata(self):
         metadata = self.load_file()
+        if not metadata:
+            return
+        self._metadata_cache = metadata
 
         if self.file_id and metadata.file_id and metadata.file_id == self.file_id:
             return
         else:
             self.file_id = metadata.file_id
 
-        if not metadata:
-            return
         if not metadata.is_federation:
             raise XmlDescriptionError("XML Haven't federation form")
 
