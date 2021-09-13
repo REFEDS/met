@@ -244,7 +244,6 @@ class Federation(Base):
         # Remove orphaned contacts
         ContactPerson.objects.filter(entities=None).delete()
 
-
     def _add_new_entities(self, entities, entities_from_xml, request, federation_slug):
         db_entity_types = EntityType.objects.all()
         cached_entity_types = {
