@@ -18,9 +18,9 @@ from django.views.generic import TemplateView
 admin.autodiscover()
 
 urlpatterns = patterns('',
-                       # Examples:
                        url(r'^$', 'met.metadataparser.views.index', name='index'),
                        url(r'^met/', include('met.metadataparser.urls')),
+                       url(r'^ds/', 'met.portal.views.ds'),
 
                        # Uncomment the admin/doc line below to enable admin documentation:
                        # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

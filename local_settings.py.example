@@ -57,6 +57,8 @@ SAML2DIR = os.path.join(BASEDIR, 'saml2')
 LOGIN_URL = '%s/saml2/login' % BASEURL
 LOGOUT_URL = '%s/met/logout' % BASEURL
 LOGIN_REDIRECT_URL = '%s/' % BASEURL
+LOCAL_DS = '%s/ds/' % BASEURL
+GLOBAL_DS = 'https://service.seamlessaccess.org/ds/'
 
 SAML_DESCRIPTION = 'Metadata Explorer Tool'
 SAML_ENTITYID = 'https://met-hostname.example.com/saml2/metadata/'

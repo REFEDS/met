@@ -14,6 +14,7 @@
     <script src="{{ STATIC_URL }}js/sort_startup.js"></script>
     <script src="{{ STATIC_URL }}js/highcharts.js"></script>
     <script src="{{ STATIC_URL }}js/jquery.dataTables.min.js"></script>
+    <script src="{{ STATIC_URL }}js/thiss.js"></script>
     <!-- Bootstrap -->
     <link href="{{ STATIC_URL }}css/bootstrap.css" rel="stylesheet">
     <!--link href="{{ STATIC_URL }}css/bootstrap-responsive.css" rel="stylesheet"-->
@@ -44,7 +45,8 @@
               </li>
             {% else %}
               <li class="divider-vertical"></li>
-              <li><a href="{{ portal_settings.LOGIN_URL }}" class="signin">{% trans "Login" %}</a></li>
+              <li><div id='thiss-ds'></div></li>
+              <li><a href="{{ portal_settings.LOGIN_URL }}" class="signin">| {% trans "alternative discovery service "%}</a></li>
               <li><div id='wayf-button'></div></li>
             {% endif %}
           </ul>
@@ -125,6 +127,14 @@
       }());
       //]]>
     </script>
+    <script>
+	window.onload = function() {
+	  // Render the Seamless Access button
+	  thiss.DiscoveryComponent.render({
+	    loginInitiatorURL: '{{ settings.LOCAL_DS }}',
+	  }, '#thiss-ds');
+	};
+	</script>
     <!-- End Open Web Analytics Code -->
   </body>
 </html>
