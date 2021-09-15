@@ -10,9 +10,19 @@
 # Consortium GARR, http://www.garr.it
 ##########################################################################
 
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
+from local_settings import BASEURL, LOGIN_URL, LOCAL_DS, GLOBAL_DS, SAML_ENTITYID
 
+
+def ds(request):
+    idp = request.GET.get('entityID', None)
+    if idp is not None:
+        url = "%s?idp=%s" % (LOGIN_URL, idp)
+    else:
+        url = "%s/?target=%s&return=%s&entityID=%s" % (GLOBAL_DS, BASEURL, LOCAL_DS, SAML_ENTITYID)
+
+    return redirect(url)
 
 def error403(request):
     response = render_to_response(
