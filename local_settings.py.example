@@ -54,14 +54,14 @@ ORGANIZATION_NAME = 'Your organization'
 
 SAML2DIR = os.path.join(BASEDIR, 'saml2')
 
-LOGIN_URL = '%s/saml2/login' % BASEURL
-LOGOUT_URL = '%s/met/logout' % BASEURL
-LOGIN_REDIRECT_URL = '%s/' % BASEURL
-LOCAL_DS = '%s/ds/' % BASEURL
+LOGIN_URL = '%s%s/saml2/login' % (HOSTNAME, BASEURL)
+LOGOUT_URL = '%s%s/met/logout' % (HOSTNAME, BASEURL)
+LOGIN_REDIRECT_URL = '%s%s/' % (HOSTNAME, BASEURL)
+LOCAL_DS = '%s%s/ds/' % (HOSTNAME, BASEURL)
 GLOBAL_DS = 'https://service.seamlessaccess.org/ds/'
 
 SAML_DESCRIPTION = 'Metadata Explorer Tool'
-SAML_ENTITYID = 'https://met-hostname.example.com/saml2/metadata/'
+SAML_ENTITYID = '%s%s/saml2/metadata/' % (HOSTNAME, BASEURL)
 
 SAML_CONFIG = {
   # full path to the xmlsec1 binary programm
