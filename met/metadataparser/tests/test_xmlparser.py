@@ -43,8 +43,8 @@ class XMLParserTestCase(TestCase):
                     <mdui:DisplayName xml:lang="ru">Антиплагиат</mdui:DisplayName>
                     <mdui:Description xml:lang="en">Service for plagiarism detection in text documents.</mdui:Description>
                     <mdui:Description xml:lang="ru">Сервис поиска текстовых заимствований.</mdui:Description>
-                    <mdui:InformationUrl xml:lang="ru">https://www.antiplagiat.ru/</mdui:InformationUrl>
-                    <mdui:InformationUrl xml:lang="en">https://www.antiplagiat.com/</mdui:InformationUrl>
+                    <mdui:InformationURL xml:lang="ru">https://www.antiplagiat.ru/</mdui:InformationURL>
+                    <mdui:InformationURL xml:lang="en">https://www.antiplagiat.com/</mdui:InformationURL>
                     <mdui:Logo height="33" width="88">https://auth.antiplagiat.ru/img/logo.png</mdui:Logo>
                   </mdui:UIInfo>
                 </Extensions>
