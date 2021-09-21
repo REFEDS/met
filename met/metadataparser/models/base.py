@@ -161,9 +161,9 @@ class Base(models.Model):
                 count = count + 1
 
             if len(select) > 0:
-                pipeline = [{'load fail_on_error True': load}, {'select': select}]
+                pipeline = [{'load fail_on_error True validate False': load}, {'select': select}]
             else:
-                pipeline = [{'load fail_on_error True': load}, 'select']
+                pipeline = [{'load fail_on_error True validate False': load}, 'select']
 
             md = MDRepository()
             entities = Plumbing(pipeline=pipeline, pid=self.slug).process(
