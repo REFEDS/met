@@ -43,6 +43,7 @@ class XMLParserTestCase(TestCase):
                     <mdui:DisplayName xml:lang="ru">Антиплагиат</mdui:DisplayName>
                     <mdui:Description xml:lang="en">Service for plagiarism detection in text documents.</mdui:Description>
                     <mdui:Description xml:lang="ru">Сервис поиска текстовых заимствований.</mdui:Description>
+                    <!-- The following two lines are wrong: should be InformationURL -->
                     <mdui:InformationUrl xml:lang="ru">https://www.antiplagiat.ru/</mdui:InformationUrl>
                     <mdui:InformationUrl xml:lang="en">https://www.antiplagiat.com/</mdui:InformationUrl>
                     <mdui:Logo height="33" width="88">https://auth.antiplagiat.ru/img/logo.png</mdui:Logo>
@@ -92,7 +93,7 @@ class XMLParserTestCase(TestCase):
         '''
         # based in SAMLMetadataResourceParser.parse()
         validation_errors = {}
-        parse_saml_metadata(
+        node, expire_time_offset, exception = parse_saml_metadata(
             unicode_stream(xml),
             key=None,
             base_url='http://www.fedurus.ru/metadata/metadata.fedurus.xml',
@@ -102,4 +103,7 @@ class XMLParserTestCase(TestCase):
             validate=False,
             validation_errors=validation_errors,
         )
-        # TODO: continue with the asserts when the previous call stop raising errors
+        self.assertEqual(node.tag, '{urn:oasis:names:tc:SAML:2.0:metadata}EntitiesDescriptor')
+        signature_node, entity_node = node.getchildren()
+        self.assertEqual(signature_node.tag, '{http://www.w3.org/2000/09/xmldsig#}Signature')
+        self.assertEqual(entity_node.tag, '{urn:oasis:names:tc:SAML:2.0:metadata}EntityDescriptor')
