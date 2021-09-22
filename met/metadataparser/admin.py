@@ -11,8 +11,11 @@
 ##########################################################################
 
 from django.contrib import admin
+from django.utils.safestring import mark_safe
 
-from met.metadataparser.models import Federation, Entity, EntityCategory
+from met.metadataparser.models import (
+    Federation, Entity, EntityCategory, ContactPerson, EntityScope
+)
 
 
 class FederationAdmin(admin.ModelAdmin):
@@ -20,16 +23,50 @@ class FederationAdmin(admin.ModelAdmin):
     filter_horizontal = ('editor_users',)
 
 
+class ScopesInline(admin.TabularInline):
+    model = EntityScope
+
+
 class EntityAdmin(admin.ModelAdmin):
     list_filter = ('federations', )
     search_fields = ('entityid', 'name')
-    filter_horizontal = ('editor_users',)
+    filter_horizontal = ('editor_users', 'contacts')
+    inlines = (ScopesInline, )
+    readonly_fields = ('federation_list', )
+
+    def federation_list(self, instance):
+        response = '<ul>'
+        for federation in instance.federations.all():
+            response += '<li>{}</li>'.format(federation.name)
+        response += '</ul>'
+        return mark_safe(response)
+    federation_list.short_description = 'Federations'
 
 
 class EntityCategoryAdmin(admin.ModelAdmin):
     search_fields = ('category_id', 'name')
 
 
+class ContactPersonAdmin(admin.ModelAdmin):
+    search_fields = ('name', 'email')
+    list_display = ('name', 'email', 'type')
+    readonly_fields = ('entity_list', )
+
+    def entity_list(self, instance):
+        response = '<ul>'
+        for entity in instance.entities.all():
+            response += '<li>{}</li>'.format(entity.entityid)
+        response += '</ul>'
+        return mark_safe(response)
+    entity_list.short_description = 'Entities'
+
+
+class EntityScopeAdmin(admin.ModelAdmin):
+    list_display = ('entity', 'name', )
+
+
 admin.site.register(Federation, FederationAdmin)
 admin.site.register(Entity, EntityAdmin)
 admin.site.register(EntityCategory, EntityCategoryAdmin)
+admin.site.register(ContactPerson, ContactPersonAdmin)
+admin.site.register(EntityScope, EntityScopeAdmin)

@@ -14,29 +14,25 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 
-class EntityCategory(models.Model):
+class EntityScope(models.Model):
     """
-    Description of an entity category as defined in SAML here:
-    http://macedir.org/draft-macedir-entity-category-00.html
+    Description of an entity scope as defined in SAML here:
+    https://docs.oasis-open.org/security/saml-subject-id-attr/v1.0/cs01/saml-subject-id-attr-v1.0-cs01.html#_Toc536097238
     """
-    category_id = models.CharField(
-        verbose_name='Entity category ID',
-        max_length=1000,
+    entity = models.ForeignKey(
+        'Entity',
+        verbose_name=_('Entity'),
         blank=False,
         null=False,
-        help_text=_('The ID of the entity category')
     )
 
     name = models.CharField(
-        verbose_name='Entity category name',
+        verbose_name='Scope name',
         max_length=1000,
-        blank=True,
-        null=True,
-        help_text=_('The name of the entity category')
+        blank=False,
+        null=False,
+        help_text=_('The name of the scope')
     )
 
-    class Meta:
-        verbose_name_plural = 'entity categories'
-
     def __str__(self):
-        return self.name or self.category_id
+        return self.name

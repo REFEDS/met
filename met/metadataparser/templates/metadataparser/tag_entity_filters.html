@@ -11,7 +11,14 @@
   </a>
   <ul class="dropdown-menu">
     <li>
-      <a href="{% entitycategory_filter_url filter_base_path 'All' otherparams %}">{% trans "All Categories" %}</a>
+      <a href="{% entitycategory_filter_url filter_base_path 'All' otherparams %}">
+        ----------
+      </a>
+    </li>
+    <li>
+      <a href="{% entitycategory_filter_url filter_base_path 'No Category' otherparams %}">
+        {% trans "No Category" %}
+      </a>
     </li>
 
     {% for category in categories %}

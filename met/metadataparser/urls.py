@@ -39,6 +39,8 @@ urlpatterns = patterns(
         name='entity_edit'),
     url(r'^entity/(?P<entity_id>.+)/delete/$', 'entity_delete',
         name='entity_delete'),
+    url(r'^entity/(?P<entityid>.+)/metadata-comparator/$', 'entity_metadata_comparator',
+        name='entity_metadata_comparator'),
     url(r'^entity/(?P<entityid>.+)/$', 'entity_view',
         name='entity_view'),
 

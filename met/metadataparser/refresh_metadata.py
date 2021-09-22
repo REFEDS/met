@@ -26,6 +26,9 @@ else:
 
 
 def _send_message_via_email_and_slack(error_msg, federation, logger=None):
+    # Do not send messages if we're in debug mode
+    if settings.DEBUG:
+        return
     mail_config_dict = getattr(settings, 'MAIL_CONFIG')
     try:
         subject = mail_config_dict['refresh_subject'] % federation

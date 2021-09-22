@@ -83,11 +83,8 @@ class MetadataParser:
             'description': MetadataParser.entity_description(element),
             'infoUrl': MetadataParser.entity_information_url(element),
             'privacyUrl': MetadataParser.entity_privacy_url(element),
-            'organization': MetadataParser.entity_organization(element),
             'logos': MetadataParser.entity_logos(element),
-            'scopes': MetadataParser.entity_attribute_scope(element),
             'attr_requested': MetadataParser.entity_requested_attributes(element),
-            'contacts': MetadataParser.entity_contacts(element),
             'registration_policy': MetadataParser.registration_policy(element)
         }
 
@@ -121,6 +118,9 @@ class MetadataParser:
                 entity['protocols'] = MetadataParser.entity_protocols(
                     element, entity['entity_types'])
                 entity['certstats'] = MetadataParser.get_certstats(element)
+                entity['organization'] = MetadataParser.entity_organization(element)
+                entity['contacts'] = MetadataParser.entity_contacts(element)
+                entity['scopes'] = MetadataParser.entity_attribute_scope(element)
 
                 if details:
                     entity_details = MetadataParser._get_entity_details(
@@ -229,13 +229,14 @@ class MetadataParser:
             certName = 'invalid'
 
             try:
-                text = x.text.replace('\n', '').replace(
-                    ' ', '').replace('\t', '')
+                text = x.text.replace('\n', '').replace(' ', '').replace('\t', '')
                 text = '\n'.join(MetadataParser._chunkstring(text, 64))
-                certText = '\n'.join(
+                cert_text = '\n'.join(
                     ['-----BEGIN CERTIFICATE-----', text, '-----END CERTIFICATE-----'])
+                # load_pem_x509_certificate requires bytes, not a str
+                cert_text_encoded = cert_text.encode('utf-8')
                 cert = x509.load_pem_x509_certificate(
-                    certText, default_backend())
+                    cert_text_encoded, default_backend())
                 certName = cert.signature_hash_algorithm.name
             except Exception:
                 pass
@@ -419,8 +420,14 @@ class MetadataParser:
             email = cont_node.xpath(".//md:EmailAddress", namespaces=NAMESPACES)
             if email:
                 email = email[0].text
+                stripped_email = email[7:] if email.startswith('mailto:') else email
             else:
-                email = None
-            cont.append({'type': c_type, 'name': name,
-                         'surname': surname, 'email': email})
+                email = stripped_email = None
+            cont.append({
+                'type': c_type,
+                'name': name,
+                'surname': surname,
+                'email': email,
+                'stripped_email': stripped_email
+            })
         return cont

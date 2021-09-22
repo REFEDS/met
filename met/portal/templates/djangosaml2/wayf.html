@@ -11,13 +11,27 @@
       Please select your <strong>Identity Provider</strong> from the following list:
     {% endblocktrans %}
   </p>
-  <ul class="unstyled">
+    <table id="idp_names" class="display" width="50%">
+      <thead style="display:none;">
+        <tr>
+            <th>IdP Name</th>
+        </tr>
+    </thead>
+    <tbody>
     {% for url, name in available_idps %}
-      <li>
-        <a href="{% url 'djangosaml2.views.login' %}?idp={{ url }}{% if came_from %}&next={{ came_from }}{% endif %}">
-          {{ name }}
-        </a>
-      </li>
+      <tr>
+        <td><a href="{% url 'djangosaml2.views.login' %}?idp={{ url }}{% if came_from %}&next={{ came_from }}{% endif %}">{{ name }}</a></td>
+      </tr>
     {% endfor %}
-  </ul>
+  </tbody>
+  </table>
+  <script>
+  $(document).ready( function () {
+    $('#idp_names').DataTable({
+      paging: false,
+      scrollY: 400
+    });
+    $('.navbar-search pull-right').hide();
+  } );
+  </script>
 {% endblock %}
