@@ -30,7 +30,7 @@ def noop(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('metadataparser', '0002_entity_canonical_name'),
+        ('metadataparser', '0003_entity_canonical_name'),
     ]
 
     operations = [
