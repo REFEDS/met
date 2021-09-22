@@ -1,7 +1,7 @@
 Django==1.8.19
 lxml>=2.3.5
 requests>=1.0.0
-requests-cache
+requests-cache==0.7.5
 pysaml2>=6.5.0
 djangosaml2==0.18.1
 django-pagination>=1.0.7
