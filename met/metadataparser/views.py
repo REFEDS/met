@@ -763,13 +763,21 @@ def entity_metadata_comparator(request, entityid):
 
     entity = get_object_or_404(Entity, entityid=entityid)
     first_federation = entity.federations.all()[0]
+    try:
+        second_federation = entity.federations.all()[1]
+    except IndexError:
+        # There's only one federation
+        second_federation = first_federation
     if 'federation' in request.GET:
         entity.curfed = get_object_or_404(Federation, slug=request.GET.get('federation'))
     else:
         entity.curfed = first_federation
 
     left_panel_federation = entity.curfed
-    right_panel_federation = first_federation
+    if left_panel_federation != first_federation:
+        right_panel_federation = first_federation
+    else:
+        right_panel_federation = second_federation
 
     return render_to_response(
         'metadataparser/entity_metadata_comparator.html',
