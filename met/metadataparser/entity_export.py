@@ -17,6 +17,8 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from django.template.defaultfilters import slugify
 import simplejson as json
 
+from met.metadataparser.utils import convert_urls
+
 
 class SetEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -44,12 +46,18 @@ def export_entity_csv(entity):
     writer = csv.writer(response)
     edict = entity.to_dict()
 
-    writer.writerow(edict.keys())
+    display_keys = ['entityid', 'displayName', 'registration_authority', 'registration_instant', 'protocols', 'organization', 'contacts', 'description', 'infoUrl', 'privacyUrl', 'attr_requested', 'registration_policy', 'languages', 'types', 'federations']
+
+    writer.writerow(display_keys)
     # Write data to CSV file
     row = []
-    for _, value in edict.items():
-        row.append(_serialize_value_to_csv(value))
-    row_ascii = [v.encode('ascii', 'ignore') for v in row]
+    for field, value in edict.items():
+        if field in display_keys:
+            # Convert to full path urls
+            if field == "federations":
+                value = convert_urls(value)
+            row.append(_serialize_value_to_csv(value))
+    row_ascii = [str(v) for v in row]
 
     writer.writerow(row_ascii)
     # Return CSV file to browser as download
@@ -58,7 +66,7 @@ def export_entity_csv(entity):
 
 def export_entity_json(entity):
     # Return JS file to browser as download
-    serialized = json.dumps(entity.to_dict(), cls=SetEncoder)
+    serialized = json.dumps(entity.to_dict(), cls=SetEncoder, ensure_ascii=False, encoding='utf-8')
     response = HttpResponse(serialized, content_type='application/json')
     response['Content-Disposition'] = ('attachment; filename=%s.json' % slugify(entity))
     return response
@@ -68,7 +76,7 @@ def export_entity_xml(entity):
     entity_xml = entity.xml
 
     # Return XML file to browser as download
-    response = HttpResponse(str(entity_xml), content_type='application/xml')
+    response = HttpResponse(entity_xml, content_type='application/xml')
     response['Content-Disposition'] = ('attachment; filename=%s.xml' % slugify(entity))
     return response
 

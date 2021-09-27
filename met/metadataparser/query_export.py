@@ -34,6 +34,7 @@ def export_csv(model, filename, fields):
     for obj in model:
         row = []
         for field in fields:
+            # Convert to full path urls
             if field == "federations":
                 obj[field] = convert_urls(obj[field])
             row.append('%s' % obj[field])

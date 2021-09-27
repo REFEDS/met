@@ -111,11 +111,14 @@ def process_xml_entity_fed_info(federation_info):
         processed_fed_info.append(new_fed)
     return processed_fed_info
 
-def convert_urls(value):
+def convert_urls(values):
     # Convert to full path urls
     fed_value = []
-    for val in value:
-        fed_value.append((val[0], get_full_path_url(val[1])))
+    for val in values:
+        if (isinstance(val , dict)):
+            fed_value.append({'name': val['name'], 'url': get_full_path_url(val['url'])})
+        else:
+            fed_value.append((val[0], get_full_path_url(val[1])))
     return fed_value
 
 
