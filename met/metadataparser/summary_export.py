@@ -45,7 +45,7 @@ def export_summary_json(qs, relation, filename, counters):
                 obj, relation).filter(**counter_filter).count()
         objs[str(obj)] = item
     # Return JS file to browser as download
-    serialized = json.dumps(objs, ensure_ascii=False).encode("utf8")
+    serialized = json.dumps(objs, ensure_ascii=False, encoding='utf-8')
     response = HttpResponse(serialized, content_type='application/json')
     response['Content-Disposition'] = ('attachment; filename=%s.json'
                                        % slugify(filename))
