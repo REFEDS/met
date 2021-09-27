@@ -14,6 +14,7 @@ import hashlib
 import smtplib
 from email.mime.text import MIMEText
 from django.conf import settings
+from django.template.defaultfilters import slugify
 from slack import RTMClient as SlackClient
 
 
@@ -26,6 +27,10 @@ def compare_filecontents(a, b):
     md5_a = hashlib.md5(a).hexdigest()
     md5_b = hashlib.md5(b).hexdigest()
     return md5_a == md5_b
+
+
+def custom_slugify(obj):
+    return slugify(str(obj).replace("://", "_").replace("/", "_").replace(".", "_"))
 
 
 def _connect_to_smtp(server, port=25, login_type=None, username=None, password=None):
