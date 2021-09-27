@@ -17,6 +17,8 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from django.template.defaultfilters import slugify
 import simplejson as json
 
+from local_settings import HOSTNAME
+
 
 # Taken from http://djangosnippets.org/snippets/790/
 def export_csv(model, filename, fields):
@@ -32,6 +34,8 @@ def export_csv(model, filename, fields):
     for obj in model:
         row = []
         for field in fields:
+            if field == "federations":
+                obj[field] = convert_urls(obj[field])
             row.append('%s' % obj[field])
         writer.writerow(row)
     # Return CSV file to browser as download
@@ -48,10 +52,13 @@ def export_json(model, filename, fields):
                 item[field] = list(obj[field])
             else:
                 item[field] = obj[field]
+            # Convert to full path urls
+            if (field == "federations"):
+                item[field] = convert_urls(item[field])
 
         objs.append(item)
     # Return JS file to browser as download
-    serialized = json.dumps(objs)
+    serialized = json.dumps(objs, ensure_ascii=False).encode("utf8")
     response = HttpResponse(serialized, content_type='application/json')
     response['Content-Disposition'] = ('attachment; filename=%s.json'
                                        % slugify(filename))
@@ -65,26 +72,26 @@ def _parse_xml_element(xml, father, structure):
             father.appendChild(tag)
             _parse_xml_element(xml, tag, structure[k])
     elif type(structure) == tuple:
-        tag_name = father.tagName
+        tag_name = father.tagName.rstrip('s')
         for l in list(structure):
             tag = xml.createElement(tag_name)
             _parse_xml_element(xml, tag, l)
             father.appendChild(tag)
     elif type(structure) == list:
-        tag_name = father.tagName
+        tag_name = father.tagName.rstrip('s')
         for l in structure:
             tag = xml.createElement(tag_name)
             _parse_xml_element(xml, tag, l)
             father.appendChild(tag)
     elif type(structure) == set:
-        tag_name = father.tagName
+        tag_name = father.tagName.rstrip('s')
         for l in list(structure):
             tag = xml.createElement(tag_name)
             _parse_xml_element(xml, tag, l)
             father.appendChild(tag)
     else:
         if type(structure) == str:
-            data = structure.encode('ascii', errors='xmlcharrefreplace')
+            data = structure
         else:
             data = str(structure)
         tag = xml.createTextNode(data)
@@ -96,7 +103,22 @@ def export_xml(model, filename, fields=None):
     root = xml.createElement(filename)
     for obj in model:
         elem = xml.createElement('entity')
-        _parse_xml_element(xml, elem, obj)
+        new_obj = {}
+        for field in obj:
+            if field in fields:
+                # Convert to full path urls
+                if (field == "federations"):
+                    converted_data = convert_urls(obj[field])
+                    new_obj[field] = []
+                    for fed in converted_data:
+                        new_fed = {
+                            'name': fed[0],
+                            'url': fed[1]
+                        }
+                        new_obj[field].append(new_fed)
+            else:
+                new_obj[field] = obj[field]
+        _parse_xml_element(xml, elem, new_obj)
         root.appendChild(elem)
     xml.appendChild(root)
 
@@ -120,3 +142,15 @@ def export_query_set(mode, qs, filename, fields=None):
     else:
         content = 'Error 400, Format %s is not supported' % mode
         return HttpResponseBadRequest(content)
+
+
+def convert_urls(value):
+    # Convert to full path urls
+    fed_value = []
+    for val in value:
+        fed_value.append((val[0], get_full_path_url(val[1])))
+    return fed_value
+
+
+def get_full_path_url(absolute_url):
+    return "%s%s" % (HOSTNAME, absolute_url)
