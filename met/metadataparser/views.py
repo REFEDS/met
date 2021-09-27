@@ -974,7 +974,7 @@ def search_entities(request):
                     export_format,
                     entities,
                     'entities_search_result',
-                    ('entityid', 'types', 'federations')
+                    ('entityid', 'types', 'name', 'federations')
                 )
 
             return render_to_response(
