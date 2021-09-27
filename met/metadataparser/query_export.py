@@ -17,7 +17,7 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from django.template.defaultfilters import slugify
 import simplejson as json
 
-from local_settings import HOSTNAME
+from met.metadataparser.utils import convert_urls, process_xml_entity_fed_info
 
 
 # Taken from http://djangosnippets.org/snippets/790/
@@ -58,7 +58,7 @@ def export_json(model, filename, fields):
 
         objs.append(item)
     # Return JS file to browser as download
-    serialized = json.dumps(objs, ensure_ascii=False).encode("utf8")
+    serialized = json.dumps(objs, ensure_ascii=False, encoding='utf-8')
     response = HttpResponse(serialized, content_type='application/json')
     response['Content-Disposition'] = ('attachment; filename=%s.json'
                                        % slugify(filename))
@@ -108,16 +108,9 @@ def export_xml(model, filename, fields=None):
             if field in fields:
                 # Convert to full path urls
                 if (field == "federations"):
-                    converted_data = convert_urls(obj[field])
-                    new_obj[field] = []
-                    for fed in converted_data:
-                        new_fed = {
-                            'name': fed[0],
-                            'url': fed[1]
-                        }
-                        new_obj[field].append(new_fed)
-            else:
-                new_obj[field] = obj[field]
+                    new_obj[field] = process_xml_entity_fed_info(obj[field])
+                else:
+                    new_obj[field] = obj[field]
         _parse_xml_element(xml, elem, new_obj)
         root.appendChild(elem)
     xml.appendChild(root)
@@ -142,15 +135,3 @@ def export_query_set(mode, qs, filename, fields=None):
     else:
         content = 'Error 400, Format %s is not supported' % mode
         return HttpResponseBadRequest(content)
-
-
-def convert_urls(value):
-    # Convert to full path urls
-    fed_value = []
-    for val in value:
-        fed_value.append((val[0], get_full_path_url(val[1])))
-    return fed_value
-
-
-def get_full_path_url(absolute_url):
-    return "%s%s" % (HOSTNAME, absolute_url)
