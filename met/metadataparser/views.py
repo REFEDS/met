@@ -95,7 +95,7 @@ def _index_export(export, export_format, objects):
             export_format,
             objects['most_federated_entities'],
             'most_federated_entities',
-            ('entityid', 'types', 'name', 'federations')
+            ('entityid', 'types', 'absolute_url', 'name', 'federations')
         )
     else:
         return export_summary(
@@ -252,14 +252,15 @@ def federation_view(request, federation_slug=None):
         entities.append({
             'entityid': entity.entityid,
             'name': entity.name,
-            'absolute_url': entity.get_absolute_url(),
+            'absolute_url': request.build_absolute_uri(entity.get_absolute_url()),
             'types': [str(item) for item in entity.types.all()],
-            'federations': [(str(item.name), item.get_absolute_url()) for item in entity.federations.all()],
+            'federations': [(str(item.name), request.build_absolute_uri(item.get_absolute_url())) for item in entity.federations.all()],
         })
 
     if format:
+        filename = 'federation_%s' % federation_slug
         return export_query_set(
-            format, entities, 'entities_search_result', ('entityid', 'types', 'federations'))
+            format, entities, filename, ('entityid', 'types', 'absolute_url', 'name', 'federations'))
 
     context = RequestContext(request)
     user = context.get('user', None)
@@ -810,33 +811,23 @@ def search_service(request):
     if filters:
         objects = Entity.objects.filter(**filters)
 
-    if objects and 'format' in request.GET.keys():
-        entities = []
-        for entity in objects:
-            entities.append({
-                'entityid': entity.entityid,
-                'name': entity.name,
-                'absolute_url': entity.get_absolute_url(),
-                'types': [str(item) for item in entity.types.all()],
-                'federations': [(str(item.name), item.get_absolute_url()) for item in entity.federations.all()],
-            })
-
-        return export_query_set(
-            request.GET.get('format'),
-            entities,
-            'entities_search_result',
-            ('entityid', 'types', 'federations')
-        )
-
     entities = []
     for entity in objects:
         entities.append({
             'entityid': entity.entityid,
             'name': entity.name,
-            'absolute_url': entity.get_absolute_url(),
+            'absolute_url': request.build_absolute_uri(entity.get_absolute_url()),
             'types': [str(item) for item in entity.types.all()],
-            'federations': [(str(item.name), item.get_absolute_url()) for item in entity.federations.all()],
+            'federations': [(str(item.name), request.build_absolute_uri(item.get_absolute_url())) for item in entity.federations.all()],
         })
+
+    if objects and 'format' in request.GET.keys():
+        return export_query_set(
+            request.GET.get('format'),
+            entities,
+            'entities_search_result',
+            ('entityid', 'absolute_url', 'name', 'types', 'federations')
+        )
 
     return render_to_response(
         'metadataparser/service_search.html',
@@ -964,9 +955,9 @@ def search_entities(request):
                 entities.append({
                     'entityid': entity.entityid,
                     'name': entity.name,
-                    'absolute_url': entity.get_absolute_url(),
+                    'absolute_url': request.build_absolute_uri(entity.get_absolute_url()),
                     'types': [str(item) for item in entity.types.all()],
-                    'federations': [(str(item.name), item.get_absolute_url()) for item in entity.federations.all()],
+                    'federations': [(str(item.name), request.build_absolute_uri(item.get_absolute_url())) for item in entity.federations.all()],
                 })
 
             if export_format:
@@ -974,7 +965,7 @@ def search_entities(request):
                     export_format,
                     entities,
                     'entities_search_result',
-                    ('entityid', 'types', 'name', 'federations')
+                    ('entityid', 'types', 'absolute_url', 'name', 'federations')
                 )
 
             return render_to_response(

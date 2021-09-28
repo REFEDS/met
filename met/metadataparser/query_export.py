@@ -17,7 +17,7 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from django.template.defaultfilters import slugify
 import simplejson as json
 
-from met.metadataparser.utils import convert_urls, process_xml_entity_fed_info
+from met.metadataparser.utils import process_xml_entity_fed_info
 
 
 # Taken from http://djangosnippets.org/snippets/790/
@@ -34,9 +34,6 @@ def export_csv(model, filename, fields):
     for obj in model:
         row = []
         for field in fields:
-            # Convert to full path urls
-            if field == "federations":
-                obj[field] = convert_urls(obj[field])
             row.append('%s' % obj[field])
         writer.writerow(row)
     # Return CSV file to browser as download
@@ -53,9 +50,6 @@ def export_json(model, filename, fields):
                 item[field] = list(obj[field])
             else:
                 item[field] = obj[field]
-            # Convert to full path urls
-            if (field == "federations"):
-                item[field] = convert_urls(item[field])
 
         objs.append(item)
     # Return JS file to browser as download

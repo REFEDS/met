@@ -17,8 +17,6 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from django.template.defaultfilters import slugify
 import simplejson as json
 
-from met.metadataparser.utils import convert_urls
-
 
 class SetEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -46,16 +44,13 @@ def export_entity_csv(entity):
     writer = csv.writer(response)
     edict = entity.to_dict()
 
-    display_keys = ['entityid', 'displayName', 'registration_authority', 'registration_instant', 'protocols', 'organization', 'contacts', 'description', 'infoUrl', 'privacyUrl', 'attr_requested', 'registration_policy', 'languages', 'types', 'federations']
+    display_keys = ['entityid', 'absolute_url', 'displayName', 'registration_authority', 'registration_instant', 'protocols', 'organization', 'contacts', 'description', 'infoUrl', 'privacyUrl', 'attr_requested', 'registration_policy', 'languages', 'types', 'federations']
 
     writer.writerow(display_keys)
     # Write data to CSV file
     row = []
     for field, value in edict.items():
         if field in display_keys:
-            # Convert to full path urls
-            if field == "federations":
-                value = convert_urls(value)
             row.append(_serialize_value_to_csv(value))
     row_ascii = [str(v) for v in row]
 
