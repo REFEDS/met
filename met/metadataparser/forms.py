@@ -284,7 +284,7 @@ class SearchEntitiesForm(forms.Form):
     for entity_type in EntityType.objects.all():
         type_choices.append(('%s' % entity_type, entity_type))
 
-    category_choices = [('All', 'All types')]
+    category_choices = [('All', 'All types'), ('No Category', 'No Category')]
     for entity_category in EntityCategory.objects.all():
         category_choices.append(('%s' % entity_category, entity_category))
 
