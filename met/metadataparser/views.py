@@ -595,12 +595,13 @@ def entity_view(request, entityid):
 
     entity = get_object_or_404(Entity, entityid=entityid)
 
-    if 'federation' in request.GET:
+    if 'federation' in request.GET and request.GET.get('federation'):
         federation = get_object_or_404(Federation, slug=request.GET.get('federation'))
         entity.curfed = federation
     else:
-        federation = entity.federations.all()[0]
-        entity.curfed = federation
+        federations = entity.federations.all()
+        if federations:
+            entity.curfed = federations[0]
 
     if 'format' in request.GET:
         return export_entity(request.GET.get('format'), entity)
@@ -762,22 +763,27 @@ def entity_metadata_comparator(request, entityid):
     entityid = RESCUE_SLASH.sub("\\1/\\2", entityid)
 
     entity = get_object_or_404(Entity, entityid=entityid)
-    first_federation = entity.federations.all()[0]
-    try:
-        second_federation = entity.federations.all()[1]
-    except IndexError:
-        # There's only one federation
-        second_federation = first_federation
-    if 'federation' in request.GET:
-        entity.curfed = get_object_or_404(Federation, slug=request.GET.get('federation'))
-    else:
-        entity.curfed = first_federation
+    federations = entity.federations.all()
 
-    left_panel_federation = entity.curfed
-    if left_panel_federation != first_federation:
-        right_panel_federation = first_federation
-    else:
-        right_panel_federation = second_federation
+    left_panel_federation = right_panel_federation = None
+
+    if federations:
+        first_federation = entity.federations.all()[0]
+        try:
+            second_federation = entity.federations.all()[1]
+        except IndexError:
+            # There's only one federation
+            second_federation = first_federation
+        if 'federation' in request.GET:
+            entity.curfed = get_object_or_404(Federation, slug=request.GET.get('federation'))
+        else:
+            entity.curfed = first_federation
+
+        left_panel_federation = entity.curfed
+        if left_panel_federation != first_federation:
+            right_panel_federation = first_federation
+        else:
+            right_panel_federation = second_federation
 
     return render_to_response(
         'metadataparser/entity_metadata_comparator.html',

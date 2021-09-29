@@ -8,13 +8,14 @@
     <h2 style="clear:both; margin-bottom:25px">{{ entity }}</h2>
   {% endif %}
 
+  {% if entity.curfed %}
   <p style="margin-top:9.5px; float:left; clear:both; margin-right:10px">
     <i>{% trans "Information retrieved from federation: " %}</i>
   </p>
 
   <div class="btn-group pull-left" style="margin-right:10px; margin-bottom:5px">
     <a class="btn btn1 dropdown-toggle" data-toggle="dropdown" href="#">
-      {% if entity.curfed %}{{ entity.curfed }}{% else %}{% trans "Unknown" %}{% endif %}
+      {{ entity.curfed }}
       <span> &nbsp; <font class="freccia" color=white size=3>&#9661;</font></span>
     </a>
     <ul class="dropdown-menu">
@@ -32,6 +33,11 @@
       {% trans "ago" %})
     </i>
   </p>
+  {% else %}
+  <p style="margin-top:9.5px; float:left; clear:both; margin-right:10px">
+    <i>{% trans "No Federation" %}</i>
+  </p>
+  {% endif %}
 
   <!--form method="get" action="{{ entity.absolute_url }}"><i>{% trans "Information retrieved from federation: " %}</i>
     <select name="federation" onchange="this.form.submit()">
@@ -64,6 +70,7 @@
       </div>
     {% endcanedit %}
 
+    {% if entity.xml %}
     <div class="btn-group pull-right">
       <a
           class="btn"
@@ -72,7 +79,9 @@
         {% trans "view xml" %}
       </a>
     </div>
+    {% endif %}
 
+    {% if entity.has_federations %}
     <div class="btn-group pull-right" style="margin-right: 10px;">
       <a
           class="btn"
@@ -80,6 +89,7 @@
         {% trans "metadata comparator" %}
       </a>
     </div>
+    {% endif %}
 
 {% endblock %}
 
@@ -108,11 +118,13 @@
       <tr>
         <td class="first-col"><strong class="tabella">{% trans "Registration policy" %}:</strong></td>
         <td>
+          {% if entity.registration_policy %}
           <a
               href="{% l10n_property entity.registration_policy lang %}"
               target="_blank">
             {% l10n_property entity.registration_policy lang %}
           </a>
+          {% endif %}
         </td>
       </tr>
       <tr>

@@ -309,6 +309,9 @@ class Entity(Base):
 
         return protocols
 
+    def has_federations(self):
+        return self.federations.exists()
+
     def display_attributes(self):
         attributes = {}
         for [attr, friendly] in self.attributes:
@@ -394,7 +397,7 @@ class Entity(Base):
             if right_fed is not None:
                 entity_cached = right_fed.get_entity_metadata(self.entityid)
                 self._entity_cached = entity_cached
-            else:
+            elif first_fed is not None:
                 entity_cached = first_fed.get_entity_metadata(self.entityid)
                 self._entity_cached = entity_cached
 
