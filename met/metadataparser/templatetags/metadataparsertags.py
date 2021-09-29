@@ -192,7 +192,14 @@ def entity_filter_url(base_path, filt, otherparams=None):
 
 
 @register.simple_tag()
-def entitycategory_filter_url(base_path, filt, otherparams=None):
+def entitycategory_filter_url(base_path, filt, otherparams=None, entity_type=None):
+    if entity_type != 'All':
+        if otherparams is None:
+            otherparams = ''
+        if otherparams:
+            otherparams += '&'
+        otherparams += 'entity_type=%s' % entity_type
+
     url = base_path
     if filt != 'All':
         url += '?entity_category=%s' % filt
