@@ -52,14 +52,21 @@ def _fetch_new_metadata_file(federation, logger):
 def refresh(fed_name=None, force_refresh=False, logger=None):
     log('Starting refreshing metadata ...', logger, logging.INFO)
 
-    federations = Federation.objects.all()
+    if fed_name:
+        federations = Federation.objects.filter(slug=fed_name)
+        if not federations:
+            log('Federation %s not found' % fed_name, logger, logging.INFO)
+    else:
+        federations = Federation.objects.all()
+
+    if not federations:
+        log('No federation to be processed' % fed_name, logger, logging.INFO)
+        return
+
     federations.prefetch_related('etypes', 'federations')
     # TODO prefetch related, add federations->entity_categories
 
     for federation in federations:
-        if fed_name and federation.slug != fed_name:
-            continue
-
         error_msg = None
         try:
             log('[%s] Refreshing metadata ...' %
@@ -91,6 +98,7 @@ def refresh(fed_name=None, force_refresh=False, logger=None):
 
             log('[%s] Updating federation statistics ...' %
                 federation, logger, logging.DEBUG)
+
             (computed, not_computed) = federation.compute_new_stats()
             log('[%s] Computed statistics: %s' %
                 (federation, computed), logger, logging.DEBUG)
