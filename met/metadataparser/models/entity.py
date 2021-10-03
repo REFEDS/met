@@ -29,6 +29,7 @@ from met.metadataparser.xmlparser import DESCRIPTOR_TYPES_DISPLAY
 from met.metadataparser.models.base import JSONField, Base
 from met.metadataparser.models.entity_type import EntityType
 from met.metadataparser.models.entity_federations import Entity_Federations
+from met.metadataparser.utils import get_full_path_url
 
 TOP_LENGTH = getattr(settings, 'TOP_LENGTH', 5)
 
@@ -309,6 +310,9 @@ class Entity(Base):
 
         return protocols
 
+    def has_federations(self):
+        return self.federations.exists()
+
     def display_attributes(self):
         attributes = {}
         for [attr, friendly] in self.attributes:
@@ -394,7 +398,7 @@ class Entity(Base):
             if right_fed is not None:
                 entity_cached = right_fed.get_entity_metadata(self.entityid)
                 self._entity_cached = entity_cached
-            else:
+            elif first_fed is not None:
                 entity_cached = first_fed.get_entity_metadata(self.entityid)
                 self._entity_cached = entity_cached
 
@@ -492,7 +496,8 @@ class Entity(Base):
 
         entity = self._entity_cached.copy()
         entity['types'] = [str(f) for f in self.types.all()]
-        entity['federations'] = [{'name': str(f), 'url': f.get_absolute_url()}
+        entity['absolute_url'] = get_full_path_url(self.get_absolute_url())
+        entity['federations'] = [{'name': str(f), 'url': get_full_path_url(f.get_absolute_url())}
                                  for f in self.federations.all()]
 
         if self.registration_authority:
@@ -534,9 +539,9 @@ class Entity(Base):
                 entities.append({
                     'entityid': entity.entityid,
                     'name': entity.name,
-                    'absolute_url': entity.get_absolute_url(),
+                    'absolute_url': get_full_path_url(entity.get_absolute_url()),
                     'types': [str(item) for item in entity.types.all()],
-                    'federations': [(str(item.name), item.get_absolute_url()) for item in entity.federations.all()],
+                    'federations': [(str(item.name), get_full_path_url(item.get_absolute_url())) for item in entity.federations.all()],
                 })
 
         if cache_expire:

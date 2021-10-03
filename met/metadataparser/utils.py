@@ -17,6 +17,8 @@ from django.conf import settings
 from django.template.defaultfilters import slugify
 from slack import RTMClient as SlackClient
 
+from local_settings import HOSTNAME
+
 
 def compare_filecontents(a, b):
     if a is None:
@@ -101,3 +103,18 @@ def send_mail(from_email_address, subject, message):
     finally:
         if smtp_send:
             smtp_send.quit()
+
+
+def process_xml_entity_fed_info(federation_info):
+    processed_fed_info = []
+    for fed in federation_info:
+        new_fed = {
+            'name': fed[0],
+            'url': fed[1]
+        }
+        processed_fed_info.append(new_fed)
+    return processed_fed_info
+
+
+def get_full_path_url(absolute_url):
+    return "%s%s" % (HOSTNAME, absolute_url)

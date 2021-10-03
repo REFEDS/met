@@ -9,21 +9,22 @@
     {% endif %}
     <span>&nbsp;<font class="freccia" color=white size=3>&#9661;</font></span>
   </a>
-  <ul class="dropdown-menu">
+
+   <ul class="dropdown-menu">
     <li>
-      <a href="{% entitycategory_filter_url filter_base_path 'All' otherparams %}">
+      <a href="{% entitycategory_filter_url filter_base_path 'All' otherparams entity_type %}">
         ----------
       </a>
     </li>
     <li>
-      <a href="{% entitycategory_filter_url filter_base_path 'No Category' otherparams %}">
+      <a href="{% entitycategory_filter_url filter_base_path 'No Category' otherparams entity_type %}">
         {% trans "No Category" %}
       </a>
     </li>
 
     {% for category in categories %}
       <li {% if category.category_id == entity_category %}class="active"{% endif %}>
-        <a href="{% entitycategory_filter_url filter_base_path category.category_id otherparams %}">{{ category }}</a>
+        <a href="{% entitycategory_filter_url filter_base_path category.category_id otherparams entity_type %}">{{ category }}</a>
       </li>
     {% endfor %}
   </ul>

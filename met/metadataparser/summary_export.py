@@ -30,7 +30,7 @@ def export_summary_csv(qs, relation, filename, counters):
     writer.writerow(labels)
     # Write data to CSV file
     for obj in qs:
-        row = [str(obj).encode('utf-8')]
+        row = [str(obj)]
         for _, counter_filter in counters:
             row.append(getattr(obj, relation).filter(**counter_filter).count())
         writer.writerow(row)
@@ -47,7 +47,7 @@ def export_summary_json(qs, relation, filename, counters):
                 obj, relation).filter(**counter_filter).count()
         objs[str(obj)] = item
     # Return JS file to browser as download
-    serialized = json.dumps(objs)
+    serialized = json.dumps(objs, ensure_ascii=False, encoding='utf-8')
     response = HttpResponse(serialized, content_type='application/json')
     response['Content-Disposition'] = ('attachment; filename=%s.json'
                                        % custom_slugify(filename))
