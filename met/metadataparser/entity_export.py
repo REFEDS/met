@@ -14,7 +14,9 @@ import csv
 from xml.dom.minidom import Document
 
 from django.http import HttpResponse, HttpResponseBadRequest
-from django.template.defaultfilters import slugify
+
+from met.metadataparser.utils import custom_slugify
+
 import simplejson as json
 
 
@@ -40,7 +42,7 @@ def _serialize_value_to_csv(value):
 
 def export_entity_csv(entity):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = ('attachment; filename=%s.csv' % slugify(entity))
+    response['Content-Disposition'] = ('attachment; filename=%s.csv' % custom_slugify(entity))
     writer = csv.writer(response)
     edict = entity.to_dict()
 
@@ -58,12 +60,11 @@ def export_entity_csv(entity):
     # Return CSV file to browser as download
     return response
 
-
 def export_entity_json(entity):
     # Return JS file to browser as download
     serialized = json.dumps(entity.to_dict(), cls=SetEncoder, ensure_ascii=False, encoding='utf-8')
     response = HttpResponse(serialized, content_type='application/json')
-    response['Content-Disposition'] = ('attachment; filename=%s.json' % slugify(entity))
+    response['Content-Disposition'] = ('attachment; filename=%s.json' % custom_slugify(entity))
     return response
 
 
@@ -72,7 +73,7 @@ def export_entity_xml(entity):
 
     # Return XML file to browser as download
     response = HttpResponse(entity_xml, content_type='application/xml')
-    response['Content-Disposition'] = ('attachment; filename=%s.xml' % slugify(entity))
+    response['Content-Disposition'] = ('attachment; filename=%s.xml' % custom_slugify(entity))
     return response
 
 
