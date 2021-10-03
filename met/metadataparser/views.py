@@ -208,21 +208,21 @@ def federation_view(request, federation_slug=None):
         request.session.save()
 
     federation = get_object_or_404(Federation, slug=federation_slug)
-    if federation.registration_authority:
-        categories = EntityCategory.objects.all().filter(
-            Q(category_id__icontains=federation.registration_authority) |
-            Q(category_id__icontains='http://refeds.org') |
-            Q(category_id__icontains='http://www.geant.net'))
-    else:
-        categories = EntityCategory.objects.all().filter(
-            Q(category_id__icontains='http://refeds.org') |
-            Q(category_id__icontains='http://www.geant.net'))
 
     ob_entities = Entity.objects.filter(federations__id=federation.id)
+
     entity_type = None
     if request.GET and 'entity_type' in request.GET:
         entity_type = request.GET['entity_type']
         ob_entities = ob_entities.filter(types__xmlname=entity_type)
+
+    entity_federations = Entity_Federations.objects.filter(
+        federation=federation,
+        entity_id__in=ob_entities,
+    )
+    categories = EntityCategory.objects.filter(
+        entity_federations=entity_federations,
+    ).distinct()
 
     entity_category = None
     if request.GET and 'entity_category' in request.GET:
