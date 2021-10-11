@@ -61,7 +61,7 @@ def send_slack(message):
     if slack_config_dict and 'token' in slack_config_dict and slack_config_dict['token']:
         slack_token = slack_config_dict['token']
         slack_channel = slack_config_dict['channel'] if 'channel' in slack_config_dict else '#devops'
-        sc = SlackClient(slack_token)
+        sc = SlackClient(token=slack_token)
 
         sc.api_call(
             'chat.postMessage',
