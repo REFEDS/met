@@ -925,7 +925,6 @@ def search_entities(request):
                 organization_display_name = organization_display_name.lower()
                 search_by_org_disp_name = True
 
-            category_eid_list = []
             org_entity_ids_list = []
 
             if search_by_org_name or search_by_org_disp_name:
