@@ -15,7 +15,7 @@ import smtplib
 from email.mime.text import MIMEText
 from django.conf import settings
 from django.template.defaultfilters import slugify
-from slack import RTMClient as SlackClient
+from slackclient import SlackClient
 
 from local_settings import HOSTNAME
 
