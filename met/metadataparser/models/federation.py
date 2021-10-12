@@ -15,6 +15,7 @@ import simplejson as json
 
 from datetime import datetime, time, timedelta
 
+from django.core.exceptions import MultipleObjectsReturned
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Max
@@ -226,11 +227,16 @@ class Federation(Base):
             e.load_metadata()
             e.contacts.clear()
             for xml_contact in e.xml_contacts:
-                contact, _ = ContactPerson.objects.get_or_create(
-                    type=ContactPerson.get_type_by_description(xml_contact['type']),
-                    name=xml_contact['name'],
-                    email=xml_contact['stripped_email'],
-                )
+                contact_params = {
+                    'type': ContactPerson.get_type_by_description(xml_contact['type']),
+                    'name': xml_contact['name'],
+                    'email': xml_contact['stripped_email'],
+                }
+                try:
+                    contact, _ = ContactPerson.objects.get_or_create(**contact_params)
+                except MultipleObjectsReturned:
+                    # Cover edge case with more than 1 equivalent ContactPerson
+                    contact = ContactPerson.objects.filter(**contact_params).first()
                 e.contacts.add(contact)
 
             # Scopes
