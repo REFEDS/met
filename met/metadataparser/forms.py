@@ -369,5 +369,14 @@ class SearchEntitiesForm(forms.Form):
         widget=forms.HiddenInput(attrs={'id': 'export_format'})
     )
 
+    ordering_column = forms.CharField(
+        required=False,
+        widget=forms.HiddenInput(attrs={'id': 'ordering_column'})
+    )
+    ordering_order = forms.CharField(
+        required=False,
+        widget=forms.HiddenInput(attrs={'id': 'ordering_order'})
+    )
+
     class Meta:
         fields = []

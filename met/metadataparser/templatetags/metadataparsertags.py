@@ -89,7 +89,7 @@ def interfederations_summary(context, queryname, counts, federations=None):
 
 @register.inclusion_tag('metadataparser/tag_entity_list.html', takes_context=True)
 def entity_list(context, entities, categories=None, pagination=None, curfed=None, show_total=True,
-                append_query=None, onclick_page=None, onclick_export=None):
+                append_query=None, onclick_page=None, onclick_export=None, onclick_header=None):
     request = context.get('request', None)
     lang = 'en'
     if request:
@@ -106,6 +106,7 @@ def entity_list(context, entities, categories=None, pagination=None, curfed=None
             'pagination': pagination,
             'onclick_page': onclick_page,
             'onclick_export': onclick_export,
+            'onclick_header': onclick_header,
             'entity_types': DESCRIPTOR_TYPES}
 
 

@@ -870,6 +870,9 @@ def search_entities(request):
             filters = {}
             args = ()
 
+            column_to_order = form.cleaned_data['ordering_column']
+            order = form.cleaned_data['ordering_order']
+
             entity_type = form.cleaned_data['entity_type']
             if entity_type and entity_type != 'All':
                 filters['types__name'] = entity_type
@@ -896,6 +899,11 @@ def search_entities(request):
                 filters['entityscope__name__icontains'] = scope
 
             ob_entities = Entity.objects.all()
+            if column_to_order == 'num_federations':
+                ob_entities = ob_entities.annotate(
+                    num_federations=Count('federations')
+                )
+
             if args:
                 ob_entities = ob_entities.filter(*args)
             if filters:
@@ -963,6 +971,8 @@ def search_entities(request):
             export_format = form.cleaned_data['export_format']
 
             ob_entities = ob_entities.prefetch_related('types', 'federations')
+            order_by = '-%s' % column_to_order if order == 'desc' else column_to_order
+            ob_entities = ob_entities.order_by(order_by)
             pagination = _paginate_fed(ob_entities, form.cleaned_data['page'])
             results = pagination['objects'] if not export_format else ob_entities
 

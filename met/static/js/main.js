@@ -14,31 +14,11 @@ $(document).ready(function() {
 
 $(document).ready(function() {
 
-  $("table.met-sortable").find('th.sorting').each(
-    function(idx, obj) {
-      $(obj).click(function() {
-        orderTable($(obj).data('name'));
-      });
-    }
-  );
-});
-
-$(document).ready(function() {
-
   $("#tablepress-4").tablesorter();
 });
 
-$(document).ready(function() {
-
-  $("#tablepress-5").tablesorter();
-});
-
-$(document).ready(function() {
-
-  $("#tablepress-7").tablesorter();
-});
-
-function orderTable(columnName) {
+function orderTable(elem) {
+  var columnName = $(elem).data('name');
   var newHref = setParam(window.location.href, 'page', '1');
   if (
     (newHref.indexOf('order=asc') > -1) &&
