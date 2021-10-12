@@ -11,6 +11,7 @@
 ##########################################################################
 
 import logging
+import traceback
 from datetime import datetime
 
 from django.conf import settings
@@ -108,7 +109,7 @@ def refresh(fed_name=None, force_refresh=False, logger=None):
         except Exception as e:
             if error_msg is None:
                 error_msg = '%s' % e
-            error_msg = f'{error_msg}\n{e}'
+            error_msg = f'{error_msg}\n{e}\n{traceback.format_exc()}'
 
         finally:
             if error_msg:
