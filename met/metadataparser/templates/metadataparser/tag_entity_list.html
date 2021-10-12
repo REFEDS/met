@@ -63,7 +63,7 @@
 	<div class="table-responsive">
 		<table
         id="tablepress-3"
-        class="tablepress tablepress-id-3 dataTable no-footer"
+        class="tablepress tablepress-id-3 dataTable no-footer met-sortable"
         role="grid"
         aria-describedby="tablepress-3_info">
 		  <thead>
@@ -75,7 +75,7 @@
             rowspan="1"
             colspan="1"
             aria-label="Entity ID: activate to sort column ascending"
-            onclick="orderTable('entityid')">
+            data-name="entityid">
           <strong class="tabella">EntityID</strong>
         </th>
 			  <th
@@ -85,18 +85,17 @@
             rowspan="1"
             colspan="1"
             aria-label="Type: activate to sort column ascending"
-            onclick="orderTable('types')">
+            data-name="types">
           <strong class="tabella">Type</strong>
         </th>
 			  <th
-            class="column-3-head sorting"
+            class="column-3-head"
             tabindex="0"
             aria-controls="tablepress-3"
             rowspan="1"
             colspan="1"
             aria-label="Display Name: activate to sort column ascending"
-            nowrap
-            onclick="orderTable('name')">
+            nowrap>
           <strong class="tabella">Display Name</strong>
         </th>
 			  <th
@@ -116,7 +115,7 @@
             colspan="1"
             aria-label="Number of Federations: activate to sort column ascending"
             nowrap
-            onclick="orderTable('num_federations')">
+            data-name="num_federations">
           <strong class="tabella">Number of Federations</strong>
         </th>
 			</tr>

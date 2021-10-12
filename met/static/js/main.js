@@ -14,7 +14,13 @@ $(document).ready(function() {
 
 $(document).ready(function() {
 
-  //$("#tablepress-3").tablesorter();
+  $("table.met-sortable").find('th.sorting').each(
+    function(idx, obj) {
+      $(obj).click(function() {
+        orderTable($(obj).data('name'));
+      });
+    }
+  );
 });
 
 $(document).ready(function() {
