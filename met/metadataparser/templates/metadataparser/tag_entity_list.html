@@ -74,7 +74,8 @@
             aria-controls="tablepress-3"
             rowspan="1"
             colspan="1"
-            aria-label="Entity ID: activate to sort column ascending">
+            aria-label="Entity ID: activate to sort column ascending"
+            onclick="orderTable('entityid')">
           <strong class="tabella">EntityID</strong>
         </th>
 			  <th
@@ -83,7 +84,8 @@
             aria-controls="tablepress-3"
             rowspan="1"
             colspan="1"
-            aria-label="Type: activate to sort column ascending">
+            aria-label="Type: activate to sort column ascending"
+            onclick="orderTable('types')">
           <strong class="tabella">Type</strong>
         </th>
 			  <th
@@ -93,11 +95,12 @@
             rowspan="1"
             colspan="1"
             aria-label="Display Name: activate to sort column ascending"
-            nowrap>
+            nowrap
+            onclick="orderTable('name')">
           <strong class="tabella">Display Name</strong>
         </th>
 			  <th
-            class="column-4-head sorting"
+            class="column-4-head"
             tabindex="0"
             aria-controls="tablepress-3"
             rowspan="1"
@@ -112,7 +115,8 @@
             rowspan="1"
             colspan="1"
             aria-label="Number of Federations: activate to sort column ascending"
-            nowrap>
+            nowrap
+            onclick="orderTable('num_federations')">
           <strong class="tabella">Number of Federations</strong>
         </th>
 			</tr>

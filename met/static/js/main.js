@@ -14,7 +14,7 @@ $(document).ready(function() {
 
 $(document).ready(function() {
 
-  $("#tablepress-3").tablesorter();
+  //$("#tablepress-3").tablesorter();
 });
 
 $(document).ready(function() {
@@ -32,3 +32,25 @@ $(document).ready(function() {
   $("#tablepress-7").tablesorter();
 });
 
+function orderTable(columnName) {
+  var newHref = setParam(window.location.href, 'page', '1');
+  if (
+    (newHref.indexOf('order=asc') > -1) &&
+    (newHref.indexOf('column=' + columnName) > -1)
+  ) {
+    newHref = setParam(newHref, 'order', 'desc');
+  } else {
+    newHref = setParam(newHref, 'order', 'asc');
+  }
+  newHref = setParam(newHref, 'column', columnName);
+  window.location.href = newHref;
+}
+
+function setParam(uri, key, val) {
+    return uri
+        .replace(
+          new RegExp("([?&]" + key + "(?=[=&#]|$)[^#&]*|(?=#|$))"),
+          "&" + key + "=" + encodeURIComponent(val)
+        )
+        .replace(/^([^?&]+)&/, "$1?");
+}
