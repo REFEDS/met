@@ -200,6 +200,8 @@ def _paginate_fed(ob_entities, page):
 @profile(name='Federation view')
 def federation_view(request, federation_slug=None):
     format = request.GET.get('format')
+    column_to_order = request.GET.get('column', 'entityid')
+    order = request.GET.get('order', 'asc')
 
     if federation_slug:
         request.session['%s_process_done' % federation_slug] = False
@@ -209,7 +211,12 @@ def federation_view(request, federation_slug=None):
 
     federation = get_object_or_404(Federation, slug=federation_slug)
 
-    ob_entities = Entity.objects.filter(federations__id=federation.id)
+    ob_entities = Entity.objects.all()
+    if column_to_order == 'num_federations':
+        ob_entities = ob_entities.annotate(
+            num_federations=Count('federations')
+        )
+    ob_entities = ob_entities.filter(federations__id=federation.id)
 
     entity_type = None
     if request.GET and 'entity_type' in request.GET:
@@ -241,6 +248,8 @@ def federation_view(request, federation_slug=None):
             )
 
     ob_entities = ob_entities.prefetch_related('types', 'federations')
+    order_by = '-%s' % column_to_order if order == 'desc' else column_to_order
+    ob_entities = ob_entities.order_by(order_by)
     pagination = _paginate_fed(ob_entities, request.GET.get('page'))
 
     entities = []
