@@ -70,7 +70,7 @@ def refresh(fed_name=None, force_refresh=False, logger=None):
         error_msg = None
         try:
             log('[%s] Refreshing metadata ...' %
-                federation, logger, logging.INFO)
+                federation.slug, logger, logging.INFO)
             error_msg, data_changed = _fetch_new_metadata_file(
                 federation, logger)
 
