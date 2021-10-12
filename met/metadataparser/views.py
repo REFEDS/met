@@ -870,8 +870,8 @@ def search_entities(request):
             filters = {}
             args = ()
 
-            column_to_order = form.cleaned_data['ordering_column']
-            order = form.cleaned_data['ordering_order']
+            column_to_order = form.cleaned_data['ordering_column'] or 'entityid'
+            order = form.cleaned_data['ordering_order'] or 'asc'
 
             entity_type = form.cleaned_data['entity_type']
             if entity_type and entity_type != 'All':
