@@ -14,21 +14,23 @@ import csv
 from xml.dom.minidom import Document
 
 from django.http import HttpResponse, HttpResponseBadRequest
-from django.template.defaultfilters import slugify
+
+from met.metadataparser.utils import custom_slugify
+
 import simplejson as json
 
 
 def export_summary_csv(qs, relation, filename, counters):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = ('attachment; filename=%s.csv'
-                                       % slugify(filename))
+                                       % custom_slugify(filename))
     writer = csv.writer(response, quoting=csv.QUOTE_NONNUMERIC)
     labels = ['name']
     labels.extend([label for (label, _) in counters])
     writer.writerow(labels)
     # Write data to CSV file
     for obj in qs:
-        row = [str(obj).encode('utf-8')]
+        row = [str(obj)]
         for _, counter_filter in counters:
             row.append(getattr(obj, relation).filter(**counter_filter).count())
         writer.writerow(row)
@@ -45,10 +47,10 @@ def export_summary_json(qs, relation, filename, counters):
                 obj, relation).filter(**counter_filter).count()
         objs[str(obj)] = item
     # Return JS file to browser as download
-    serialized = json.dumps(objs)
+    serialized = json.dumps(objs, ensure_ascii=False, encoding='utf-8')
     response = HttpResponse(serialized, content_type='application/json')
     response['Content-Disposition'] = ('attachment; filename=%s.json'
-                                       % slugify(filename))
+                                       % custom_slugify(filename))
     return response
 
 
@@ -71,7 +73,7 @@ def export_summary_xml(qs, relation, filename, counters):
     # Return XML file to browser as download
     response = HttpResponse(xml.toxml(), content_type='application/xml')
     response['Content-Disposition'] = ('attachment; filename=%s.xml'
-                                       % slugify(filename))
+                                       % custom_slugify(filename))
     return response
 
 

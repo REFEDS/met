@@ -10,6 +10,7 @@
 # Consortium GARR, http://www.garr.it
 ##########################################################################
 
+from io import StringIO
 from lxml import etree
 from cryptography import x509
 from cryptography.hazmat.backends import default_backend
@@ -71,7 +72,8 @@ class MetadataParser:
         self.filename = filename
         with open(filename) as myfile:
             data = myfile.read().replace('\n', '')
-        self.rootelem = etree.fromstring(data)
+        parser = etree.XMLParser(recover=True)
+        self.rootelem = etree.fromstring(data, parser=parser)
         self.file_id = self.rootelem.get('ID', None)
         self.is_federation = self.rootelem.tag == FEDERATION_ROOT_TAG
         self.is_entity = not self.is_federation

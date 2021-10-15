@@ -14,7 +14,10 @@ import hashlib
 import smtplib
 from email.mime.text import MIMEText
 from django.conf import settings
-from slack import RTMClient as SlackClient
+from django.template.defaultfilters import slugify
+from slackclient import SlackClient
+
+from local_settings import HOSTNAME
 
 
 def compare_filecontents(a, b):
@@ -26,6 +29,10 @@ def compare_filecontents(a, b):
     md5_a = hashlib.md5(a).hexdigest()
     md5_b = hashlib.md5(b).hexdigest()
     return md5_a == md5_b
+
+
+def custom_slugify(obj):
+    return slugify(str(obj).replace("://", "_").replace("/", "_").replace(".", "_"))
 
 
 def _connect_to_smtp(server, port=25, login_type=None, username=None, password=None):
@@ -54,7 +61,7 @@ def send_slack(message):
     if slack_config_dict and 'token' in slack_config_dict and slack_config_dict['token']:
         slack_token = slack_config_dict['token']
         slack_channel = slack_config_dict['channel'] if 'channel' in slack_config_dict else '#devops'
-        sc = SlackClient(slack_token)
+        sc = SlackClient(token=slack_token)
 
         sc.api_call(
             'chat.postMessage',
@@ -96,3 +103,18 @@ def send_mail(from_email_address, subject, message):
     finally:
         if smtp_send:
             smtp_send.quit()
+
+
+def process_xml_entity_fed_info(federation_info):
+    processed_fed_info = []
+    for fed in federation_info:
+        new_fed = {
+            'name': fed[0],
+            'url': fed[1]
+        }
+        processed_fed_info.append(new_fed)
+    return processed_fed_info
+
+
+def get_full_path_url(absolute_url):
+    return "%s%s" % (HOSTNAME, absolute_url)

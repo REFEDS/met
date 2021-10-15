@@ -95,7 +95,7 @@ def _index_export(export, export_format, objects):
             export_format,
             objects['most_federated_entities'],
             'most_federated_entities',
-            ('entityid', 'types', 'name', 'federations')
+            ('entityid', 'types', 'absolute_url', 'name', 'federations')
         )
     else:
         return export_summary(
@@ -208,21 +208,21 @@ def federation_view(request, federation_slug=None):
         request.session.save()
 
     federation = get_object_or_404(Federation, slug=federation_slug)
-    if federation.registration_authority:
-        categories = EntityCategory.objects.all().filter(
-            Q(category_id__icontains=federation.registration_authority) |
-            Q(category_id__icontains='http://refeds.org') |
-            Q(category_id__icontains='http://www.geant.net'))
-    else:
-        categories = EntityCategory.objects.all().filter(
-            Q(category_id__icontains='http://refeds.org') |
-            Q(category_id__icontains='http://www.geant.net'))
 
     ob_entities = Entity.objects.filter(federations__id=federation.id)
+
     entity_type = None
     if request.GET and 'entity_type' in request.GET:
         entity_type = request.GET['entity_type']
         ob_entities = ob_entities.filter(types__xmlname=entity_type)
+
+    entity_federations = Entity_Federations.objects.filter(
+        federation=federation,
+        entity_id__in=ob_entities,
+    )
+    categories = EntityCategory.objects.filter(
+        entity_federations=entity_federations,
+    ).distinct()
 
     entity_category = None
     if request.GET and 'entity_category' in request.GET:
@@ -252,14 +252,15 @@ def federation_view(request, federation_slug=None):
         entities.append({
             'entityid': entity.entityid,
             'name': entity.name,
-            'absolute_url': entity.get_absolute_url(),
+            'absolute_url': request.build_absolute_uri(entity.get_absolute_url()),
             'types': [str(item) for item in entity.types.all()],
-            'federations': [(str(item.name), item.get_absolute_url()) for item in entity.federations.all()],
+            'federations': [(str(item.name), request.build_absolute_uri(item.get_absolute_url())) for item in entity.federations.all()],
         })
 
     if format:
+        filename = 'federation_%s' % federation_slug
         return export_query_set(
-            format, entities, 'entities_search_result', ('entityid', 'types', 'federations'))
+            format, entities, filename, ('entityid', 'types', 'absolute_url', 'name', 'federations'))
 
     context = RequestContext(request)
     user = context.get('user', None)
@@ -595,12 +596,13 @@ def entity_view(request, entityid):
 
     entity = get_object_or_404(Entity, entityid=entityid)
 
-    if 'federation' in request.GET:
+    if 'federation' in request.GET and request.GET.get('federation'):
         federation = get_object_or_404(Federation, slug=request.GET.get('federation'))
         entity.curfed = federation
     else:
-        federation = entity.federations.all()[0]
-        entity.curfed = federation
+        federations = entity.federations.all()
+        if federations:
+            entity.curfed = federations[0]
 
     if 'format' in request.GET:
         return export_entity(request.GET.get('format'), entity)
@@ -762,14 +764,27 @@ def entity_metadata_comparator(request, entityid):
     entityid = RESCUE_SLASH.sub("\\1/\\2", entityid)
 
     entity = get_object_or_404(Entity, entityid=entityid)
-    first_federation = entity.federations.all()[0]
-    if 'federation' in request.GET:
-        entity.curfed = get_object_or_404(Federation, slug=request.GET.get('federation'))
-    else:
-        entity.curfed = first_federation
+    federations = entity.federations.all()
 
-    left_panel_federation = entity.curfed
-    right_panel_federation = first_federation
+    left_panel_federation = right_panel_federation = None
+
+    if federations:
+        first_federation = entity.federations.all()[0]
+        try:
+            second_federation = entity.federations.all()[1]
+        except IndexError:
+            # There's only one federation
+            second_federation = first_federation
+        if 'federation' in request.GET:
+            entity.curfed = get_object_or_404(Federation, slug=request.GET.get('federation'))
+        else:
+            entity.curfed = first_federation
+
+        left_panel_federation = entity.curfed
+        if left_panel_federation != first_federation:
+            right_panel_federation = first_federation
+        else:
+            right_panel_federation = second_federation
 
     return render_to_response(
         'metadataparser/entity_metadata_comparator.html',
@@ -802,33 +817,23 @@ def search_service(request):
     if filters:
         objects = Entity.objects.filter(**filters)
 
-    if objects and 'format' in request.GET.keys():
-        entities = []
-        for entity in objects:
-            entities.append({
-                'entityid': entity.entityid,
-                'name': entity.name,
-                'absolute_url': entity.get_absolute_url(),
-                'types': [str(item) for item in entity.types.all()],
-                'federations': [(str(item.name), item.get_absolute_url()) for item in entity.federations.all()],
-            })
-
-        return export_query_set(
-            request.GET.get('format'),
-            entities,
-            'entities_search_result',
-            ('entityid', 'types', 'federations')
-        )
-
     entities = []
     for entity in objects:
         entities.append({
             'entityid': entity.entityid,
             'name': entity.name,
-            'absolute_url': entity.get_absolute_url(),
+            'absolute_url': request.build_absolute_uri(entity.get_absolute_url()),
             'types': [str(item) for item in entity.types.all()],
-            'federations': [(str(item.name), item.get_absolute_url()) for item in entity.federations.all()],
+            'federations': [(str(item.name), request.build_absolute_uri(item.get_absolute_url())) for item in entity.federations.all()],
         })
+
+    if objects and 'format' in request.GET.keys():
+        return export_query_set(
+            request.GET.get('format'),
+            entities,
+            'entities_search_result',
+            ('entityid', 'absolute_url', 'name', 'types', 'federations')
+        )
 
     return render_to_response(
         'metadataparser/service_search.html',
@@ -890,7 +895,7 @@ def search_entities(request):
             search_by_entity_category = False
             entity_category = form.cleaned_data['entity_category']
             if entity_category and entity_category != 'All':
-                search_by_entity_category = False
+                search_by_entity_category = True
 
             search_by_org_name = False
             organization_name = form.cleaned_data['organization_name']
@@ -903,47 +908,48 @@ def search_entities(request):
                 organization_display_name = organization_display_name.lower()
                 search_by_org_disp_name = True
 
-            if search_by_entity_category or search_by_org_name or search_by_org_disp_name:
-                category_eid_list = []
-                org_entity_ids_list = []
+            category_eid_list = []
+            org_entity_ids_list = []
 
+            if search_by_org_name or search_by_org_disp_name:
                 for entity in ob_entities.all():
-                    if search_by_entity_category:
-                        feds = Entity_Federations.objects.filter(entity=entity)
-
-                        if federations and 'All' not in federations:
-                            ec_list = [Q(federation__id=f) for f in federations]
-                            ec_args = (reduce(operator.or_, ec_list),)
-                            feds = feds.filter(*ec_args)
-
-                        feds.prefetch_related('entity_categories')
-                        feds = feds.filter(entity_categories__category_id=entity_category)
-                        category_eid_list.extend([Q(entityid=f.entity.entityid) for f in feds])
-
                     if search_by_org_name or search_by_org_disp_name:
-                        entity_found = False
+                        entity_found_by_name = False
+                        entity_found_by_disp_name = False
                         if search_by_org_name:
                             if entity.organization_name:
                                 for entity_org_name in entity.organization_name.values():
                                     if organization_name in entity_org_name.lower():
-                                        org_entity_ids_list.append(entity.id)
-                                        entity_found = True
+                                        entity_found_by_name = True
                                         break
-                        if not entity_found and search_by_org_disp_name:
+
+                        skip_cond = search_by_org_name and not entity_found_by_name
+
+                        if not skip_cond and search_by_org_disp_name:
                             if entity.organization_display_name:
                                 for entity_org_disp_name in entity.organization_display_name.values():
                                     if organization_display_name in entity_org_disp_name.lower():
-                                        org_entity_ids_list.append(entity.id)
+                                        entity_found_by_disp_name = True
+                                        break
 
-                if search_by_entity_category:
-                    if category_eid_list:
-                        eid_args = (reduce(operator.or_, category_eid_list),)
-                        ob_entities = ob_entities.filter(*eid_args)
-                    else:
-                        ob_entities = Entity.objects.none()
+                        if search_by_org_name and search_by_org_disp_name:
+                            if entity_found_by_name and entity_found_by_disp_name:
+                                org_entity_ids_list.append(entity.id)
+                        elif entity_found_by_name or entity_found_by_disp_name:
+                                org_entity_ids_list.append(entity.id)
 
-                if search_by_org_name or search_by_org_disp_name:
-                    ob_entities = ob_entities.filter(id__in=org_entity_ids_list)
+            if org_entity_ids_list:
+                ob_entities = ob_entities.filter(id__in=org_entity_ids_list)
+
+            if search_by_entity_category and entity_category:
+                if entity_category == 'No Category':
+                    ob_entities = ob_entities.filter(
+                        entity_federations__entity_categories=None,
+                    ).distinct()
+                else:
+                    ob_entities = ob_entities.filter(
+                        entity_federations__entity_categories__category_id=entity_category,
+                    ).distinct()
 
             export_format = form.cleaned_data['export_format']
 
@@ -956,9 +962,9 @@ def search_entities(request):
                 entities.append({
                     'entityid': entity.entityid,
                     'name': entity.name,
-                    'absolute_url': entity.get_absolute_url(),
+                    'absolute_url': request.build_absolute_uri(entity.get_absolute_url()),
                     'types': [str(item) for item in entity.types.all()],
-                    'federations': [(str(item.name), item.get_absolute_url()) for item in entity.federations.all()],
+                    'federations': [(str(item.name), request.build_absolute_uri(item.get_absolute_url())) for item in entity.federations.all()],
                 })
 
             if export_format:
@@ -966,7 +972,7 @@ def search_entities(request):
                     export_format,
                     entities,
                     'entities_search_result',
-                    ('entityid', 'types', 'federations')
+                    ('entityid', 'types', 'absolute_url', 'name', 'federations')
                 )
 
             return render_to_response(

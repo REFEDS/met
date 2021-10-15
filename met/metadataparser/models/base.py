@@ -23,6 +23,7 @@ from django.utils.translation import ugettext_lazy as _
 from pyff.builtins import load, select  # NOQA
 from pyff.pipes import Plumbing
 from pyff.repo import MDRepository
+from pyff.exceptions import ResourceException
 
 from met.metadataparser.xmlparser import MetadataParser
 from met.metadataparser.utils import compare_filecontents
@@ -160,15 +161,19 @@ class Base(models.Model):
                     select.append('%s' % curid)
                 count = count + 1
 
+            pipeline = [{'load fail_on_error True filter_invalid False': load}]
             if len(select) > 0:
-                pipeline = [{'load fail_on_error True validate False': load}, {'select': select}]
+                pipeline.append({'select': select})
             else:
-                pipeline = [{'load fail_on_error True validate False': load}, 'select']
+                pipeline.append('select')
 
             md = MDRepository()
-            entities = Plumbing(pipeline=pipeline, pid=self.slug).process(
-                md, state={'batch': True, 'stats': {}})
-            return etree.tostring(entities)
+            try:
+                entities = Plumbing(pipeline=pipeline, pid=self.slug).process(
+                    md, state={'batch': True, 'stats': {}}, raise_exceptions=True)
+                return etree.tostring(entities)
+            except ResourceException as e:
+                raise Exception(e)
         except Exception as e:
             raise Exception(
                 f'Getting metadata from {load_streams} failed.\nError: {e}')
@@ -189,8 +194,10 @@ class Base(models.Model):
         req = self._get_metadata_stream(metadata_files)
 
         try:
-            self.file.seek(0)
-            original_file_content = self.file.read()
+            original_file_content = None
+            if self.file.name:
+                self.file.seek(0)
+                original_file_content = self.file.read()
             if compare_filecontents(original_file_content, req):
                 return False
         except Exception:

@@ -14,15 +14,19 @@ import csv
 from xml.dom.minidom import Document
 
 from django.http import HttpResponse, HttpResponseBadRequest
-from django.template.defaultfilters import slugify
+
+from met.metadataparser.utils import custom_slugify
+
 import simplejson as json
+
+from met.metadataparser.utils import process_xml_entity_fed_info
 
 
 # Taken from http://djangosnippets.org/snippets/790/
 def export_csv(model, filename, fields):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = ('attachment; filename=%s.csv'
-                                       % slugify(filename))
+                                       % custom_slugify(filename))
     writer = csv.writer(response)
     # Write headers to CSV file
 
@@ -51,10 +55,10 @@ def export_json(model, filename, fields):
 
         objs.append(item)
     # Return JS file to browser as download
-    serialized = json.dumps(objs)
+    serialized = json.dumps(objs, ensure_ascii=False, encoding='utf-8')
     response = HttpResponse(serialized, content_type='application/json')
     response['Content-Disposition'] = ('attachment; filename=%s.json'
-                                       % slugify(filename))
+                                       % custom_slugify(filename))
     return response
 
 
@@ -65,26 +69,26 @@ def _parse_xml_element(xml, father, structure):
             father.appendChild(tag)
             _parse_xml_element(xml, tag, structure[k])
     elif type(structure) == tuple:
-        tag_name = father.tagName
+        tag_name = father.tagName.rstrip('s')
         for l in list(structure):
             tag = xml.createElement(tag_name)
             _parse_xml_element(xml, tag, l)
             father.appendChild(tag)
     elif type(structure) == list:
-        tag_name = father.tagName
+        tag_name = father.tagName.rstrip('s')
         for l in structure:
             tag = xml.createElement(tag_name)
             _parse_xml_element(xml, tag, l)
             father.appendChild(tag)
     elif type(structure) == set:
-        tag_name = father.tagName
+        tag_name = father.tagName.rstrip('s')
         for l in list(structure):
             tag = xml.createElement(tag_name)
             _parse_xml_element(xml, tag, l)
             father.appendChild(tag)
     else:
         if type(structure) == str:
-            data = structure.encode('ascii', errors='xmlcharrefreplace')
+            data = structure
         else:
             data = str(structure)
         tag = xml.createTextNode(data)
@@ -96,14 +100,22 @@ def export_xml(model, filename, fields=None):
     root = xml.createElement(filename)
     for obj in model:
         elem = xml.createElement('entity')
-        _parse_xml_element(xml, elem, obj)
+        new_obj = {}
+        for field in obj:
+            if field in fields:
+                # Convert to full path urls
+                if (field == "federations"):
+                    new_obj[field] = process_xml_entity_fed_info(obj[field])
+                else:
+                    new_obj[field] = obj[field]
+        _parse_xml_element(xml, elem, new_obj)
         root.appendChild(elem)
     xml.appendChild(root)
 
     # Return xml file to browser as download
     response = HttpResponse(xml.toxml(), content_type='application/xml')
     response['Content-Disposition'] = ('attachment; filename=%s.xml'
-                                       % slugify(filename))
+                                       % custom_slugify(filename))
     return response
 
 

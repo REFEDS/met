@@ -35,7 +35,7 @@ class XMLParserTestCase(TestCase):
                 </ds:X509Data>
               </ds:KeyInfo>
             </ds:Signature>
-            <EntityDescriptor entityID="https://auth.antiplagiat.ru/Saml2">
+            <EntityDescriptor ID="_9f06e0edfeb1fbbc850b2d88ef19671d19e519c1" entityID="https://auth.antiplagiat.ru/Saml2">
               <SPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
                 <Extensions>
                   <mdui:UIInfo>
