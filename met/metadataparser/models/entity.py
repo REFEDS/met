@@ -467,6 +467,7 @@ class Entity(Base):
         newname = self._get_property('displayName')
         if newname and newname != '':
             self.name = newname
+            self.canonical_name = newname.get('en')
 
         self.certstats = self._get_property('certstats')
 
