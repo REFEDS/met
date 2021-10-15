@@ -15,7 +15,7 @@ def populate_entities(apps, schema_editor):
         except KeyError:
             canonical_name = list(entity.name.values())[0]
         try:
-            entity.canonical_name = canonical_name
+            entity.canonical_name = canonical_name.strip()
             with transaction.atomic():
                 entity.save(update_fields=('canonical_name', ))
         except OperationalError:
