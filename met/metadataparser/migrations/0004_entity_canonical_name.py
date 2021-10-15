@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('metadataparser', '0002_add_entity_fields'),
+        ('metadataparser', '0003_convert_collations'),
     ]
 
     operations = [
