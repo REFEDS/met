@@ -120,6 +120,14 @@ class Entity(Base):
         verbose_name=_('Display Name')
     )
 
+    canonical_name = models.CharField(
+        blank=True,
+        null=True,
+        max_length=500,
+        verbose_name=_('Canonical Name'),
+        db_index=True,
+    )
+
     certstats = models.CharField(
         blank=True,
         null=True,
@@ -459,6 +467,7 @@ class Entity(Base):
         newname = self._get_property('displayName')
         if newname and newname != '':
             self.name = newname
+            self.canonical_name = newname.get('en')
 
         self.certstats = self._get_property('certstats')
 
