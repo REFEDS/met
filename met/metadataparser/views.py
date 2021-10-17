@@ -248,6 +248,9 @@ def federation_view(request, federation_slug=None):
             )
 
     ob_entities = ob_entities.prefetch_related('types', 'federations')
+    # This is the only column name that doesn't correspond to a real entity field
+    if column_to_order == 'name':
+        column_to_order = 'canonical_name'
     order_by = '-%s' % column_to_order if order == 'desc' else column_to_order
     ob_entities = ob_entities.order_by(order_by)
     pagination = _paginate_fed(ob_entities, request.GET.get('page'))
@@ -970,6 +973,9 @@ def search_entities(request):
             export_format = form.cleaned_data['export_format']
 
             ob_entities = ob_entities.prefetch_related('types', 'federations')
+            # This is the only column name that doesn't correspond to a real entity field
+            if column_to_order == 'name':
+                column_to_order = 'canonical_name'
             order_by = '-%s' % column_to_order if order == 'desc' else column_to_order
             ob_entities = ob_entities.order_by(order_by)
             pagination = _paginate_fed(ob_entities, form.cleaned_data['page'])

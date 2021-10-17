@@ -99,13 +99,19 @@
           <strong class="tabella">Type</strong>
         </th>
 			  <th
-            class="column-3-head"
+            class="column-3-head sorting"
             tabindex="0"
             aria-controls="tablepress-3"
             rowspan="1"
             colspan="1"
             aria-label="Display Name: activate to sort column ascending"
-            nowrap>
+            nowrap
+            data-name="name"
+            {% if onclick_header %}
+            onclick="{{ onclick_header }}(this)"
+            {% else %}
+            onclick="orderTable(this)"
+            {% endif %}>
           <strong class="tabella">Display Name</strong>
         </th>
 			  <th
