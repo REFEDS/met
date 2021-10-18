@@ -13,22 +13,30 @@ $(document).ready(function() {
 });
 
 $(document).ready(function() {
-  // Not using the JS sorting as we sort the entire queryset and not only the seen page
-  // $("#tablepress-3").tablesorter();
-});
-
-$(document).ready(function() {
 
   $("#tablepress-4").tablesorter();
 });
 
-$(document).ready(function() {
+function orderTable(elem) {
+  var columnName = $(elem).data('name');
+  var newHref = setParam(window.location.href, 'page', '1');
+  if (
+    (newHref.indexOf('order=asc') > -1) &&
+    (newHref.indexOf('column=' + columnName) > -1)
+  ) {
+    newHref = setParam(newHref, 'order', 'desc');
+  } else {
+    newHref = setParam(newHref, 'order', 'asc');
+  }
+  newHref = setParam(newHref, 'column', columnName);
+  window.location.href = newHref;
+}
 
-  $("#tablepress-5").tablesorter();
-});
-
-$(document).ready(function() {
-
-  $("#tablepress-7").tablesorter();
-});
-
+function setParam(uri, key, val) {
+    return uri
+        .replace(
+          new RegExp("([?&]" + key + "(?=[=&#]|$)[^#&]*|(?=#|$))"),
+          "&" + key + "=" + encodeURIComponent(val)
+        )
+        .replace(/^([^?&]+)&/, "$1?");
+}

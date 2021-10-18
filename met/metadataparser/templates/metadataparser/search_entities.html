@@ -18,6 +18,23 @@
       return false;
     }
 
+    function change_ordering(elem) {
+      var oldColumn = $('#ordering_column').val();
+      var oldOrder = $('#ordering_order').val();
+
+      var newColumn = $(elem).data('name');
+      var newOrder = 'asc';
+      if (oldColumn === newColumn && oldOrder === 'asc') {
+        newOrder = 'desc';
+      }
+      $('#pagination_page').val(1);
+      $('#ordering_column').val(newColumn);
+      $('#ordering_order').val(newOrder);
+      var form = $('#ordering_column').parents('form:first');
+      form.submit();
+      return false;
+    }
+
     $(document).ready(function(){
       $('#export_format').val(null);
     });
@@ -30,7 +47,7 @@
 
 {% block content %}
   {% if object_list %}
-    {% entity_list object_list pagination=pagination onclick_page="change_page" onclick_export="change_export" %}
+    {% entity_list object_list pagination=pagination onclick_page="change_page" onclick_export="change_export" onclick_header="change_ordering" %}
   {% elif request.method == 'POST' %}
     <p>No entities found with these criteria.</p>
   {% endif %}

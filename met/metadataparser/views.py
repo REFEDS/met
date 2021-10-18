@@ -200,6 +200,8 @@ def _paginate_fed(ob_entities, page):
 @profile(name='Federation view')
 def federation_view(request, federation_slug=None):
     format = request.GET.get('format')
+    column_to_order = request.GET.get('column', 'entityid')
+    order = request.GET.get('order', 'asc')
 
     if federation_slug:
         request.session['%s_process_done' % federation_slug] = False
@@ -209,7 +211,12 @@ def federation_view(request, federation_slug=None):
 
     federation = get_object_or_404(Federation, slug=federation_slug)
 
-    ob_entities = Entity.objects.filter(federations__id=federation.id)
+    ob_entities = Entity.objects.all()
+    if column_to_order == 'num_federations':
+        ob_entities = ob_entities.annotate(
+            num_federations=Count('federations')
+        )
+    ob_entities = ob_entities.filter(federations__id=federation.id)
 
     entity_type = None
     if request.GET and 'entity_type' in request.GET:
@@ -241,6 +248,11 @@ def federation_view(request, federation_slug=None):
             )
 
     ob_entities = ob_entities.prefetch_related('types', 'federations')
+    # This is the only column name that doesn't correspond to a real entity field
+    if column_to_order == 'name':
+        column_to_order = 'canonical_name'
+    order_by = '-%s' % column_to_order if order == 'desc' else column_to_order
+    ob_entities = ob_entities.order_by(order_by)
     pagination = _paginate_fed(ob_entities, request.GET.get('page'))
 
     entities = []
@@ -861,6 +873,9 @@ def search_entities(request):
             filters = {}
             args = ()
 
+            column_to_order = form.cleaned_data['ordering_column'] or 'entityid'
+            order = form.cleaned_data['ordering_order'] or 'asc'
+
             entity_type = form.cleaned_data['entity_type']
             if entity_type and entity_type != 'All':
                 filters['types__name'] = entity_type
@@ -887,6 +902,11 @@ def search_entities(request):
                 filters['entityscope__name__icontains'] = scope
 
             ob_entities = Entity.objects.all()
+            if column_to_order == 'num_federations':
+                ob_entities = ob_entities.annotate(
+                    num_federations=Count('federations')
+                )
+
             if args:
                 ob_entities = ob_entities.filter(*args)
             if filters:
@@ -908,7 +928,6 @@ def search_entities(request):
                 organization_display_name = organization_display_name.lower()
                 search_by_org_disp_name = True
 
-            category_eid_list = []
             org_entity_ids_list = []
 
             if search_by_org_name or search_by_org_disp_name:
@@ -954,6 +973,11 @@ def search_entities(request):
             export_format = form.cleaned_data['export_format']
 
             ob_entities = ob_entities.prefetch_related('types', 'federations')
+            # This is the only column name that doesn't correspond to a real entity field
+            if column_to_order == 'name':
+                column_to_order = 'canonical_name'
+            order_by = '-%s' % column_to_order if order == 'desc' else column_to_order
+            ob_entities = ob_entities.order_by(order_by)
             pagination = _paginate_fed(ob_entities, form.cleaned_data['page'])
             results = pagination['objects'] if not export_format else ob_entities
 
