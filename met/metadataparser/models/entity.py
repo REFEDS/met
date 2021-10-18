@@ -29,7 +29,7 @@ from met.metadataparser.xmlparser import DESCRIPTOR_TYPES_DISPLAY
 from met.metadataparser.models.base import JSONField, Base
 from met.metadataparser.models.entity_type import EntityType
 from met.metadataparser.models.entity_federations import Entity_Federations
-from met.metadataparser.utils import get_full_path_url
+from met.metadataparser.utils import get_canonical, get_full_path_url
 
 TOP_LENGTH = getattr(settings, 'TOP_LENGTH', 5)
 
@@ -467,7 +467,7 @@ class Entity(Base):
         newname = self._get_property('displayName')
         if newname and newname != '':
             self.name = newname
-            self.canonical_name = newname.get('en')
+            self.canonical_name = get_canonical(newname)
 
         self.certstats = self._get_property('certstats')
 

@@ -5,17 +5,15 @@ import unicodedata
 from django.db import transaction
 from django.db import migrations, models
 from django.db.utils import OperationalError
+from met.metadataparser.utils import get_canonical
 
 
 def populate_entities(apps, schema_editor):
     Entity = apps.get_model('metadataparser', 'Entity')
     for entity in Entity.objects.filter(name__isnull=False):
         try:
-            canonical_name = entity.name['en']
-        except KeyError:
-            canonical_name = list(entity.name.values())[0]
-        try:
-            entity.canonical_name = canonical_name.strip()
+            canonical_name = get_canonical(entity.name)
+            entity.canonical_name = canonical_name
             with transaction.atomic():
                 entity.save(update_fields=('canonical_name', ))
         except OperationalError:

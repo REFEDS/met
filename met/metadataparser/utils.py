@@ -118,3 +118,13 @@ def process_xml_entity_fed_info(federation_info):
 
 def get_full_path_url(absolute_url):
     return "%s%s" % (HOSTNAME, absolute_url)
+
+
+def get_canonical(data):
+    canonical = data.get('en', data.get('es', data.get('de')))
+    if not canonical:
+        try:
+            canonical = list(data.values())[0]
+        except IndexError:
+            pass
+    return canonical.strip()
