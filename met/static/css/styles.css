@@ -103,3 +103,8 @@ div.summary .btn-toolbar {
 footer {
     text-align: center;
 }
+
+div#thiss-ds > div {
+    width: 300px !important;
+    height: 85px !important;
+}
