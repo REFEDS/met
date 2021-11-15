@@ -107,4 +107,11 @@ footer {
 div#thiss-ds > div {
     width: 300px !important;
     height: 85px !important;
+    margin-top: 5px;
+    margin-right: 10px;
+}
+
+a.signin {
+    margin-top: 15px;
+    display: none !important;
 }
