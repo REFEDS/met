@@ -10,14 +10,18 @@
 # Consortium GARR, http://www.garr.it
 ##########################################################################
 
+import json
 import hashlib
+import os
 import smtplib
 from email.mime.text import MIMEText
 from django.conf import settings
 from django.template.defaultfilters import slugify
 from slackclient import SlackClient
 
-from local_settings import HOSTNAME
+from saml2.mdstore import InMemoryMetaData
+
+from local_settings import HOSTNAME, SAML2DIR
 
 
 def compare_filecontents(a, b):
@@ -127,4 +131,23 @@ def get_canonical(data):
             canonical = list(data.values())[0]
         except IndexError:
             pass
+
     return canonical.strip()
+
+
+class EdugainIdPsDatabaseMetadataLoader(InMemoryMetaData):
+
+    def __init__(self, attrc, metadata='', node_name=None,
+                 check_validity=True, security=None, **kwargs):
+
+        super(EdugainIdPsDatabaseMetadataLoader, self).__init__(None, **kwargs)
+
+        filename = os.path.join(SAML2DIR, 'edugain_parsedmetadata.json')
+        with open(filename) as f:
+            self.entity = json.load(f)
+
+    def load(self, *args, **kwargs):
+        pass
+
+    def __getitem__(self, item):
+        return self.entity[item]
