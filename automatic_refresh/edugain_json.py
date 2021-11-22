@@ -15,11 +15,8 @@
 import dotenv
 import os
 import sys
-import logging
-import logging.config
 
-
-dotenv.read_dotenv(os.environ.get('DOTENV_FILE', '/home/pitbulk/proyectos/met-private/.env'))
+dotenv.read_dotenv(os.environ.get('DOTENV_FILE', '/opt/met/.env'))
 
 os.environ['PYTHON_EGG_CACHE'] = '/tmp/.python-eggs/'
 
