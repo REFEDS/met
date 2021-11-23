@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>{% trans "Metadata Explorer Tool" %}</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta name="description" content="{% trans "Metadata Explorer Tool" %}">
+    <meta name="description" content="{% trans 'Metadata Explorer Tool' %}">
     <meta name="author" content="G&eacute;ant">
     <script src="{{ STATIC_URL }}js/jquery-1.10.2.min.js"></script>
     <script src="{{ STATIC_URL }}js/bootstrap.js"></script>
@@ -47,10 +47,10 @@
               <li class="divider-vertical"></li>
               <li><div id='thiss-ds'></div></li>
               <li><a href="{{ portal_settings.LOGIN_URL }}" class="signin">| {% trans "alternative discovery service "%}</a></li>
-              <li><div id='wayf-button'></div></li>
             {% endif %}
           </ul>
 	      </div>
+        {% if not "/saml2/login" in request.path %}
         <form
             class="navbar-search pull-right"
             action="{% url 'search_service' %}"
@@ -67,6 +67,7 @@
 		        <img class="lente" src="{{ STATIC_URL}}images/search_button.png">
           {% endwith %}
         </form>
+        {% endif %}
       </div>
 
       <div class="summary">
@@ -129,12 +130,14 @@
     </script>
     <script>
 	window.onload = function() {
-	  // Render the Seamless Access button
-	  thiss.DiscoveryComponent.render({
-	    loginInitiatorURL: '{{ settings.LOCAL_DS }}',
-      backgroundColor: 'none',
-      color: '#D72E3F',
-	  }, '#thiss-ds');
+    if (!window.location.pathname.includes('/saml2/login')) {
+      // Render the Seamless Access button
+      thiss.DiscoveryComponent.render({
+        loginInitiatorURL: '{{ settings.LOCAL_DS }}',
+        backgroundColor: 'none',
+        color: '#D72E3F',
+      }, '#thiss-ds');
+    }
 	};
 	</script>
     <!-- End Open Web Analytics Code -->
